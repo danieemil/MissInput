@@ -16,9 +16,25 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
-#include <cpctelera.h>
+#include <cube.h>
 
-void main(void) {
+#define ORIGIN cpctm_screenPtr (CPCT_VMEM_START, 20, 96)
+
+void init()
+{
+
+   u8* paleto = {20,21};
+   u16 tapie = 2;
+
+   cpct_disableFirmware();
+   cpct_setVideoMode(2);
+   cpct_setPalette(paleto, tapie);
+   //cpct_setBorder(paleto[0]);
+
+}
+
+void dibujacubo()
+{
    u8* pvmem;  // Pointer to video memory
 
    // Clear Screen
@@ -26,7 +42,16 @@ void main(void) {
 
    // Draw String on the middle of the screen
    pvmem = cpct_getScreenPtr(CPCT_VMEM_START, 20, 96);
-   cpct_drawStringM1("Welcome to CPCtelera!", pvmem, 1, 0);
+   
+   cpct_drawSolidBox (ORIGIN, 0xFF, 2, 4);
+}
+
+
+void main(void) {
+
+   init();
+   dibujacubo();
+   
 
    // Loop forever
    while (1);
