@@ -16,43 +16,53 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
-#include <cube.h>
+#include <Player.h>
+
 
 #define ORIGIN cpctm_screenPtr (CPCT_VMEM_START, 20, 96)
 
 void init()
 {
 
-   u8* paleto = {20,21};
-   u16 tapie = 2;
-
    cpct_disableFirmware();
-   cpct_setVideoMode(2);
-   cpct_setPalette(paleto, tapie);
-   //cpct_setBorder(paleto[0]);
+   cpct_setVideoMode(1);
+   cpct_setPalette(p_palette, 4);
+   cpct_setBorder(p_palette[3]);
+
+   initPro();
 
 }
 
-void dibujacubo()
+void draw()
 {
    u8* pvmem;  // Pointer to video memory
 
-   // Clear Screen
-   cpct_memset(CPCT_VMEM_START, 0, 0x4000);
-
-   // Draw String on the middle of the screen
-   pvmem = cpct_getScreenPtr(CPCT_VMEM_START, 20, 96);
+   pvmem = cpct_getScreenPtr(CPCT_VMEM_START, pro->x, pro->y);
    
-   cpct_drawSolidBox (ORIGIN, 0xFF, 2, 4);
+   cpct_drawSprite(getProSpr(), pvmem, getProW(), getProH());
+}
+
+void inputManager()
+{
+
+}
+
+void move()
+{
+   movePro();
 }
 
 
 void main(void) {
 
    init();
-   dibujacubo();
+   draw();
    
 
    // Loop forever
-   while (1);
+   while (1)
+   {
+      move();
+      draw();
+   }
 }
