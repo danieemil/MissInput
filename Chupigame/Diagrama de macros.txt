@@ -1,0 +1,33 @@
+
+
+Comodin:
+    01: Colision
+    02: Colision mortal
+    03: Power-up doble salto
+    04: Power-up gravedad
+    05: etc...
+
+
+
+Entidad(Colisionable):
+    Posicion: X e Y
+    Tamaño: Ancho y alto
+    Comodin: Puede indicar si mata o no al jugador, o pa otras cosas.
+
+
+Renderizable:
+    Entidad:
+        Posicion.
+        Tamaño
+    Sprite: Dirección de memoria donde empieza el sprite.
+
+
+Power-ups:
+
+
+Enemigos:
+
+
+Jugador:
+
+
