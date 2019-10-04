@@ -7,3 +7,4 @@
 .globl cpct_setPalette_asm
 .globl cpct_drawSprite_asm
 .globl cpct_setPALColour_asm
+.globl cpct_drawSolidBox_asm
