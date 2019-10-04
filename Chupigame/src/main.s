@@ -19,7 +19,9 @@
 ;; Include all CPCtelera constant definitions, macros and variables
 .include "cpctelera.h.s"
 .include "main.h.s"
-.include "entity.h.s"
+.include "render.h.s"
+
+;;.include "sprite.h"
 ;;
 ;; Start of _DATA area 
 ;;  SDCC requires at least _DATA and _CODE areas to be declared, but you may use
@@ -39,6 +41,11 @@
 ;; WARNING: Every global symbol declared will be linked, so DO NOT declare 
 ;; symbols for functions you do not use.
 ;;
+
+
+DefineEntity caja, #32, #48, #4, #16, #0xFF
+
+DefineDrawableEntity player, #76, #60, #4, #16, #0xFF, _player_spr
 
 
 
@@ -61,20 +68,36 @@ _main::
    ld hl, #0x0B10
    call cpct_setPALColour_asm          ;;Destruye F, BC, HL
 
+   ld ix, #player
 
    ;; Calculate a video-memory location for printing a string
    ld   de, #CPCT_VMEM_START_ASM ;; DE = Pointer to start of the screen
-   ;;ld    b, #24                  ;; B = y coordinate (24 = 0x18)
-   ;;ld    c, #16                  ;; C = x coordinate (16 = 0x10)
-   ld   bc, #0x1810
+   ld    b, de_y(ix)                  ;; B = y coordinate
+   ld    c, de_x(ix)                  ;; C = x coordinate
+   call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
+
+   ex de, hl
+   ld l, dde_spr_l(ix)
+   ld h, dde_spr_h(ix) 
+   ld c, de_w(ix)
+   ld b, de_h(ix)
+   call cpct_drawSprite_asm            ;;Destruye AF, BC, DE, HL
+
+
+   ld ix, #caja
+
+   ;; Calculate a video-memory location for printing a string
+   ld   de, #CPCT_VMEM_START_ASM ;; DE = Pointer to start of the screen
+   ld    b, de_y(ix)                  ;; B = y coordinate
+   ld    c, de_x(ix)                  ;; C = x coordinate
 
    call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
 
    ex de, hl
-   ld hl, #_player_spr
-   ld bc, #0x1004
-   call cpct_drawSprite_asm            ;;Destruye AF, BC, DE, HL
-
+   ld a, de_type(ix)
+   ld c, de_w(ix)
+   ld b, de_h(ix)
+   call cpct_drawSolidBox_asm ;; Destruye AF, BC, DE, HL
 
 
    ;; Loop forever
