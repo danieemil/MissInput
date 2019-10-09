@@ -44,3 +44,75 @@ initializePlayer:
     ld dp_dir(ix), #0
 
 ret
+
+
+
+
+
+;;====================================================
+;;Definition: Actualiza al jugador 
+;;Entrada:
+;;  IX  ->  Puntero que contiene al jugador
+;;  A   ->  Acción del jugador(moverse, saltar)
+;;Salida:
+;;Destruye: HL,
+;;====================================================
+updatePlayer:
+
+
+    ld dp_dir(ix), #0
+    bit 0, a
+    jr nz, check_right
+        dec dp_dir(ix)
+        
+
+    check_right:
+    bit 1, a
+    jr nz, check_jump
+        inc dp_dir(ix)
+        
+
+    check_jump:
+    ;Colisiones
+    bit 2, a
+    jr nz, end
+        ld a, de_type(ix)
+        bit 6, a
+        call z, jump
+
+    end:
+
+    call move
+
+
+ret
+
+
+
+;;====================================================
+;;Definition: Controla el movimiento del personaje
+;;Entrada: 
+;;Salida:
+;;Destruye:
+;;====================================================
+move:
+    ld a, de_x(ix)
+    ld b, dp_dir(ix)
+    sla b   ;; Esto hace que se mueva el doble de rápido ;/
+    sub a, b
+    ld de_x(ix), a
+
+ret
+
+
+
+;;====================================================
+;;Definition: Inicia el salto
+;;Entrada:
+;;Salida:
+;;Destruye:
+;;====================================================
+jump:
+
+
+ret

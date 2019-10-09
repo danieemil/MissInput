@@ -17,7 +17,6 @@
 ;;-------------------------------------------------------------------------------
 
 ;; Include all CPCtelera constant definitions, macros and variables
-.include "cpctelera.h.s"
 .include "main.h.s"
 .include "player.h.s"
 .include "bins/MapaPruebas2.h.s"
@@ -92,8 +91,6 @@ _main::
    ld hl, #_mylevel_0_end
    call cpct_zx7b_decrunch_s_asm
 
-
-
    ld c,    #_map_W
    ld b,    #_map_H
    ld de,   #_map_W
@@ -117,25 +114,6 @@ _main::
 
 
    ;;---------------------------
-   ;; Dibujar jugador         
-   ;;---------------------------
-
-   ;; Calculate a video-memory location for printing a string
-   ld   de, #CPCT_VMEM_START_ASM ;; DE = Pointer to start of the screen
-   ld    b, de_y(ix)                  ;; B = y coordinate
-   ld    c, de_x(ix)                  ;; C = x coordinate
-   call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
-
-   ex de, hl
-   ld l, dde_spr_l(ix)
-   ld h, dde_spr_h(ix) 
-   ld c, de_w(ix)
-   ld b, de_h(ix)
-   call cpct_drawSprite_asm            ;;Destruye AF, BC, DE, HL
-
-
-
-   ;;---------------------------
    ;; Dibujar caja
    ;;---------------------------
 
@@ -154,7 +132,81 @@ _main::
    ld b, de_h(ix)
    call cpct_drawSolidBox_asm ;; Destruye AF, BC, DE, HL
 
-
+   ld ix, #_jug
    ;; Loop forever
 loop:
+
+   call drawBackground
+
+   call inputManager
+
+
+   call updatePlayer
+   
+   call drawSprite
+   
+   call cpct_waitVSYNC_asm
+
+
    jr    loop
+
+
+;;====================================================
+;; Key Definitions:
+;; Key_O       
+;; Key_P        
+;; Key_Space   
+;;
+;;
+;;
+;;====================================================
+;;Definition: Controla las pulsaciones por teclado
+;;Entrada:
+;;Salida:
+;; A     -> Teclas pulsadas
+;;Destruye: A, BC, D, HL
+;;====================================================
+inputManager:
+
+
+   call cpct_scanKeyboard_asm    ;;Destruye: AF, BC, DE, HL
+
+   call cpct_isAnyKeyPressed_asm ;;Destruye: A, B, HL
+      jr nz, key_pressed         ;;Es 0
+      ld a, #0
+      ret
+
+   key_pressed:
+   ld a, #0
+   ex af, af'
+
+   check_left:
+   ld hl, #Key_O
+   call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
+   jr z, check_right
+      ex af, af'
+      add a, #1
+      ex af, af'
+
+
+   check_right:
+   ld hl, #Key_P
+   call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
+   jr z, check_jump
+      ex af, af'
+      add a, #2
+      ex af, af'
+
+
+   check_jump:
+   ld hl, #Key_Space
+   call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
+   jr z, final_input
+      ex af, af'
+      add a, #4
+      ret
+
+   final_input:
+   ex af, af'
+
+ret

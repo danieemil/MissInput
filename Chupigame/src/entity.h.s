@@ -1,4 +1,4 @@
-
+.include "cpctelera.h.s"
 ;; Macros
 
 .macro DefineEntity _name, _x, _y, _w, _h, _type

@@ -16,3 +16,13 @@ de_size = 5
 dde_spr_l = 0 + de_size
 dde_spr_h = 1 + de_size
 
+
+;; Global
+    ;;Dependencias
+    .globl cpct_drawSprite_asm
+    .globl cpct_getScreenPtr_asm
+    .globl cpct_drawSolidBox_asm
+
+    ;;Funciones
+    .globl drawSprite
+    .globl drawBackground

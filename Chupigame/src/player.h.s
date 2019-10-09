@@ -29,25 +29,27 @@ player_height   = 16
 
 
 ;; Globls
-    ;;Datos
+    ;;Dependencias
     .globl _player_spr
 
 
 
     ;;Funciones
     .globl initializePlayer
+    .globl updatePlayer
 
 
 ;Flags del jugador(almacenados en la variable _type de entidad)
 ;Estos flags solo se corresponden si el primer bit está activo
 ;
-;J -> Jugador?
-;S -> Colisiona con suelo?
-;D -> Colisiona con pared_derecha?
-;I -> Colisiona con pared_izquierda?
-;P -> Power-up de doble salto?
-;G -> Gravedad?
-;M -> Muerte
+;7   J -> Jugador?
+;6   S -> Colisiona con suelo?
+;5   D -> Colisiona con pared_derecha?
+;4   I -> Colisiona con pared_izquierda?
+;3   P -> Power-up de doble salto?
+;2   G -> Gravedad?
+;1   M -> Muerte
+;0   D -> Direction (1-> Left, 0 -> Right)
 ;
-;J S D I P G M N
+;J S D I P G M D
 ;1 0 0 0 0 0 0 0
