@@ -57,6 +57,18 @@ ret
 ;;Salida:
 ;;Destruye: HL,
 ;;====================================================
+;;
+;;Orden de físicas del player
+;;1º Analizamos el input
+;;2º Mover en x
+;;3º Comprobamos colisiones
+;;4º Corregimos en x
+;;5º Mover en y
+;;6º Comprobamos colisiones
+;;7º Corregimos en y
+;;8º Dibujamos y muerte en ciclos
+;;
+;;====================================================
 updatePlayer:
 
 

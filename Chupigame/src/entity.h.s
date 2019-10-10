@@ -18,3 +18,12 @@ de_w    = 2
 de_h    = 3
 de_type = 4
 
+
+;; Globals
+    ;;Dependencias
+
+
+    ;;Funciones
+    .globl colisionDetection
+
+

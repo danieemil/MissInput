@@ -44,7 +44,7 @@
 ;; symbols for functions you do not use.
 ;;
 
-DefineEntity caja, #32, #48, #4, #16, #0xFF
+DefineEntity caja, #32, #48, #1, #16, #0xFF
 
 _jug:
 ;DefinePlayer _name, _x, _y, _w, _h, _type, _sprite, _jumptbl_ptr, _velx, _dir
@@ -133,6 +133,7 @@ _main::
    call cpct_drawSolidBox_asm ;; Destruye AF, BC, DE, HL
 
    ld ix, #_jug
+   ld iy, #caja
    ;; Loop forever
 loop:
 
@@ -142,6 +143,8 @@ loop:
 
 
    call updatePlayer
+
+   call colisionDetection
    
    call drawSprite
    
