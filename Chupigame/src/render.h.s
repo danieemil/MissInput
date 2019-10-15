@@ -25,4 +25,5 @@ dde_spr_h = 1 + de_size
 
     ;;Funciones
     .globl drawSprite
+    .globl drawBox
     .globl drawBackground

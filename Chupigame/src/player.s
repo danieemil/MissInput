@@ -61,15 +61,25 @@ ret
 ;;Orden de físicas del player
 ;;1º Analizamos el input
 ;;2º Mover en x
-;;3º Comprobamos colisiones
+;;3º Comprobamos colisiones para todos los objetos
+;;      - Si C es -1:
+;;        Hacemos que esta entidad solo ejecute el paso 5º
+;;      - Si C es  0:
+;;        Hacemos que esta entidad se salte el paso 4º 
+;;      - Si C es  1:
+;;        Hacemos que esta entidad ejecute todos los pasos
 ;;4º Corregimos en x
 ;;5º Mover en y
-;;6º Comprobamos colisiones
+;;6º Comprobamos colisiones ¿solo en Y? para todos los objetos
+;;      - Si C es 0 o -1:
+;;        Hacemos que esta entidad se salte el paso 7º
+;;      - Si C es  1:
+;;        Hacemos que esta entidad ejecute el siguiente paso
 ;;7º Corregimos en y
-;;8º Dibujamos y muerte en ciclos
 ;;
+;; AHORA VUELVO, LEE ESTO ATENTAMENTE A VER SI TE CONVENCE
 ;;====================================================
-updatePlayer:
+inputPlayer:
 
 
     ld dp_dir(ix), #0
@@ -94,28 +104,34 @@ updatePlayer:
 
     end:
 
-    call move
-
-
 ret
 
 
 
 ;;====================================================
-;;Definition: Controla el movimiento del personaje
+;;Definition: Controla el movimiento del personaje en X
 ;;Entrada: 
 ;;Salida:
 ;;Destruye:
 ;;====================================================
-move:
+playerMoveX:
     ld a, de_x(ix)
     ld b, dp_dir(ix)
     sla b   ;; Esto hace que se mueva el doble de rápido ;/
     sub a, b
     ld de_x(ix), a
-
 ret
 
+
+;;=====================================================
+;;Definition: Controla el movimiento del personaje en Y
+;;Entrada: 
+;;Salida:
+;;Destruye:
+;;=====================================================
+playerMoveY:
+    
+ret
 
 
 ;;====================================================

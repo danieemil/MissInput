@@ -44,7 +44,15 @@
 ;; symbols for functions you do not use.
 ;;
 
-DefineEntity caja, #32, #48, #1, #16, #0xFF
+
+DefineEntity caja, #78, #48, #1, #16, #0xFF
+
+entities:
+   .db #38, #96, #04, #08, #0xFF
+   .db #38, #190, #04, #08, #0xFF
+   .db #38, #06, #04, #08, #0xFF
+   .db #0x80
+
 
 _jug:
 ;DefinePlayer _name, _x, _y, _w, _h, _type, _sprite, _jumptbl_ptr, _velx, _dir
@@ -80,6 +88,12 @@ _main::
    ld hl, #0x0B10
    call cpct_setPALColour_asm          ;;Destruye F, BC, HL
 
+
+
+   call entityLoader
+
+
+
    ;;---------------------------
    ;; Dibujar mapa
    ;;---------------------------
@@ -91,11 +105,11 @@ _main::
    ld hl, #_mylevel_0_end
    call cpct_zx7b_decrunch_s_asm
 
-   ld c,    #_map_W
-   ld b,    #_map_H
-   ld de,   #_map_W
-   ld hl,   #levels_tileset
-   call cpct_etm_setDrawTilemap4x8_ag_asm ;; Elegimos el tileset para dibujar el mapa
+   ;ld c,    #_map_W
+   ;ld b,    #_map_H
+   ;ld de,   #_map_W
+   ;ld hl,   #levels_tileset
+   ;call cpct_etm_setDrawTilemap4x8_ag_asm ;; Elegimos el tileset para dibujar el mapa
 
    ;ld hl,   #0xC000
    ;ld de,   #levels_buffer
@@ -114,39 +128,98 @@ _main::
 
 
    ;;---------------------------
-   ;; Dibujar caja
+   ;; Dibujar cajas
    ;;---------------------------
 
-   ld ix, #caja
 
-   ;; Calculate a video-memory location for printing a string
-   ld   de, #CPCT_VMEM_START_ASM ;; DE = Pointer to start of the screen
-   ld    b, de_y(ix)                  ;; B = y coordinate
-   ld    c, de_x(ix)                  ;; C = x coordinate
+   ld ix, #vector
+   ld a, (v_num)
+   ld bc, #de_size
 
-   call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
+   drawBox_loop:
+      exx
+      ex af, af'
+      call drawBox
+      ex af, af'
+      exx
 
-   ex de, hl
-   ld a, de_type(ix)
-   ld c, de_w(ix)
-   ld b, de_h(ix)
-   call cpct_drawSolidBox_asm ;; Destruye AF, BC, DE, HL
+      add ix, bc
 
-   ld ix, #_jug
-   ld iy, #caja
+      dec a
+   jr nz, drawBox_loop
+
+
+
+   ld ix, #player
    ;; Loop forever
 loop:
 
    call drawBackground
 
    call inputManager
+   call inputPlayer
 
 
-   call updatePlayer
+   call playerMoveX
 
-   call colisionDetection
+
+   ld iy, #vector
+   ld a, (v_num)
+   ld bc, #de_size
+
+   collisionBoxX_loop:
+      exx
+      ex af, af'
+      
+      res 4, de_type(iy)
+      ld c, #0
+      call detectCollisionX
+
+      ;;call fixX
+
+      ex af, af'
+      exx
+
+      add iy, bc
+
+      dec a
+
+   jr nz, collisionBoxX_loop
+
+   
+
+   call playerMoveY
+
+
+   ld iy, #vector
+   ld a, (v_num)
+   ld bc, #de_size
+
+   collisionBoxY_loop:
+      exx
+      ex af, af'
+      
+
+      bit 4, de_type(iy)
+      jr nz, no_collisionY
+
+      call collisionY
+
+      no_collisionY:
+      
+      ;;call fixY
+
+      ex af, af'
+      exx
+
+      add iy, bc
+
+      dec a
+
+   jr nz, collisionBoxY_loop
    
    call drawSprite
+
    
    call cpct_waitVSYNC_asm
 
@@ -176,11 +249,11 @@ inputManager:
 
    call cpct_isAnyKeyPressed_asm ;;Destruye: A, B, HL
       jr nz, key_pressed         ;;Es 0
-      ld a, #0
+      xor a                      ;; Ponemos A a 0
       ret
 
    key_pressed:
-   ld a, #0
+   xor a                         ;; Ponemos A a 0
    ex af, af'
 
    check_left:
@@ -211,5 +284,34 @@ inputManager:
 
    final_input:
    ex af, af'
+
+ret
+
+
+
+entityLoader:
+
+
+   ld hl, #entities
+
+   loader_loop:
+   
+      ld a, (hl)
+      cp #0x80
+      ret z
+
+      ex de, hl
+      call ent_new_default
+      ex de, hl
+      push hl
+
+      call ent_copy
+      pop hl
+
+      ld bc, #de_size
+      add hl, bc
+
+      jr #loader_loop
+
 
 ret

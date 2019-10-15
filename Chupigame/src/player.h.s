@@ -36,7 +36,9 @@ player_height   = 16
 
     ;;Funciones
     .globl initializePlayer
-    .globl updatePlayer
+    .globl inputPlayer
+    .globl playerMoveX
+    .globl playerMoveY
 
 
 ;Flags del jugador(almacenados en la variable _type de entidad)
