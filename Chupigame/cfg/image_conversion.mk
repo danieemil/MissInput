@@ -42,19 +42,20 @@ PALETTE=0 2 3 26
 #$(eval $(call IMG2SP, CONVERT_PALETTE , $(PALETTE), g_palette ))
 #$(eval $(call IMG2SP, CONVERT         , img.png , w, h, array, palette, tileset))
 
-$(eval $(call IMG2SP, SET_MODE        , 1                  ))
-$(eval $(call IMG2SP, SET_PALETTE_FW  , $(PALETTE)	))
-$(eval $(call IMG2SP, CONVERT_PALETTE , $(PALETTE), g_palette ))
-$(eval $(call IMG2SP, SET_IMG_FORMAT  , zgtiles		))	
-$(eval $(call IMG2SP, SET_OUTPUT      , bin                  ))
-$(eval $(call IMG2SP, CONVERT         , assets/maps/tileset.png , 16, 8, ztiles))
+$(eval $(call IMG2SP, SET_MODE        , 1                  						))
+$(eval $(call IMG2SP, SET_PALETTE_FW  , $(PALETTE)								))
+$(eval $(call IMG2SP, CONVERT_PALETTE , $(PALETTE), g_palette 					))
+$(eval $(call IMG2SP, SET_IMG_FORMAT  , zgtiles									))
+$(eval $(call IMG2SP, SET_OUTPUT      , bin                						))
+$(eval $(call IMG2SP, SET_FOLDER      , src/bins/ 								))
+$(eval $(call IMG2SP, CONVERT         , assets/maps/tileset.png , 16, 8, ztiles	))
 
 
-$(eval $(call IMG2SP, SET_MASK        , none               )) 
-$(eval $(call IMG2SP, SET_FOLDER      , src/               ))
-$(eval $(call IMG2SP, SET_IMG_FORMAT  , sprites            ))
-$(eval $(call IMG2SP, SET_OUTPUT      , c                  ))
-$(eval $(call IMG2SP, CONVERT         , assets/sprite.png , 16, 16, player_spr))
+$(eval $(call IMG2SP, SET_MASK        , none               						)) 
+$(eval $(call IMG2SP, SET_FOLDER      , src/               						))
+$(eval $(call IMG2SP, SET_IMG_FORMAT  , sprites            						))
+$(eval $(call IMG2SP, SET_OUTPUT      , c                  						))
+$(eval $(call IMG2SP, CONVERT         , assets/sprite.png , 16, 16, player_spr	))
 
 ##
 ## OLD MACROS (For compatibility)

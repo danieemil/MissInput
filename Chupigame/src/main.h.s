@@ -1,10 +1,16 @@
 .globl _g_palette
-.globl _player_spr
 
 .globl cpct_disableFirmware_asm
-.globl cpct_getScreenPtr_asm
 .globl cpct_setVideoMode_asm
 .globl cpct_setPalette_asm
-.globl cpct_drawSprite_asm
 .globl cpct_setPALColour_asm
-.globl cpct_drawSolidBox_asm
+.globl cpct_etm_setDrawTilemap4x8_ag_asm
+.globl cpct_etm_drawTilemap4x8_ag_asm
+.globl cpct_etm_setDrawTilemap4x8_agf_asm
+.globl cpct_etm_drawTilemap4x8_agf_asm
+.globl cpct_zx7b_decrunch_s_asm
+.globl cpct_drawTileAligned4x8_asm
+.globl cpct_isAnyKeyPressed_asm
+.globl cpct_isKeyPressed_asm
+.globl cpct_scanKeyboard_asm
+.globl cpct_waitVSYNC_asm
