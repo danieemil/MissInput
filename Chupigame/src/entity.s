@@ -1,7 +1,7 @@
 .include "entity.h.s"
 
 vector:
-DefineEntityVector v_entity, 5
+DefineEntityVector v_entity, 20
 
 v_num:          .db 0
 v_entity_next:  .dw #vector

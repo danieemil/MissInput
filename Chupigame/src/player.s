@@ -117,9 +117,10 @@ ret
 playerMoveX:
     ld a, de_x(ix)
     ld b, dp_dir(ix)
-    sla b   ;; Esto hace que se mueva el doble de rápido ;/
     sub a, b
     ld de_x(ix), a
+
+    end_playerMoveX:
 ret
 
 
@@ -141,6 +142,46 @@ ret
 ;;Destruye:
 ;;====================================================
 jump:
+
+
+ret
+
+
+;;====================================================
+;;Definition: Corrige X frente a una colision
+;;Entrada:
+;;Salida:
+;;Destruye:
+;;====================================================
+pl_fixX:
+
+    ld a, dp_dir(ix)        ;; P = Player    C = Colision
+    cp #1                    ;; P se mueve a la derecha?
+    jr z, pl_fixX_left     ;; P -> Izquierda  ||  C -> Derecha
+
+        ld a, de_x(iy)      ;; Cargamos Cx
+        sub de_w(ix)        ;; Restamos Pw
+        ld de_x(ix), a      ;; Px = (Cx-Pw)
+        ;;set 5, de_type(ix)    ;; Marca el flag de colision con pared derecha (Walljump)
+        ret
+
+    pl_fixX_left:
+
+        ld a, de_x(iy)      ;; Cargamos Cx
+        add de_w(iy)        ;; Sumamos  Cw
+        ld de_x(ix), a      ;; Px = (Cx+Cw)
+        ;;set 4, de_type(ix)    ;; Marca el flag de colision con pared izquierda (Walljump)
+        ret
+
+
+
+;;====================================================
+;;Definition: Corrige Y frente a una colisions
+;;Entrada:
+;;Salida:
+;;Destruye:
+;;====================================================
+pl_fixY:
 
 
 ret

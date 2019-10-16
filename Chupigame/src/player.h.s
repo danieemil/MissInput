@@ -39,6 +39,8 @@ player_height   = 16
     .globl inputPlayer
     .globl playerMoveX
     .globl playerMoveY
+    .globl pl_fixX
+    .globl pl_fixY
 
 
 ;Flags del jugador(almacenados en la variable _type de entidad)

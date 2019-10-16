@@ -50,7 +50,9 @@ DefineEntity caja, #78, #48, #1, #16, #0xFF
 entities:
    .db #38, #96, #04, #08, #0xFF
    .db #38, #190, #04, #08, #0xFF
-   .db #38, #06, #04, #08, #0xFF
+   .db #38, #86, #04, #08, #0xFF
+   .db #38, #76, #04, #08, #0xFF
+   .db #38, #66, #04, #08, #0xFF
    .db #0x80
 
 
@@ -175,7 +177,11 @@ loop:
       ld c, #0
       call detectCollisionX
 
-      ;;call fixX
+      ld a, c
+      cp #1
+      jr nz, noCollisionBoxX
+      call pl_fixX
+      noCollisionBoxX:
 
       ex af, af'
       exx
@@ -257,6 +263,10 @@ inputManager:
    ex af, af'
 
    check_left:
+   ld a, de_x(ix)                ;; Comprobamos que no se pasa por el borde izquierdo
+   cp #0
+   jr z, check_right
+
    ld hl, #Key_O
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
    jr z, check_right
@@ -266,6 +276,10 @@ inputManager:
 
 
    check_right:
+   ld a, de_x(ix)                ;; Comprobamos que no se pasa por el borde derecho
+   cp #0x4C
+   jr z, check_jump
+
    ld hl, #Key_P
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
    jr z, check_jump
