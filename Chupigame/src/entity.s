@@ -151,14 +151,16 @@ ret
 
 ;;==================================================================================
 ;;Definition: Después de corregir en X y mover en Y, detecta colisiones solo en Y
-;;0487
 ;;==================================================================================
 collisionY:
     bit 4, de_type(iy)
-    jr z, etiqueta
+    jr nz, etiqueta
+
 
     ld c, #0
     jr detectCollisionY
+
+    
 
     etiqueta:
 ret

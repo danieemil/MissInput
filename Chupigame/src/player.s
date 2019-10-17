@@ -1,8 +1,13 @@
 .include "player.h.s"
 
 
+;; Tabla de saltos, nos permite simular la gravedad
 _jumptable:
-    .db  -5, -5, -3, -3, -1, -1, 0, 1, 1, 2, 3, 3, 5, 5, 128
+    .db  -12, -9, -7, -5, -4, -3, -1, -1, 0, 1, 1, 1, 1, 1, 3, 3, 3, 4, 0x80
+
+jp_start    = #0   ;;Posición en la tabla cuando se inicia el salto
+jp_floorCol = #8    ;;Posición en la tabla cuando colisiona con el suelo
+jp_wallCol  = #9    ;;Posición en la tabla cuando colisiona con la pared
 
 ;;====================================================
 ;;Definition: Inicializa los valores del jugador 
@@ -34,6 +39,8 @@ initializePlayer:
 
     ;; Seteamos su tabla de saltos
     ld hl, #_jumptable
+    ld bc, #8
+    add hl, bc
     ld dp_jump_l(ix), l
     ld dp_jump_h(ix), h
 
@@ -77,47 +84,43 @@ ret
 ;;        Hacemos que esta entidad ejecute el siguiente paso
 ;;7º Corregimos en y
 ;;
-;; AHORA VUELVO, LEE ESTO ATENTAMENTE A VER SI TE CONVENCE
 ;;====================================================
 inputPlayer:
 
 
     ld dp_dir(ix), #0
     bit 0, a
-    jr nz, check_right
+    jr z, check_right
         dec dp_dir(ix)
-        
 
     check_right:
     bit 1, a
-    jr nz, check_jump
+    jr z, check_jump
         inc dp_dir(ix)
         
 
     check_jump:
-    ;Colisiones
     bit 2, a
-    jr nz, end
+    jr z, end
         ld a, de_type(ix)
         bit 6, a
-        call z, jump
+        jp nz, jump
 
     end:
-
 ret
 
 
 
 ;;====================================================
 ;;Definition: Controla el movimiento del personaje en X
-;;Entrada: 
+;;Entrada: IX -> Apunta al jugador
 ;;Salida:
-;;Destruye:
+;;Destruye: A, B
 ;;====================================================
 playerMoveX:
     ld a, de_x(ix)
     ld b, dp_dir(ix)
-    sub a, b
+    add a, b
     ld de_x(ix), a
 
     end_playerMoveX:
@@ -126,23 +129,44 @@ ret
 
 ;;=====================================================
 ;;Definition: Controla el movimiento del personaje en Y
-;;Entrada: 
-;;Salida:
-;;Destruye:
+;;Entrada: IX -> Apunta al jugador
+;;Salida: 
+;;Destruye: A, BC, HL
 ;;=====================================================
 playerMoveY:
+
+    ld a, de_y(ix)
+    ld h, dp_jump_h(ix)
+    ld l, dp_jump_l(ix)
+    add a, (hl)
+
+    ld de_y(ix), a
+
+    res 6, de_type(ix)
+
+    inc hl
+    ld a, #0x80
+
+    cp a, (hl)
+    ret z
+
+    ld dp_jump_h(ix), h
+    ld dp_jump_l(ix), l
     
 ret
 
-
 ;;====================================================
 ;;Definition: Inicia el salto
-;;Entrada:
+;;Entrada: IX -> Apunta al jugador
 ;;Salida:
-;;Destruye:
+;;Destruye: A, BC, HL
 ;;====================================================
 jump:
 
+    ld hl, #_jumptable
+
+    ld dp_jump_l(ix), l
+    ld dp_jump_h(ix), h
 
 ret
 
@@ -150,13 +174,15 @@ ret
 ;;====================================================
 ;;Definition: Corrige X frente a una colision
 ;;Entrada:
+;;  IX  ->  Player
+;;  IY  ->  Entidad
 ;;Salida:
 ;;Destruye:
 ;;====================================================
 pl_fixX:
 
     ld a, dp_dir(ix)        ;; P = Player    C = Colision
-    cp #1                    ;; P se mueve a la derecha?
+    cp #-1                    ;; P se mueve a la derecha?
     jr z, pl_fixX_left     ;; P -> Izquierda  ||  C -> Derecha
 
         ld a, de_x(iy)      ;; Cargamos Cx
@@ -176,12 +202,48 @@ pl_fixX:
 
 
 ;;====================================================
-;;Definition: Corrige Y frente a una colisions
+;;Definition: Corrige Y frente a una colision
 ;;Entrada:
+;;  IX  ->  Player
+;;  IY  ->  Entidad
 ;;Salida:
-;;Destruye:
+;;Destruye: A, B
 ;;====================================================
 pl_fixY:
 
+    ld h, dp_jump_h(ix)
+    ld l, dp_jump_l(ix)
+
+    ld a, (hl)
+    cp #1
+    jp m, check_roof
+
+    check_floor:
+    ld a, de_y(iy)
+    ld b, de_h(ix)
+    sub a, b
+
+    ld de_y(ix), a
+    set 6, de_type(ix)
+
+    ld hl, #_jumptable
+    ld a, #-1
+    cp a, (hl)
+    ret z
+
+    ld bc, #jp_floorCol
+    add hl, bc
+
+    ld dp_jump_h(ix), h
+    ld dp_jump_l(ix), l
+
+    ret
+
+    check_roof:
+    ld a, de_y(iy)
+    ld b, de_h(iy)
+    add a, b
+
+    ld de_y(ix), a
 
 ret

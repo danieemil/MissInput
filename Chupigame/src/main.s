@@ -48,16 +48,14 @@
 DefineEntity caja, #78, #48, #1, #16, #0xFF
 
 entities:
-   .db #38, #96, #04, #08, #0xFF
-   .db #38, #190, #04, #08, #0xFF
-   .db #38, #86, #04, #08, #0xFF
-   .db #38, #76, #04, #08, #0xFF
-   .db #38, #66, #04, #08, #0xFF
+   .db #38, #66, #04, #80, #0xFF
+   .db #00, #192,#39, #08, #0xFF
+   .db #39, #192,#41, #08, #0xFF
+   .db #00, #00,#39, #08, #0xFF
+   .db #39, #00,#41, #08, #0xFF
    .db #0x80
 
 
-_jug:
-;DefinePlayer _name, _x, _y, _w, _h, _type, _sprite, _jumptbl_ptr, _velx, _dir
 DefinePlayer player, #60, #60, #4, #16, #128, #0, #0, #0, #0
 
 levels_buffer           = 0x0040
@@ -122,7 +120,7 @@ _main::
    ;ld de,   #0xC000
    ;call cpct_drawTileAligned4x8_asm
 
-   ld ix, #_jug
+   ld ix, #player
    ld b, #76
    ld c, #60
 
@@ -209,11 +207,16 @@ loop:
       bit 4, de_type(iy)
       jr nz, no_collisionY
 
+
       call collisionY
 
+      ld a, c
+      cp #1
+      jr nz, noCollisionBoxY
+      call pl_fixY
+      noCollisionBoxY:
+
       no_collisionY:
-      
-      ;;call fixY
 
       ex af, af'
       exx
@@ -287,7 +290,6 @@ inputManager:
       add a, #2
       ex af, af'
 
-
    check_jump:
    ld hl, #Key_Space
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
@@ -298,6 +300,8 @@ inputManager:
 
    final_input:
    ex af, af'
+
+   
 
 ret
 
