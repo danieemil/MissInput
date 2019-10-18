@@ -5,8 +5,9 @@
 _jumptable:
     .db  -12, -9, -7, -5, -4, -3, -1, -1, 0, 1, 1, 1, 1, 1, 3, 3, 3, 4, 0x80
 
-jp_start    = #0   ;;Posición en la tabla cuando se inicia el salto
-jp_floorCol = #8    ;;Posición en la tabla cuando colisiona con el suelo
+jp_start    = #0    ;;Posición en la tabla cuando se inicia el salto
+jp_extra    = #6    ;;Posición en la tabla como interpolación para el salto progresivo
+jp_floorCol = #9    ;;Posición en la tabla cuando colisiona con el suelo
 jp_wallCol  = #9    ;;Posición en la tabla cuando colisiona con la pared
 
 ;;====================================================
@@ -102,11 +103,13 @@ inputPlayer:
     check_jump:
     bit 2, a
     jr z, end
-        ld a, de_type(ix)
-        bit 6, a
-        jp nz, jump
-
+        bit 7, de_type(ix)
+        call z, jump
+        set 7, de_type(ix)
+        ret
     end:
+    res 7, de_type(ix)
+    
 ret
 
 
@@ -135,21 +138,47 @@ ret
 ;;=====================================================
 playerMoveY:
 
-    ld a, de_y(ix)
+    
     ld h, dp_jump_h(ix)
     ld l, dp_jump_l(ix)
-    add a, (hl)
 
+    bit 7, de_type(ix)
+    jr nz, check_limit
+
+        ld a, #-1
+        cp (hl)
+        jp m, check_limit
+        jr z, check_limit   ;; Si quitas esto pasan cosas... ;/
+
+        ld hl, #_jumptable
+        ld bc, #jp_extra
+        add hl, bc
+
+        jr save_jump_ptr
+
+
+
+    check_limit:
+
+    ld a, de_y(ix)
+    add a, (hl)
+    
     ld de_y(ix), a
 
     res 6, de_type(ix)
 
     inc hl
+
     ld a, #0x80
 
     cp a, (hl)
     ret z
 
+
+
+
+
+    save_jump_ptr:
     ld dp_jump_h(ix), h
     ld dp_jump_l(ix), l
     
@@ -159,14 +188,34 @@ ret
 ;;Definition: Inicia el salto
 ;;Entrada: IX -> Apunta al jugador
 ;;Salida:
-;;Destruye: A, BC, HL
+;;Destruye: B, HL
 ;;====================================================
 jump:
 
+
+
+    ld b, de_type(ix)
+    bit 6, b
+    jr nz, init_jump
+
+    check_wallRight:
+    bit 5, b
+    jr nz, init_jump
+
+    check_wallLeft:
+    bit 4, b
+    jr nz, init_jump
+
+    check_doubleJump:
+    bit 3, b
+    ret z
+
+    init_jump:
     ld hl, #_jumptable
 
     ld dp_jump_l(ix), l
     ld dp_jump_h(ix), h
+
 
 ret
 
@@ -188,7 +237,7 @@ pl_fixX:
         ld a, de_x(iy)      ;; Cargamos Cx
         sub de_w(ix)        ;; Restamos Pw
         ld de_x(ix), a      ;; Px = (Cx-Pw)
-        ;;set 5, de_type(ix)    ;; Marca el flag de colision con pared derecha (Walljump)
+        set 5, de_type(ix)    ;; Marca el flag de colision con pared derecha (Walljump)
         ret
 
     pl_fixX_left:
@@ -196,7 +245,7 @@ pl_fixX:
         ld a, de_x(iy)      ;; Cargamos Cx
         add de_w(iy)        ;; Sumamos  Cw
         ld de_x(ix), a      ;; Px = (Cx+Cw)
-        ;;set 4, de_type(ix)    ;; Marca el flag de colision con pared izquierda (Walljump)
+        set 4, de_type(ix)    ;; Marca el flag de colision con pared izquierda (Walljump)
         ret
 
 

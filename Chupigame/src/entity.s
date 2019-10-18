@@ -156,7 +156,7 @@ collisionY:
     bit 4, de_type(iy)
     jr nz, etiqueta
 
-
+    ld b, #0
     ld c, #0
     jr detectCollisionY
 
@@ -170,6 +170,11 @@ ret
 ;;Definition: Detecta las colisiones entre dos entidades en X (si colisionan las detecta en y)
 ;;=============================================================================================
 detectCollisionX:
+
+    ;; Tá xocando con la paré¿
+    ld b, #0
+
+
 ;;Primero detectamos si hay colisión en el eje X
 ;;(x2max - x1min) -> 0, negativo; si no hay colision
 ;;x2max en A
@@ -177,21 +182,28 @@ detectCollisionX:
     add a, de_w(iy)     ;;[19]
 
     sub a, de_x(ix)     ;;[19]
-    jr z, endCollisions  ;;[12/7]
     jp m, endCollisions  ;;[10]
+    jr nz, check_right  ;;[12/7]
                         ;;[67 + 12/7]
+        dec b
+        set 4, de_type(iy)
+        jr detectCollisionY
 
     ;;FRAN
     ;;[13]+[4]+[13]+[4]+[7]+[10]+[12/7]
     ;;[7]+[4]+[6]+[6]+[7]+[4]+[7]+[6]+[6]+[10]+[12/7] -> 63 + 12/7
 
+    check_right:
 ;;(x1max - x2min) -> 0, negativo; si no hay colisión
     ld a, de_x(ix)      ;;[19]
     add a, de_w(ix)     ;;[19]
 
     sub a, de_x(iy)     ;;[19]
-    jr z, endCollisions  ;;[12/7]
     jp m, endCollisions  ;;[10]
+    jr nz, detectCollisionY  ;;[12/7]
+
+        inc b
+        set 4, de_type(iy)
 
 ;;=================================================================
 ;;Definition: Detecta las colisiones entre dos entidades solo en Y
@@ -203,8 +215,8 @@ detectCollisionY:
     add a, de_h(iy)     
 
     sub a, de_y(ix)     
-    ret z
-    ret m
+    ret z  
+    ret m 
 
     ;;(y1max - y2min) -> 0, negativo; si no hay colisión
     ld a, de_y(ix)      
@@ -213,6 +225,12 @@ detectCollisionY:
     sub a, de_y(iy)     
     ret z  
     ret m 
+    
+    ld a, b
+
+    cp #0
+    jp m, box_left
+    jr nz, box_right
 
     inc c
 
@@ -220,5 +238,14 @@ detectCollisionY:
     set 4, de_type(iy)
 
 ret
+
+    box_left:
+    set 4, de_type(ix)
+    ret
+
+    box_right:
+    set 5, de_type(ix)
+    ret
+
 
 

@@ -48,8 +48,8 @@
 DefineEntity caja, #78, #48, #1, #16, #0xFF
 
 entities:
-   .db #38, #66, #04, #80, #0xFF
-   .db #00, #192,#39, #08, #0xFF
+   .db #50, #76, #04, #80, #0xFF
+   .db #00, #192,#38, #08, #0xFF
    .db #39, #192,#41, #08, #0xFF
    .db #00, #00,#39, #08, #0xFF
    .db #39, #00,#41, #08, #0xFF
@@ -156,9 +156,13 @@ loop:
 
    call drawBackground
 
+
    call inputManager
    call inputPlayer
 
+   ;; Reseteamos los bits del walljump
+   res 4, de_type(ix)
+   res 5, de_type(ix)
 
    call playerMoveX
 

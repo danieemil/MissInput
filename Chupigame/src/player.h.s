@@ -46,14 +46,14 @@ player_height   = 16
 ;Flags del jugador(almacenados en la variable _type de entidad)
 ;Estos flags solo se corresponden si el primer bit está activo
 ;
-;7   J -> Jugador?
+;7   I -> Sá pulsao salto?
 ;6   S -> Colisiona con suelo?
 ;5   D -> Colisiona con pared_derecha?
 ;4   I -> Colisiona con pared_izquierda?
 ;3   P -> Power-up de doble salto?
 ;2   G -> Gravedad?
-;1   M -> Muerte
+;1   M -> Muerte?
 ;0   D -> Direction (1-> Left, 0 -> Right)
 ;
-;J S D I P G M D
+;I S D I P G M D
 ;1 0 0 0 0 0 0 0
