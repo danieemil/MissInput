@@ -1,4 +1,5 @@
-.include "entity.h.s"
+
+.include "player.h.s"
 
 vector:
 DefineEntityVector v_entity, 20
@@ -241,11 +242,13 @@ ret
 
     box_left:
     set 4, de_type(ix)
-    ret
+    ld de, #jp_wallCol
+    jp pl_setJumptable
 
     box_right:
     set 5, de_type(ix)
-    ret
+    ld de, #jp_wallCol
+    jp pl_setJumptable
 
 
 

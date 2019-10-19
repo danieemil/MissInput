@@ -49,14 +49,19 @@ DefineEntity caja, #78, #48, #1, #16, #0xFF
 
 entities:
    .db #50, #76, #04, #80, #0xFF
+   .db #40, #76, #04, #80, #0xFF
    .db #00, #192,#38, #08, #0xFF
    .db #39, #192,#41, #08, #0xFF
    .db #00, #00,#39, #08, #0xFF
    .db #39, #00,#41, #08, #0xFF
+   .db #76, #08,#04, #95, #0xFF
+   .db #76, #103,#04,#89, #0xFF
+   .db #00, #08,#04, #95, #0xFF
+   .db #00, #103,#04, #89, #0xFF
    .db #0x80
 
 
-DefinePlayer player, #60, #60, #4, #16, #128, #0, #0, #0, #0
+DefinePlayer player, #50, #60, #4, #16, #128, #0, #0, #0, #0, #0, #0
 
 levels_buffer           = 0x0040
 levels_buffer_max_size  = 0x0274
@@ -121,7 +126,7 @@ _main::
    ;call cpct_drawTileAligned4x8_asm
 
    ld ix, #player
-   ld b, #76
+   ld b, #50
    ld c, #60
 
    call initializePlayer
@@ -157,7 +162,20 @@ loop:
    call drawBackground
 
 
+   ld a, dp_counter(ix)
+   cp #0
+   jr z, input
+
+      dec a
+      ld dp_counter(ix), a
+
+      ld a, dp_forcedDir(ix)
+      jr no_input
+
+   input:
    call inputManager
+   no_input:
+   
    call inputPlayer
 
    ;; Reseteamos los bits del walljump
@@ -283,6 +301,7 @@ inputManager:
 
 
    check_right:
+   ;;@quiquesoyyo dijo quitar
    ld a, de_x(ix)                ;; Comprobamos que no se pasa por el borde derecho
    cp #0x4C
    jr z, check_jump

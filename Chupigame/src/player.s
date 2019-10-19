@@ -5,11 +5,6 @@
 _jumptable:
     .db  -12, -9, -7, -5, -4, -3, -1, -1, 0, 1, 1, 1, 1, 1, 3, 3, 3, 4, 0x80
 
-jp_start    = #0    ;;Posición en la tabla cuando se inicia el salto
-jp_extra    = #6    ;;Posición en la tabla como interpolación para el salto progresivo
-jp_floorCol = #9    ;;Posición en la tabla cuando colisiona con el suelo
-jp_wallCol  = #9    ;;Posición en la tabla cuando colisiona con la pared
-
 ;;====================================================
 ;;Definition: Inicializa los valores del jugador 
 ;;Entrada: 
@@ -200,11 +195,20 @@ jump:
 
     check_wallRight:
     bit 5, b
-    jr nz, init_jump
+    jr z, check_wallLeft
+
+    ld dp_counter(ix), #10
+    ld dp_forcedDir(ix), #5
+    jr init_jump
+
 
     check_wallLeft:
     bit 4, b
-    jr nz, init_jump
+    jr z, check_doubleJump
+
+    ld dp_counter(ix), #10
+    ld dp_forcedDir(ix), #6
+    jr init_jump
 
     check_doubleJump:
     bit 3, b
@@ -226,7 +230,7 @@ ret
 ;;  IX  ->  Player
 ;;  IY  ->  Entidad
 ;;Salida:
-;;Destruye:
+;;Destruye: A
 ;;====================================================
 pl_fixX:
 
@@ -238,7 +242,8 @@ pl_fixX:
         sub de_w(ix)        ;; Restamos Pw
         ld de_x(ix), a      ;; Px = (Cx-Pw)
         set 5, de_type(ix)    ;; Marca el flag de colision con pared derecha (Walljump)
-        ret
+        ld de, #jp_wallCol
+        jp pl_setJumptable
 
     pl_fixX_left:
 
@@ -246,7 +251,8 @@ pl_fixX:
         add de_w(iy)        ;; Sumamos  Cw
         ld de_x(ix), a      ;; Px = (Cx+Cw)
         set 4, de_type(ix)    ;; Marca el flag de colision con pared izquierda (Walljump)
-        ret
+        ld de, #jp_wallCol
+        jp pl_setJumptable
 
 
 
@@ -256,7 +262,7 @@ pl_fixX:
 ;;  IX  ->  Player
 ;;  IY  ->  Entidad
 ;;Salida:
-;;Destruye: A, B
+;;Destruye: A, BC, HL
 ;;====================================================
 pl_fixY:
 
@@ -295,4 +301,28 @@ pl_fixY:
 
     ld de_y(ix), a
 
+ret
+
+;;====================================================
+;;Definition: Modifica la dirección del puntero a la jumptable del player
+;;            Si está en ascenso no se modifica
+;;Entrada:
+;;  IX  ->  Player
+;;  DE  ->  Jumptable pos
+;;Salida:
+;;Destruye: A, BC, HL
+;;====================================================
+pl_setJumptable:
+
+
+    ld h, dp_jump_h(ix)
+    ld l, dp_jump_l(ix)
+    ld a, #0
+    add a, (hl)
+    ret m
+
+    ld hl, #_jumptable
+    add hl, de
+    ld dp_jump_l(ix), l
+    ld dp_jump_h(ix), h
 ret
