@@ -16,13 +16,14 @@ _name:
 
 ;; Macro positions
 
-dde_size    = 7
+
 dp_jump_l   = 0 + dde_size
 dp_jump_h   = 1 + dde_size
 dp_vel      = 2 + dde_size
 dp_dir      = 3 + dde_size
 dp_counter  = 4 + dde_size
 dp_forcedDir= 5 + dde_size
+dp_size     = 6 + dde_size
 
 
 

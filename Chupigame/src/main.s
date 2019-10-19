@@ -48,18 +48,30 @@
 DefineEntity caja, #78, #48, #1, #16, #0xFF
 
 entities:
-   .db #50, #76, #04, #80, #0xFF
-   .db #40, #76, #04, #80, #0xFF
-   .db #00, #192,#38, #08, #0xFF
-   .db #39, #192,#41, #08, #0xFF
-   .db #00, #00,#39, #08, #0xFF
-   .db #39, #00,#41, #08, #0xFF
-   .db #76, #08,#04, #95, #0xFF
-   .db #76, #103,#04,#89, #0xFF
-   .db #00, #08,#04, #95, #0xFF
-   .db #00, #103,#04, #89, #0xFF
+   .db #50, #76, #04, #80, #0xF0
+   .db #40, #76, #04, #80, #0xF0
+   .db #00, #192,#38, #08, #0xF0
+   .db #39, #192,#41, #08, #0xF0
+   .db #00, #00,#39, #08, #0xF0
+   .db #39, #00,#41, #08, #0xF0
+   .db #76, #08,#04, #95, #0xF0
+   .db #76, #103,#04,#89, #0xF0
+   .db #00, #08,#04, #95, #0xF0
+   .db #00, #103,#04, #89, #0xF0
    .db #0x80
 
+power_ups:
+   .db #20, #99, #power_width, #power_height, #0xFF
+   .dw _power1_spr
+
+   .db #50, #80, #power_width, #power_height, #0xFF
+   .dw _power1_spr
+
+   .db #37, #170, #power_width, #power_height, #0xFF
+   .dw _power1_spr
+
+
+   .db #0x80
 
 DefinePlayer player, #50, #60, #4, #16, #128, #0, #0, #0, #0, #0, #0
 
@@ -95,7 +107,7 @@ _main::
 
 
 
-   call entityLoader
+   call vectorsLoader
 
 
 
@@ -154,6 +166,28 @@ _main::
    jr nz, drawBox_loop
 
 
+   ;;---------------------------
+   ;; Dibujar power-ups
+   ;;---------------------------
+
+   ld ix, #vectorPowers
+   ld a, (vP_num)
+   ld bc, #dde_size
+
+   drawPower_loop:
+      exx
+      ex af, af'
+      call drawSprite
+      ex af, af'
+      exx
+
+      add ix, bc
+
+      dec a
+   jr nz, drawPower_loop
+
+
+
 
    ld ix, #player
    ;; Loop forever
@@ -178,77 +212,46 @@ loop:
    
    call inputPlayer
 
+
+
+
    ;; Reseteamos los bits del walljump
    res 4, de_type(ix)
    res 5, de_type(ix)
 
-   call playerMoveX
 
+   call playerMoveX
 
    ld iy, #vector
    ld a, (v_num)
    ld bc, #de_size
+   call collisionBoxX_loop
 
-   collisionBoxX_loop:
-      exx
-      ex af, af'
-      
-      res 4, de_type(iy)
-      ld c, #0
-      call detectCollisionX
-
-      ld a, c
-      cp #1
-      jr nz, noCollisionBoxX
-      call pl_fixX
-      noCollisionBoxX:
-
-      ex af, af'
-      exx
-
-      add iy, bc
-
-      dec a
-
-   jr nz, collisionBoxX_loop
-
-   
 
    call playerMoveY
 
-
    ld iy, #vector
    ld a, (v_num)
    ld bc, #de_size
-
-   collisionBoxY_loop:
-      exx
-      ex af, af'
-      
-
-      bit 4, de_type(iy)
-      jr nz, no_collisionY
-
-
-      call collisionY
-
-      ld a, c
-      cp #1
-      jr nz, noCollisionBoxY
-      call pl_fixY
-      noCollisionBoxY:
-
-      no_collisionY:
-
-      ex af, af'
-      exx
-
-      add iy, bc
-
-      dec a
-
-   jr nz, collisionBoxY_loop
+   call collisionBoxY_loop
    
+   ld iy, #vectorPowers
+   ld a, (vP_num)
+   ld bc, #dde_size
+   call collisionBoxX_loop
+
+
+   ld a, de_type(ix)
+   ex af, af'
+
+   ;; Colisiones
+
+
+
+   ex af, af'
+   ld de_type(ix), a
+
+
    call drawSprite
 
    
@@ -329,17 +332,22 @@ inputManager:
 ret
 
 
-
-entityLoader:
+;;====================================================
+;;Definition: Carga datos en un vector
+;;Entrada:
+;;Salida:
+;;Destruye: A, BC, DE, HL
+;;====================================================
+vectorsLoader:
 
 
    ld hl, #entities
 
-   loader_loop:
+   ent_loop:
    
       ld a, (hl)
       cp #0x80
-      ret z
+      jr z, load_power_ups
 
       ex de, hl
       call ent_new_default
@@ -352,7 +360,107 @@ entityLoader:
       ld bc, #de_size
       add hl, bc
 
-      jr #loader_loop
+   jr #ent_loop
 
 
+   load_power_ups:
+
+   ld hl, #power_ups
+
+   power_loop:
+   
+      ld a, (hl)
+      cp #0x80
+      ret z
+
+      ex de, hl
+      call power_new_default
+      ex de, hl
+      push hl
+
+      call power_copy
+      pop hl
+
+      ld bc, #dde_size
+      add hl, bc
+
+      jr #power_loop
+
+
+ret
+
+
+;;===============================================================================
+;;Definition: Detecta colisiones entre un vector y el personaje al moverse en X
+;;Entrada:
+;; IX -> Jugador
+;; IY -> Vector
+;; A  -> Tamaño ACTUAL del vector
+;; BC -> Tamaño de cada elemento del vector
+;;Salida:
+;;Destruye: A, IY
+;;===============================================================================
+collisionBoxX_loop:
+   exx
+   ex af, af'
+   
+   res 4, de_type(iy)
+   ld c, #0
+   call detectCollisionX
+
+   ld a, c
+   cp #1
+   jr nz, noCollisionBoxX
+   call pl_fixX
+   noCollisionBoxX:
+
+   ex af, af'
+   exx
+
+   add iy, bc
+
+   dec a
+
+   jr nz, collisionBoxX_loop
+ret
+
+
+
+;;===============================================================================
+;;Definition: Detecta colisiones entre un vector y el personaje al moverse en Y
+;;Entrada:
+;; IX -> Jugador
+;; IY -> Vector
+;; A  -> Tamaño ACTUAL del vector
+;; BC -> Tamaño de cada elemento del vector
+;;Salida:
+;;Destruye: A, IY
+;;===============================================================================
+collisionBoxY_loop:
+      exx
+      ex af, af'
+      
+
+      bit 4, de_type(iy)
+      jr nz, no_collisionY
+
+
+      call collisionY
+
+      ld a, c
+      cp #1
+      jr nz, noCollisionBoxY
+      call pl_fixY
+      noCollisionBoxY:
+
+      no_collisionY:
+
+      ex af, af'
+      exx
+
+      add iy, bc
+
+      dec a
+
+   jr nz, collisionBoxY_loop
 ret
