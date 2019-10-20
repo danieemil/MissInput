@@ -3,7 +3,7 @@
 
 ;; Tabla de saltos, nos permite simular la gravedad
 _jumptable:
-    .db  -12, -9, -7, -5, -4, -3, -1, -1, 0, 1, 1, 1, 1, 1, 3, 3, 3, 4, 0x80
+    .db -12, -9, -7, -5, -4, -3, -1, -1, 0, 1, 1, 1, 1, 1, 3, 3, 3, 4, 0x80
 
 ;;====================================================
 ;;Definition: Inicializa los valores del jugador 
@@ -156,14 +156,25 @@ playerMoveY:
     check_limit:
 
     ld a, de_y(ix)
+
+    ;bit 2, de_type(ix)
+    ;jr z, add_a
+
+    ;sub a, (hl)
+    ;jr save_a
+
+    add_a:
     add a, (hl)
     
+    save_a:
     ld de_y(ix), a
 
     res 6, de_type(ix)
 
+    increment:
     inc hl
 
+    check_true_limit:
     ld a, #0x80
 
     cp a, (hl)
@@ -219,6 +230,8 @@ jump:
 
     ld dp_jump_l(ix), l
     ld dp_jump_h(ix), h
+
+    res 3, de_type(ix)
 
 
 ret

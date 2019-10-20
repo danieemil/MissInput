@@ -36,8 +36,9 @@ player_height   = 16
 
 jp_start    = 0    ;;Posición en la tabla cuando se inicia el salto
 jp_extra    = 6    ;;Posición en la tabla como interpolación para el salto progresivo
-jp_floorCol = 9    ;;Posición en la tabla cuando colisiona con el suelo
-jp_wallCol  = 9    ;;Posición en la tabla cuando colisiona con la pared
+jp_floorCol = 9   ;;Posición en la tabla cuando colisiona con el suelo
+jp_wallCol  = 9   ;;Posición en la tabla cuando colisiona con la pared
+jp_end      = 18   ;;Posición en la tabla cuando caes a velocidad máxima
 
 
 ;; Globls

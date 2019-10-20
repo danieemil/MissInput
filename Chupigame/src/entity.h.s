@@ -54,8 +54,8 @@ de_size = 5
 ;
 ;7   N -> Nada
 ;6   N -> Nada
-;5   N -> Nada
-;4   C -> Detectaremos colisiones en Y?(1->No, 0->Sí)
+;5   I -> Inhabilitado?(1->Sí, 0->No)
+;4   C -> Detectaremos colisiones en Y?(1->No, 0->Sí) Solo se usa en las colisiones!!
 ;3   T -> |
 ;2   T -> +-> Tipo de power-up:
 ;;              (00->Aporta doble salto)
@@ -65,5 +65,5 @@ de_size = 5
 ;1   M -> Es mortal?(1->Sí, 0->No)
 ;0   C -> Se puede coger?(1->power-up, 0->no power-up)
 ;
-;N N N C T T M C
+;N N I C T T M C
 ;0 0 0 0 0 0 0 0

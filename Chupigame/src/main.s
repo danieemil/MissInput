@@ -48,26 +48,26 @@
 DefineEntity caja, #78, #48, #1, #16, #0xFF
 
 entities:
-   .db #50, #76, #04, #80, #0xF0
-   .db #40, #76, #04, #80, #0xF0
-   .db #00, #192,#38, #08, #0xF0
-   .db #39, #192,#41, #08, #0xF0
-   .db #00, #00,#39, #08, #0xF0
-   .db #39, #00,#41, #08, #0xF0
-   .db #76, #08,#04, #95, #0xF0
-   .db #76, #103,#04,#89, #0xF0
-   .db #00, #08,#04, #95, #0xF0
-   .db #00, #103,#04, #89, #0xF0
+   .db #50, #76, #04, #80, #0x20
+   .db #40, #76, #04, #80, #0x20
+   .db #00, #192,#38, #08, #0x20
+   .db #39, #192,#41, #08, #0x20
+   .db #00, #00,#39, #08, #0x20
+   .db #39, #00,#41, #08, #0x20
+   .db #76, #08,#04, #95, #0x20
+   .db #76, #103,#04,#89, #0x20
+   .db #00, #08,#04, #95, #0x20
+   .db #00, #103,#04, #89, #0x20
    .db #0x80
 
 power_ups:
-   .db #20, #99, #power_width, #power_height, #0xFF
+   .db #20, #99, #power_width, #power_height, #0x05
    .dw _power1_spr
 
-   .db #50, #80, #power_width, #power_height, #0xFF
+   .db #50, #80, #power_width, #power_height, #0x05
    .dw _power1_spr
 
-   .db #37, #170, #power_width, #power_height, #0xFF
+   .db #37, #170, #power_width, #power_height, #0x05
    .dw _power1_spr
 
 
@@ -108,8 +108,7 @@ _main::
 
 
    call vectorsLoader
-
-
+   
 
    ;;---------------------------
    ;; Dibujar mapa
@@ -234,22 +233,30 @@ loop:
    ld a, (v_num)
    ld bc, #de_size
    call collisionBoxY_loop
+
+
+
    
-   ld iy, #vectorPowers
-   ld a, (vP_num)
-   ld bc, #dde_size
-   call collisionBoxX_loop
-
-
    ld a, de_type(ix)
-   ex af, af'
+   push af
 
-   ;; Colisiones
+   ld iy, #vectorPowers ;;[14]
+   ld a, (vP_num)       ;;[13]
+   ld bc, #dde_size     ;;[10]
+   call collisionEnt_loop
 
+   pop af
 
+   ;; Evitamos walljump con los power ups
+   res 4, de_type(ix)
+   res 5, de_type(ix)
 
-   ex af, af'
+   or de_type(ix)
    ld de_type(ix), a
+
+
+
+
 
 
    call drawSprite
@@ -463,4 +470,101 @@ collisionBoxY_loop:
       dec a
 
    jr nz, collisionBoxY_loop
+ret
+
+
+
+;;===============================================================================
+;;Definition: Detecta colisiones entre un vector y el personaje
+;;Entrada:
+;; IX -> Jugador
+;; IY -> Vector
+;; A  -> Tamaño ACTUAL del vector
+;; BC -> Tamaño de cada elemento del vector
+;;Salida:
+;;Destruye: A, IY
+;;===============================================================================
+collisionEnt_loop:
+
+   ;; Si está inhabilitado pasamos a la siguiente entidad
+   bit 5, de_type(iy)
+   jr nz, next_Ent
+
+   exx
+   ex af, af'
+   
+   res 4, de_type(iy)
+   ld c, #0
+   call detectCollisionX
+
+   ld a, c
+   cp #1
+   jr nz, noCollisionEnt
+
+      ld a, de_type(iy)
+      
+      ;; Puede matar??!!
+      check_mortal:
+      bit 1, a
+      jr z, check_gatherable
+
+         ;jp die
+
+      ;; Se puede coger?
+      check_gatherable:
+      bit 0, a
+      jr z, check_type
+
+         set 5, de_type(iy)
+
+      ;; T _ T 
+      check_type:
+      and #12
+
+      ;;Gravedad hacia abajo?
+      check_gDown:
+      cp a, #8
+      jr nz, check_gUP
+      res 2, de_type(ix)
+      jr noCollisionEnt
+
+
+      ;;Gravedad hacia abajo?
+      check_gUP:
+      cp a, #4
+      jr nz, check_doubleJump
+      set 2, de_type(ix)
+      jr noCollisionEnt
+
+      check_doubleJump:
+      cp a, #00
+      jr nz, end_level
+
+      set 3, de_type(ix)
+
+
+      ;;Fin del nivel
+      ;jp z, end_level
+
+
+
+
+   noCollisionEnt:
+
+   ex af, af'
+   exx
+
+   next_Ent:
+
+   add iy, bc
+
+   dec a
+
+   jr nz, collisionEnt_loop
+ret
+
+
+
+end_level:
+   jr .
 ret
