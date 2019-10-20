@@ -1,74 +1,28 @@
 
 .include "player.h.s"
 
+;; En este vector estarán las entidades que corrigen la posición del jugador
 vector:
 DefineEntityVector v_entity, 20
 
 v_num:          .db 0
 v_entity_next:  .dw #vector
 
-;;=============================================================
-;;Definition: Registra una nueva entidad y le setea sus valores
-;;Entrada:
-;;  A   ->  Contiene _type
-;;  B   ->  Contiene _x
-;;  C   ->  Contiene _y
-;;  D   ->  Contiene _w
-;;  E   ->  Contiene _h
-;;Salida:
-;;  HL  ->  Apunta a la entidad registrada
-;;Destruye: AF, BC, DE, HL
-;;Comentario: 
-;;==============================================================
-ent_new:
 
-    ld hl, #v_num
-    inc (hl)
 
-    ld hl, #v_entity_next
+;; En este vector... el resto de entidades
+vector_2:
+DefineEntityVector v2_entity, 20
 
-    push de
-
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-
-    ex de, hl
-
-    pop de
-
-    push bc
-    push hl
-
-    ld bc, #de_size
-    add hl, bc
-
-    ld (v_entity_next), hl
-
-    pop hl
-    pop bc
-
-    push hl
-
-    ;; Seteamos los datos de la entidad en cuestión
-    ld (hl), b
-    inc hl
-    ld (hl), c
-    inc hl
-    ld (hl), d
-    inc hl
-    ld (hl), e
-    inc hl
-    ld (hl), a
-
-    pop hl
-
-ret
+v2_num:          .db 0
+v2_entity_next:  .dw #vector_2
 
 
 ;;=============================================================
 ;;Definition: Registra una nueva entidad
 ;;Entrada:
+;;  HL -> Dirección donde está guardado el número de entidades
+;;  BC -> Dirección donde está guardado la dirección a la siguiente entidad
 ;;Salida:
 ;;  HL  ->  Apunta a la entidad registrada
 ;;Destruye: AF, BC, HL
@@ -76,10 +30,9 @@ ret
 ;;==============================================================
 ent_new_default:
 
-    ld hl, #v_num
     inc (hl)
 
-    ld hl, #v_entity_next
+    inc hl
 
     push de
 
@@ -91,10 +44,19 @@ ent_new_default:
 
     push hl
 
+    push bc
+
     ld bc, #de_size
     add hl, bc
 
-    ld (v_entity_next), hl
+    pop bc
+
+    ld a, l
+    ld (bc), a
+    inc bc
+
+    ld a, h
+    ld (bc), a
 
     pop hl
 
@@ -242,13 +204,11 @@ ret
 
     box_left:
     set 4, de_type(ix)
-    ld de, #jp_wallCol
-    jp pl_setJumptable
+    ret
 
     box_right:
     set 5, de_type(ix)
-    ld de, #jp_wallCol
-    jp pl_setJumptable
+    ret
 
 
 

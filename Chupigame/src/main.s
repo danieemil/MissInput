@@ -60,6 +60,15 @@ entities:
    .db #00, #103,#04, #89, #0x20
    .db #0x80
 
+
+special_entities:
+   .db #04, #08, #8, #32, #0x88
+   .db #68, #160, #8, #32, #0x84
+   .db #24, #76, #8, #32, #0x80
+   .db #0x80
+
+
+
 power_ups:
    .db #20, #99, #power_width, #power_height, #0x09
    .dw _power1_spr
@@ -70,8 +79,17 @@ power_ups:
    .db #37, #170, #power_width, #power_height, #0x05
    .dw _power1_spr
 
+   .db #0x80
+
+enemies:
+
+   .db #08, #160, #enemy_width, #enemy_height, #0x09
+   .dw _enemy_spr
+   .db #0, #0, #0
 
    .db #0x80
+
+
 
 DefinePlayer player, #50, #60, #4, #16, #128, #0, #0, #0, #0, #0, #0
 
@@ -164,35 +182,39 @@ _main::
       dec a
    jr nz, drawBox_loop
 
+   ld ix, #vector_2
+   ld a, (v2_num)
+   ld bc, #de_size
 
-   ;;---------------------------
-   ;; Dibujar power-ups
-   ;;---------------------------
-
-   ld ix, #vectorPowers
-   ld a, (vP_num)
-   ld bc, #dde_size
-
-   drawPower_loop:
+   drawSpecialBox_loop:
       exx
       ex af, af'
-      call drawSprite
+      call drawBox
       ex af, af'
       exx
 
       add ix, bc
 
       dec a
-   jr nz, drawPower_loop
-
-
+   jr nz, drawSpecialBox_loop
 
 
    ld ix, #player
    ;; Loop forever
 loop:
 
+   ld iy, #player
    call drawBackground
+
+   ld iy, #vectorPowers 
+   ld a, (vP_num)       
+   ld bc, #dde_size     
+   call cleanVector
+
+   ld iy, #vectorEnemies
+   ld a, (vE_num)
+   ld bc, #dE_size
+   call cleanVector
 
 
    ld a, dp_counter(ix)
@@ -240,10 +262,20 @@ loop:
    ld a, de_type(ix)
    push af
 
+
+
+   ;; Colisiones de los power-ups
    ld iy, #vectorPowers ;;[14]
    ld a, (vP_num)       ;;[13]
    ld bc, #dde_size     ;;[10]
    call collisionEnt_loop
+
+   ;; Colisiones de las entidades especiales :/
+   ld iy, #vector_2     ;;[14]
+   ld a, (v2_num)       ;;[13]
+   ld bc, #de_size      ;;[10]
+   call collisionEnt_loop
+
 
    pop af
 
@@ -257,17 +289,34 @@ loop:
    ld de_type(ix), a
 
 
+   and #0x30
+   jr z, draw
 
+      ;; Wallride
+      ld de, #jp_wallCol
+      call pl_setJumptable
+   
 
+   draw:
 
+   ld iy, #vectorPowers 
+   ld a, (vP_num)       
+   ld bc, #dde_size     
+   call drawVector
 
+   ld iy, #vectorEnemies
+   ld a, (vE_num)
+   ld bc, #dE_size
+   call drawVector
+
+   ld iy, #player
    call drawSprite
 
    
    call cpct_waitVSYNC_asm
 
 
-   jr    loop
+   jp    loop
 
 
 ;;====================================================
@@ -342,7 +391,7 @@ ret
 
 
 ;;====================================================
-;;Definition: Carga datos en un vector
+;;Definition: Carga datos en los vectores
 ;;Entrada:
 ;;Salida:
 ;;Destruye: A, BC, DE, HL
@@ -356,9 +405,11 @@ vectorsLoader:
    
       ld a, (hl)
       cp #0x80
-      jr z, load_power_ups
+      jr z, load2_ent
 
       ex de, hl
+      ld hl, #v_num
+      ld bc, #v_entity_next
       call ent_new_default
       ex de, hl
       push hl
@@ -372,6 +423,33 @@ vectorsLoader:
    jr #ent_loop
 
 
+   load2_ent:
+   ld hl, #special_entities
+
+   ent2_loop:
+   
+      ld a, (hl)
+      cp #0x80
+      jr z, load_power_ups
+
+      ex de, hl
+      ld hl, #v2_num
+      ld bc, #v2_entity_next
+      call ent_new_default
+      ex de, hl
+      push hl
+
+      call ent_copy
+      pop hl
+
+      ld bc, #de_size
+      add hl, bc
+
+   jr #ent2_loop
+
+
+
+
    load_power_ups:
 
    ld hl, #power_ups
@@ -380,7 +458,7 @@ vectorsLoader:
    
       ld a, (hl)
       cp #0x80
-      ret z
+      jr z, load_enemies
 
       ex de, hl
       call power_new_default
@@ -393,7 +471,33 @@ vectorsLoader:
       ld bc, #dde_size
       add hl, bc
 
-      jr #power_loop
+   jr #power_loop
+
+   
+
+
+   load_enemies:
+
+   ld hl, #enemies
+
+   enemy_loop:
+   
+      ld a, (hl)
+      cp #0x80
+      ret z
+
+      ex de, hl
+      call enemy_new_default
+      ex de, hl
+      push hl
+
+      call enemy_copy
+      pop hl
+
+      ld bc, #dE_size
+      add hl, bc
+
+      jr #enemy_loop
 
 
 ret
@@ -577,8 +681,8 @@ collisionEnt_loop:
    jr nz, collisionEnt_loop
 ret
 
-
-
 end_level:
    jr .
 ret
+
+

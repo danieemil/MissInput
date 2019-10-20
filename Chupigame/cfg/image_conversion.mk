@@ -56,6 +56,7 @@ $(eval $(call IMG2SP, SET_FOLDER      , src/               						))
 $(eval $(call IMG2SP, SET_IMG_FORMAT  , sprites            						))
 $(eval $(call IMG2SP, SET_OUTPUT      , c                  						))
 $(eval $(call IMG2SP, CONVERT         , assets/sprite.png , 16, 16, player_spr	))
+$(eval $(call IMG2SP, CONVERT         , assets/enemy1.png , 16, 16, enemy_spr	))
 $(eval $(call IMG2SP, CONVERT         , assets/powerUp01.png , 8, 8, power1_spr	))
 
 ##

@@ -39,9 +39,11 @@ de_size = 5
     .globl vector
     .globl v_num
     .globl v_entity_next
+    .globl vector_2
+    .globl v2_num
+    .globl v2_entity_next
 
     ;;Funciones
-    .globl ent_new
     .globl ent_new_default
     .globl ent_copy
     .globl detectCollisionX
