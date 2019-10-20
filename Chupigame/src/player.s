@@ -157,11 +157,11 @@ playerMoveY:
 
     ld a, de_y(ix)
 
-    ;bit 2, de_type(ix)
-    ;jr z, add_a
+    bit 2, de_type(ix)
+    jr z, add_a
 
-    ;sub a, (hl)
-    ;jr save_a
+    sub a, (hl)
+    jr save_a
 
     add_a:
     add a, (hl)
@@ -197,8 +197,6 @@ ret
 ;;Destruye: B, HL
 ;;====================================================
 jump:
-
-
 
     ld b, de_type(ix)
     bit 6, b
@@ -276,17 +274,31 @@ pl_fixX:
 ;;  IY  ->  Entidad
 ;;Salida:
 ;;Destruye: A, BC, HL
+;;-12, -9, -7, -5, -4, -3, -1, -1, 0, 1, 1, 1, 1, 1, 3, 3, 3, 4, 0x80
 ;;====================================================
 pl_fixY:
 
     ld h, dp_jump_h(ix)
     ld l, dp_jump_l(ix)
 
-    ld a, (hl)
-    cp #1
-    jp m, check_roof
+    xor a
+    bit 2, de_type(ix)
+    jr z, normalGravity
 
-    check_floor:
+    sub a, (hl)
+    jr checkY
+
+    normalGravity:
+    add a, (hl)
+
+    jr z, in_roof
+
+    checkY:
+    jp m, in_roof
+
+
+
+    in_floor:
     ld a, de_y(iy)
     ld b, de_h(ix)
     sub a, b
@@ -307,12 +319,16 @@ pl_fixY:
 
     ret
 
-    check_roof:
+    in_roof:
     ld a, de_y(iy)
     ld b, de_h(iy)
     add a, b
 
     ld de_y(ix), a
+    bit 2, de_type(ix)
+    ret z
+
+    set 6, de_type(ix)
 
 ret
 
@@ -334,6 +350,34 @@ pl_setJumptable:
     add a, (hl)
     ret m
 
+    ld hl, #_jumptable
+    add hl, de
+    ld dp_jump_l(ix), l
+    ld dp_jump_h(ix), h
+ret
+
+
+;;================================================================
+;;Definition: Setea la jumptable al coger el power up de gravedad
+;;Entrada:
+;;  IX  ->  Player
+;;  DE  ->  Jumptable pos
+;;Salida:
+;;Destruye: A, BC, HL
+;;================================================================
+pl_setJumptableOnGravity:
+
+    ld de, #14
+
+    ld h, dp_jump_h(ix)
+    ld l, dp_jump_l(ix)
+    ld a, #0
+    add a, (hl)
+    jp m, fall
+
+    ld de, #04
+
+    fall:
     ld hl, #_jumptable
     add hl, de
     ld dp_jump_l(ix), l

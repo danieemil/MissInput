@@ -48,7 +48,7 @@
 DefineEntity caja, #78, #48, #1, #16, #0xFF
 
 entities:
-   .db #50, #76, #04, #80, #0x20
+   .db #50, #65, #04, #100, #0x20
    .db #40, #76, #04, #80, #0x20
    .db #00, #192,#38, #08, #0x20
    .db #39, #192,#41, #08, #0x20
@@ -61,10 +61,10 @@ entities:
    .db #0x80
 
 power_ups:
-   .db #20, #99, #power_width, #power_height, #0x05
+   .db #20, #99, #power_width, #power_height, #0x09
    .dw _power1_spr
 
-   .db #50, #80, #power_width, #power_height, #0x05
+   .db #50, #80, #power_width, #power_height, #0x00
    .dw _power1_spr
 
    .db #37, #170, #power_width, #power_height, #0x05
@@ -250,6 +250,8 @@ loop:
    ;; Evitamos walljump con los power ups
    res 4, de_type(ix)
    res 5, de_type(ix)
+
+   res 2, a
 
    or de_type(ix)
    ld de_type(ix), a
@@ -525,15 +527,27 @@ collisionEnt_loop:
       check_gDown:
       cp a, #8
       jr nz, check_gUP
-      res 2, de_type(ix)
+
+      bit 2, de_type(ix)
+      jr z, noCollisionEnt
+
+         call pl_setJumptableOnGravity
+         res 2, de_type(ix)
+
       jr noCollisionEnt
 
 
-      ;;Gravedad hacia abajo?
+      ;;Gravedad hacia arriba?
       check_gUP:
       cp a, #4
       jr nz, check_doubleJump
-      set 2, de_type(ix)
+
+      bit 2, de_type(ix)
+      jr nz, noCollisionEnt
+
+         call pl_setJumptableOnGravity
+         set 2, de_type(ix)
+      
       jr noCollisionEnt
 
       check_doubleJump:

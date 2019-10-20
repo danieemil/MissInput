@@ -55,6 +55,7 @@ jp_end      = 18   ;;Posición en la tabla cuando caes a velocidad máxima
     .globl pl_fixX
     .globl pl_fixY
     .globl pl_setJumptable
+    .globl pl_setJumptableOnGravity
 
 
 ;Flags del jugador(almacenados en la variable _type de entidad)
