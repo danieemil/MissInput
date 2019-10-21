@@ -10,6 +10,7 @@
 .globl cpct_etm_drawTilemap4x8_agf_asm
 .globl cpct_zx7b_decrunch_s_asm
 .globl cpct_drawTileAligned4x8_asm
+.globl cpct_drawTileAligned4x8_f_asm
 .globl cpct_isAnyKeyPressed_asm
 .globl cpct_isKeyPressed_asm
 .globl cpct_scanKeyboard_asm

@@ -83,9 +83,9 @@ power_ups:
 
 enemies:
 
-   .db #08, #160, #enemy_width, #enemy_height, #0x09
-   .dw _enemy_spr
-   .db #0, #0, #0
+   .db #08, #160, #enemy_width, #enemy_height, #0x02   ;;Entity
+   .dw _enemy_spr                                      ;;Render
+   .db #01, #-4, #20, #20, #08, #160, #01, #00         ;;Enemy
 
    .db #0x80
 
@@ -122,11 +122,9 @@ _main::
 
    ld hl, #0x0B10
    call cpct_setPALColour_asm          ;;Destruye F, BC, HL
-
-
-
-   call vectorsLoader
    
+   call vectorsLoader
+
 
    ;;---------------------------
    ;; Dibujar mapa
@@ -143,16 +141,16 @@ _main::
    ;ld b,    #_map_H
    ;ld de,   #_map_W
    ;ld hl,   #levels_tileset
-   ;call cpct_etm_setDrawTilemap4x8_ag_asm ;; Elegimos el tileset para dibujar el mapa
+   ;call cpct_etm_setDrawTilemap4x8_agf_asm ;; Elegimos el tileset para dibujar el mapa
 
    ;ld hl,   #0xC000
    ;ld de,   #levels_buffer
    ;call cpct_etm_drawTilemap4x8_ag_asm    ;; Dibujamos el mapa de tilesets entero
 
-
    ;ld hl,   #levels_tileset
    ;ld de,   #0xC000
-   ;call cpct_drawTileAligned4x8_asm
+   ;call cpct_drawTileAligned4x8_f_asm
+   
 
    ld ix, #player
    ld b, #50
@@ -290,12 +288,19 @@ loop:
 
 
    and #0x30
-   jr z, draw
+   jr z, update_enemies
 
       ;; Wallride
       ld de, #jp_wallCol
       call pl_setJumptable
    
+
+   update_enemies:
+   ld iy, #vectorEnemies
+   ld a, (vE_num)
+   ld bc, #dE_size
+   call enemy_updateAll
+
 
    draw:
 

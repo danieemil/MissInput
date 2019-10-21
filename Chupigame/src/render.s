@@ -96,6 +96,7 @@ _backbuffer:
 ;;
 ;; Sprite 
 ;;   80 + (84 + 20W)16 + ((36)H)H            (+36)Worst case
+;; Player -> 2704 + 9216 = 11920 ciclos
 ;
 ;; Sprite Masked
 ;;   84 + (88 + 72W)H + 40HH                 (+40)Worst case
