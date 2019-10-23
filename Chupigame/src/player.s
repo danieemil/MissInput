@@ -1,6 +1,6 @@
 .include "player.h.s"
 
-DefinePlayer player, #50, #60, #4, #16, #128, #0, #0, #0, #0, #0, #0
+DefinePlayer player, #12, #152, #4, #16, #128, #0, #0, #0, #0, #0, #0
 
 ;; Tabla de saltos, nos permite simular la gravedad
 _jumptable:
@@ -111,7 +111,13 @@ ret
 ;;Destruye: A, B
 ;;====================================================
 playerMoveX:
+
+    ld a, de_y(ix)
+    ld dde_preY(ix), a
+
     ld a, de_x(ix)
+    ld dde_preX(ix), a
+
     ld b, dp_dir(ix)
     add a, b
     ld de_x(ix), a
@@ -182,6 +188,7 @@ playerMoveY:
     save_jump_ptr:
     ld dp_jump_h(ix), h
     ld dp_jump_l(ix), l
+    
     
 ret
 

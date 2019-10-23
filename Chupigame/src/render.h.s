@@ -10,6 +10,7 @@
 _name:
     DefineEntity _name'_de, _x, _y, _w, _h, _type
     .dw _sprite
+    .db _x, _y
     _name'_size = . - _name ;; Saves the number of bytes that fills a DefineEntity
 .endm
 
@@ -17,7 +18,9 @@ _name:
 
 dde_spr_l = 0 + de_size
 dde_spr_h = 1 + de_size
-dde_size  = 2 + de_size
+dde_preX  = 2 + de_size
+dde_preY  = 3 + de_size
+dde_size  = 4 + de_size
 
 
 ;; Constantes
@@ -36,6 +39,7 @@ power_height    = 8
     .globl cpct_drawSolidBox_asm
     .globl cpct_drawTileAligned4x8_asm
     .globl cpct_drawTileAligned4x8_f_asm
+    .globl cpct_setVideoMemoryPage_asm
 
     .globl Vpowers
 
@@ -52,6 +56,12 @@ power_height    = 8
     .globl drawBackground
     .globl drawVector
     .globl cleanVector
+    .globl switchBuffers
+    .globl initBuffers
+    .globl redrawTiles
+
+    .globl _frontbuffer
+    .globl _backbuffer
 
 
 

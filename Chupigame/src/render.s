@@ -20,10 +20,55 @@ levels_buffer_end       = levels_buffer + levels_buffer_max_size - 1
 levels_tileset          = levels_buffer + _mylevel_0_OFF_001
 
 _frontbuffer:
-.dw 0xC000
+.db 0xC0
 
 _backbuffer:
-.dw 0x8000
+.db 0x80
+
+
+
+;;====================================================
+;;Definition: Intercambia los buffers
+;;Entrada:
+;;Salida:
+;;Destruye: AF, HL
+;;====================================================
+initBuffers:
+    ld hl, #0x8000
+    ld (hl), #0
+    ld de, #0x8000+1
+    ld bc, #0x4000-1
+
+    ldir
+
+ret
+
+;;====================================================
+;;Definition: Intercambia los buffers
+;;Entrada:
+;;Salida:
+;;Destruye: AF, HL
+;;====================================================
+switchBuffers:
+
+    ld hl, (_frontbuffer)   ;; Inicialmente (80C0)
+    ld a, l                 ;; Carga el front buffer en el back buffer
+    ld (_backbuffer) , a
+    ld a, h                 ;; Carga el back buffer en el front buffer
+    ld (_frontbuffer), a
+
+    srl a
+    srl a
+    ld l, a
+    jp cpct_setVideoMemoryPage_asm
+
+
+    
+    
+
+
+
+
 
 ;;=====================================================================
 ;;Definition: Dibuja el sprite que contiene el DrawableEntity en IX
@@ -44,9 +89,11 @@ _backbuffer:
 drawSprite:
 
     ;; Calculate a video-memory location for printing a string
-   ld   de, (_frontbuffer) ;; DE = Pointer to start of the screen
-   ld    b, de_y(iy)                  ;; B = y coordinate
-   ld    c, de_x(iy)                  ;; C = x coordinate
+   ld   a, (_backbuffer)         ;; DE = Pointer to start of the screen
+   ld   d, a
+   ld   e, #00
+   ld   b, de_y(iy)              ;; B = y coordinate
+   ld   c, de_x(iy)              ;; C = x coordinate
    call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
 
    ex de, hl
@@ -68,10 +115,12 @@ ret
 ;;====================================================
 drawBox:
  ;; Calculate a video-memory location for printing a string
-   ld   de, (_frontbuffer) ;; DE = Pointer to start of the screen
-   ld    b, de_y(ix)                  ;; B = y coordinate
-   ld    c, de_x(ix)                  ;; C = x coordinate
-   call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
+   ld   a, (_backbuffer)         ;; DE = Pointer to start of the screen
+   ld   d, a
+   ld   e, #0
+   ld   b, de_y(ix)             ;; B = y coordinate
+   ld   c, de_x(ix)             ;; C = x coordinate
+   call cpct_getScreenPtr_asm   ;; Calculate video memory location and return it in HL
 
    ex de, hl
    ld a, de_type(ix)
@@ -91,9 +140,11 @@ ret
 drawBackground:
 
     ;; Calculate a video-memory location for printing a string
-   ld   de, (_frontbuffer) ;; DE = Pointer to start of the screen
-   ld    b, de_y(iy)                  ;; B = y coordinate
-   ld    c, de_x(iy)                  ;; C = x coordinate
+   ld   a, (_backbuffer)         ;; DE = Pointer to start of the screen
+   ld   d, a
+   ld   e, #0
+   ld    b, dde_preY(iy)                  ;; B = y coordinate
+   ld    c, dde_preX(iy)                  ;; C = x coordinate
    call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
 
    ex de, hl
@@ -155,11 +206,11 @@ cleanVector:
     
 
     ;call drawBackground
-    ld d, de_x(iy)
+    ld d, dde_preX(iy)
     ld a, de_w(iy)
     add d
     ld e, a
-    ld b, de_y(iy)
+    ld b, dde_preY(iy)
     ld a, de_h(iy)
     add b
     call redrawTiles
@@ -202,16 +253,22 @@ redrawTiles:
     ld c, a
 
     ld a, b
+    push af
 
     ld de, #0020
     ld hl, #levels_buffer
     exx
     ld de, #0080
-    ld hl, (_frontbuffer)
+    ;;ld hl, #0x8000
+    ld a , (_backbuffer)
+    ld h, a
+    ld l , #00
+
+    pop af
 
     redrawTiles_loop:
 
-        add hl, de              ;; Front Buffer
+        add hl, de              ;; Back Buffer
         exx
         add hl, de               ;; Tilemap
         exx
@@ -262,10 +319,6 @@ redrawTiles:
 
     drawTile_Y_loop:
 
-        
-
-        
-
         push af
         ld a, (hl)
         exx
@@ -308,8 +361,6 @@ redrawTiles:
 
     pop hl
     inc hl
-
-    
 
     ld a, e
     cp #0

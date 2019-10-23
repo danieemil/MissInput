@@ -44,16 +44,10 @@
 
 
 entities:
-   .db #50, #65, #04, #100, #0x20
-   .db #40, #76, #04, #80, #0x20
-   .db #00, #192,#38, #08, #0x20
-   .db #39, #192,#41, #08, #0x20
-   .db #00, #00,#39, #08, #0x20
-   .db #39, #00,#41, #08, #0x20
-   .db #76, #08,#04, #95, #0x20
-   .db #76, #103,#04,#89, #0x20
-   .db #00, #08,#04, #95, #0x20
-   .db #00, #103,#04, #89, #0x20
+   .db #00, #176, #28, #24, #0x20         ;;Suelo [0,22] {7, 3} Tamaño en tiles
+   .db #00, #00 , #80, #16, #0x20         ;;Suelo [0,0]  {20,2} Tamaño en tiles
+   .db #44, #176, #32, #24, #0x20         ;;Suelo [11,22]{8, 3} Tamaño en tiles
+
    .db #0x80
 
 
@@ -67,12 +61,15 @@ special_entities:
 power_ups:
    .db #20, #99, #power_width, #power_height, #0x09
    .dw _power1_spr
+   .db #20, #99  
 
    .db #50, #80, #power_width, #power_height, #0x00
    .dw _power1_spr
+   .db #50, #80  
 
    .db #37, #170, #power_width, #power_height, #0x05
    .dw _power1_spr
+   .db #37, #170  
 
    .db #0x80
 
@@ -81,11 +78,13 @@ enemies:
    ;;Enemigo que rebota
    .db #08, #160, #enemy_width, #enemy_height, #0x02   ;;Entity
    .dw _enemy_spr                                      ;;Render
+   .db #08, #160                                    
    .db #01, #-4, #20, #20, #08, #160, #06, #00         ;;Enemy
 
    ;;Enemigo que detecta y persigue
    .db #08, #60, #enemy_width, #enemy_height, #0x82   ;;Entity
    .dw _enemy_spr                                     ;;Render
+   .db #08, #60  
    .db #00, #00, #20, #20, #08, #60, #01, #00         ;;Enemy
 
    .db #0x80
@@ -104,8 +103,12 @@ _main::
    ;; Inicializar paleta, modo de video, etc...
    ;; Solo se hace una vez, al iniciar el juego
    ;;-------------------------------------------
+   ld sp, #0x8000
+
 
    call cpct_disableFirmware_asm
+
+   call initBuffers
 
    ld c, #1
    call cpct_setVideoMode_asm          ;;Destruye AF, BC, HL
@@ -116,6 +119,8 @@ _main::
 
    ld hl, #0x0B10
    call cpct_setPALColour_asm          ;;Destruye F, BC, HL
+   
+
    
 
    ;;En este método preparámos el nivel para que sea jugable
@@ -144,10 +149,19 @@ _main::
    ;call cpct_etm_drawTilemap4x8_ag_asm    ;; Dibujamos el mapa de tilesets entero
 
 
-   ld de, #0xC000
+   ld a, (_backbuffer)
+   ld d, a
+   ld e, #00
    ld hl, #levels_buffer
    ld bc, #500
    call draw_tilemap
+
+   ld hl, #0x8000
+   ld de, #0xC000
+   ld bc, #0x4000
+   ldir
+
+
 
    ld ix, #player
    ld b, #76
@@ -200,8 +214,17 @@ ld ix, #player
 ;; Loop forever
 loop:
 
-   ld iy, #player
-   call drawBackground
+   ;;ld iy, #player
+   ;;call drawBackground
+
+   ld d, dde_preX(ix)
+   ld a, de_w(ix)
+   add d
+   ld e, a
+   ld b, dde_preY(ix)
+   ld a, de_h(ix)
+   add b
+   call redrawTiles
 
    ld iy, #Vpowers
    ld a, vector_n(iy)
@@ -257,9 +280,6 @@ loop:
    ld c, vector_s(iy)  
    call collisionBoxY_loop
 
-
-
-   
    ld a, de_type(ix)
    push af
 
@@ -326,6 +346,8 @@ loop:
    call drawSprite
 
    
+   
+   call switchBuffers
    call cpct_waitVSYNC_asm
 
 
@@ -748,5 +770,5 @@ draw_tilemap:
    ld a, b
    or c
    jr nz, draw_tilemap
-   
+
 ret
