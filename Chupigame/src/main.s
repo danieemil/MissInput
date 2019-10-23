@@ -19,6 +19,7 @@
 ;; Include all CPCtelera constant definitions, macros and variables
 .include "main.h.s"
 .include "player.h.s"
+.include "level_data.h.s"
 
 
 
@@ -35,61 +36,25 @@
 ;; 
 .area _CODE
 
-;; 
-;; Declare all function entry points as global symbols for the compiler.
-;; (The linker will know what to do with them)
-;; WARNING: Every global symbol declared will be linked, so DO NOT declare 
-;; symbols for functions you do not use.
-;;
 
+                  ;;=============================;;
+                  ;;TODAS LAS ENTIDADES DEL JUEGO;;
+                  ;;=============================;;
 
-entities:
-   .db #00, #176, #28, #24, #0x20         ;;Suelo [0,22] {7, 3} Tamaño en tiles
-   .db #00, #00 , #80, #16, #0x20         ;;Suelo [0,0]  {20,2} Tamaño en tiles
-   .db #44, #176, #32, #24, #0x20         ;;Suelo [11,22]{8, 3} Tamaño en tiles
+;;Jugador
+DefinePlayer player, #12, #144, #4, #16, #128, #0, #0, #0, #0, #0, #0
 
-   .db #0x80
+;;Entidades de colisión
+ReserveVector Ventities, de_size, 20
 
+;;Entidades especiales
+ReserveVector Ventities2, de_size, 20
 
-special_entities:
-   .db #04, #08, #8, #32, #0x88
-   .db #68, #160, #8, #32, #0x84
-   .db #24, #76, #8, #32, #0x80
-   .db #0x80
+;;Power-ups
+ReserveVector Vpowers, dde_size, 4
 
-
-power_ups:
-   .db #20, #99, #power_width, #power_height, #0x09
-   .dw _power1_spr
-   .db #20, #99  
-
-   .db #50, #80, #power_width, #power_height, #0x00
-   .dw _power1_spr
-   .db #50, #80  
-
-   .db #37, #170, #power_width, #power_height, #0x05
-   .dw _power1_spr
-   .db #37, #170  
-
-   .db #0x80
-
-
-enemies:
-   ;;Enemigo que rebota
-   .db #08, #160, #enemy_width, #enemy_height, #0x02   ;;Entity
-   .dw _enemy_spr                                      ;;Render
-   .db #08, #160                                    
-   .db #01, #-4, #20, #20, #08, #160, #06, #00         ;;Enemy
-
-   ;;Enemigo que detecta y persigue
-   .db #08, #60, #enemy_width, #enemy_height, #0x82   ;;Entity
-   .dw _enemy_spr                                     ;;Render
-   .db #08, #60  
-   .db #00, #00, #20, #20, #08, #60, #01, #00         ;;Enemy
-
-   .db #0x80
-
-
+;;Enemigos
+ReserveVector Venemies, dE_size, 4
 
 
 
@@ -121,70 +86,36 @@ _main::
    call cpct_setPALColour_asm          ;;Destruye F, BC, HL
    
 
-   ;; Descomprimimos de memoria
-
+   ;; Descomprimimos el mapa y tileset de memoria
    ld de, #levels_buffer_end
    ld hl, #_mylevel_0_end
    call cpct_zx7b_decrunch_s_asm
-   
-
-   
-
-
    
 
    ;;En este método preparámos el nivel para que sea jugable
    call initializeLevel
 
 
+   ;;------------
+   ;;Dibujar mapa
+   ;;------------
 
-   ;;---------------------------
-   ;; Dibujar cajas (temporal)
-   ;;---------------------------
+   ;ld a, (_backbuffer)
+   ;ld d, a
+   ;ld e, #00
+   ;ld hl, #levels_buffer
+   ;ld bc, #500
+   ;call draw_tilemap
+   
+   ;ld hl, #0x8000
+   ;ld de, #0xC000
+   ;ld bc, #0x4000
+   ;ldir
 
-
-   ld ix, #Ventities
-   ld a, vector_n(ix)
-   ld b, #0
-   ld c, vector_s(ix)
-
-   ;;drawBox_loop:
-   ;;   exx
-   ;;   ex af, af'
-   ;;   call drawBox
-   ;;   ex af, af'
-   ;;   exx
-   ;;
-   ;;   add ix, bc
-   ;;
-   ;;   dec a
-   ;;jr nz, drawBox_loop
-
-   ld ix, #Ventities2
-   ld a, vector_n(ix)
-   ld b, #0
-   ld c, vector_s(ix)
-
-   drawSpecialBox_loop:
-      exx
-      ex af, af'
-      call drawBox
-      ex af, af'
-      exx
-
-      add ix, bc
-
-      dec a
-   jr nz, drawSpecialBox_loop
 
 ld ix, #player
 
-;; Loop forever
-loop:
-
-   ;;ld iy, #player
-   ;;call drawBackground
-
+main_loop:
 
    bit 1, de_type(ix)
    call nz, initializeLevel
@@ -272,6 +203,19 @@ loop:
    ld c, vector_s(iy)  
    call collisionEnt_loop
 
+   update_enemies:
+   ld iy, #Venemies
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)
+   call enemy_updateAll
+
+   ld iy, #Venemies
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)
+   call collisionEnt_loop
+
 
    pop af
 
@@ -286,19 +230,11 @@ loop:
 
 
    and #0x30
-   jr z, update_enemies
+   jr z, draw
 
       ;; Wallride
       ld de, #jp_wallCol
       call pl_setJumptable
-   
-
-   update_enemies:
-   ld iy, #Venemies
-   ld a, vector_n(iy)
-   ld b, #0
-   ld c, vector_s(iy)
-   call enemy_updateAll
 
 
    draw:
@@ -324,7 +260,7 @@ loop:
    call cpct_waitVSYNC_asm
 
 
-   jp    loop
+jp  main_loop
 
 
 ;;====================================================
@@ -605,7 +541,7 @@ vectorloader:
 
    load_loop:
    
-   ld a, #0x80
+   ld a, #end_of_data
    cp (hl)
    jr z, end_load
 
@@ -640,7 +576,7 @@ initializeLevel:
 ;; Reiniciamos al jugador
    ld ix, #player
    ld b, #12
-   ld c, #152
+   ld c, #144
    call initializePlayer
 
 

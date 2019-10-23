@@ -27,10 +27,6 @@ dE_size     = 8 + dde_size
 
 
 ;; Constantes
-
-enemy_width    = 4
-enemy_height   = 16
-
 enemy_near_counter  = 4
 enemy_far_counter   = 1
 
@@ -38,9 +34,6 @@ enemy_far_counter   = 1
 
 ;; Globales
     ;;Dependencias
-    .globl _enemy_spr
-
-    .globl Venemies
 
 
     ;;Funciones

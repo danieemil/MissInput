@@ -23,25 +23,15 @@ dde_preY  = 3 + de_size
 dde_size  = 4 + de_size
 
 
-;; Constantes
-
-power_width     = 2
-power_height    = 8
-
-
 
 ;; Global
     ;;Dependencias
-    .globl _power1_spr
-
     .globl cpct_drawSprite_asm
     .globl cpct_getScreenPtr_asm
     .globl cpct_drawSolidBox_asm
     .globl cpct_drawTileAligned4x8_asm
     .globl cpct_drawTileAligned4x8_f_asm
     .globl cpct_setVideoMemoryPage_asm
-
-    .globl Vpowers
 
     ;; Tilemaps
     .globl levels_buffer

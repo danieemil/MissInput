@@ -1,8 +1,6 @@
 .include "enemy.h.s"
 
 
-ReserveVector Venemies, dE_size, 4
-
 ;;====================================================
 ;;Definition: Updatea todos los enemigos del vector
 ;;Entrada:

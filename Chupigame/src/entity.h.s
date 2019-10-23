@@ -23,8 +23,7 @@ de_size = 5
 
 ;; Globals
     ;;Dependencias
-    .globl Ventities
-    .globl Ventities2
+    
 
     ;;Funciones
     .globl detectCollisionX

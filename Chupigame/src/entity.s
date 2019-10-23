@@ -1,14 +1,7 @@
 
 .include "player.h.s"
 
-;; En este vector estarán las entidades que corrigen la posición del jugador
 
-ReserveVector Ventities, de_size, 20
-
-
-;; En este vector... el resto de entidades
-
-ReserveVector Ventities2, de_size, 20
 
 ;; Colisiones en GENERAL
 ;;====================================================
