@@ -42,50 +42,76 @@
 ;; symbols for functions you do not use.
 ;;
 
-
+tw = 4
+th = 8
+;;.db #*tw, #*th, #*tw, #*th, #0x20
 entities:
    .db #00, #176, #28, #24, #0x20         ;;Suelo [0,22] {7, 3} Tamaño en tiles
    .db #00, #00 , #80, #16, #0x20         ;;Suelo [0,0]  {20,2} Tamaño en tiles
    .db #44, #176, #32, #24, #0x20         ;;Suelo [11,22]{8, 3} Tamaño en tiles
-
+   .db #12, #160, #8,  #16, #0x20         ;;Suelo [11,22]{8, 3} Tamaño en tiles
+   .db #7*tw, #14*th, #2*tw, #4*th, #0x20         ;;Suelo [11,22]{8, 3} Tamaño en tiles
+   .db #9*tw, #14*th, #2*tw, #2*th, #0x20
+   .db #3*tw, #8*th, #5*tw, #1*th, #0x00
+   .db #14*tw, #11*th, #2*tw, #6*th, #0x00
+   .db #16*tw, #11*th, #4*tw, #3*th, #0x00
+   .db #19*tw, #2*th, #1*tw, #5*th, #0x00
+   .db #19*tw, #14*th, #1*tw, #8*th, #0x00
+   .db #0*tw, #7*th, #1*tw, #15*th, #0x00
+   .db #0*tw, #2*th, #1*tw, #5*th, #0x00
    .db #0x80
 
 
+
+e_pinchos = 0x02     ;; 00000010
+e_salida  = 0x0C     ;; 00001100
+e_djump   = 0x00     ;; 00000000
+e_gup     = 0x04     ;; 00000100
+e_gdown   = 0x08     ;; 00001000
+;;.db #*tw, #*th, #*tw, #*th, #0x20
 special_entities:
-   .db #04, #08, #8, #32, #0x88
-   .db #68, #160, #8, #32, #0x84
-   .db #24, #76, #8, #32, #0x80
+   .db #7*tw, #22*th, #4*tw, #3*th, #e_pinchos
+   .db #19*tw, #7*th, #1*tw, #4*th, #e_salida
+   .db #9*tw, #4*th, #2*tw, #10*th, #e_gup
+   .db #14*tw, #2*th, #2*tw, #7*th, #e_gdown
    .db #0x80
 
 
+p_djump = 0x01       ;; 00000001
+p_gup   = 0x05       ;; 00000101
+p_gdown = 0x09       ;; 00001001
+;;.db #*tw, #*th, #power_width, #power_height, #
 power_ups:
-   .db #20, #99, #power_width, #power_height, #0x09
+   .db #5*tw, #14*th, #power_width, #power_height, #p_djump
    .dw _power1_spr
-   .db #20, #99  
+   .db #5*tw, #14*th
 
-   .db #50, #80, #power_width, #power_height, #0x00
+   .db #12*tw, #18*th, #power_width, #power_height, #p_gup
    .dw _power1_spr
-   .db #50, #80  
+   .db #12*tw, #18*th
 
-   .db #37, #170, #power_width, #power_height, #0x05
+   .db #1*tw, #2*th, #power_width, #power_height, #p_gdown
    .dw _power1_spr
-   .db #37, #170  
+   .db #1*tw, #2*th
 
    .db #0x80
 
+e_bounce = 0x02      ;; 00000010
+e_line   = 0x42      ;; 01000010  
+e_chase  = 0x82      ;; 10000010
 
 enemies:
    ;;Enemigo que rebota
-   .db #08, #160, #enemy_width, #enemy_height, #0x02   ;;Entity
-   .dw _enemy_spr                                      ;;Render
-   .db #08, #160                                    
-   .db #01, #-4, #20, #20, #08, #160, #06, #00         ;;Enemy
+   .db #3*tw, #6*th, #enemy_width, #enemy_height, #e_bounce    ;;Entity
+   .dw _enemy_spr                                              ;;Render
+   .db #3*tw, #6*th                                   
+   .db #01, #0, #4*tw, #4*tw, #3*tw, #6*th, #02, #00           ;;Dirx  Diry  Range  Counter  OrX  OrY  Res  ResCount
 
    ;;Enemigo que detecta y persigue
-   .db #08, #60, #enemy_width, #enemy_height, #0x82   ;;Entity
+   .db #17*tw, #16*th, #enemy_width, #enemy_height, #e_chase  ;;Entity
    .dw _enemy_spr                                     ;;Render
-   .db #08, #60  
-   .db #00, #00, #20, #20, #08, #60, #01, #00         ;;Enemy
+   .db #17*tw, #16*th  
+   .db #00, #00, #20, #20, #17*tw, #16*th, #01, #00         ;;Enemy
 
    .db #0x80
 
@@ -121,8 +147,6 @@ _main::
    call cpct_setPALColour_asm          ;;Destruye F, BC, HL
    
 
-   
-
    ;;En este método preparámos el nivel para que sea jugable
    call initializeLevel
 
@@ -138,16 +162,6 @@ _main::
    ld hl, #_mylevel_0_end
    call cpct_zx7b_decrunch_s_asm
 
-   ;ld c,    #_map_W
-   ;ld b,    #_map_H
-   ;ld de,   #_map_W
-   ;ld hl,   #levels_tileset
-   ;call cpct_etm_setDrawTilemap4x8_agf_asm ;; Elegimos el tileset para dibujar el mapa
-
-   ;ld hl,   #0xC000
-   ;ld de,   #levels_buffer
-   ;call cpct_etm_drawTilemap4x8_ag_asm    ;; Dibujamos el mapa de tilesets entero
-
 
    ld a, (_backbuffer)
    ld d, a
@@ -161,24 +175,15 @@ _main::
    ld bc, #0x4000
    ldir
 
-
-
-   ld ix, #player
-   ld b, #76
-   ld c, #60
-
-   call initializePlayer
-
-
    ;;---------------------------
    ;; Dibujar cajas (temporal)
    ;;---------------------------
 
 
-   ld ix, #Ventities
-   ld a, vector_n(ix)
-   ld b, #0
-   ld c, vector_s(ix)
+   ;;ld ix, #Ventities
+   ;;ld a, vector_n(ix)
+   ;;ld b, #0
+   ;;ld c, vector_s(ix)
 
    ;;drawBox_loop:
    ;;   exx
@@ -186,36 +191,33 @@ _main::
    ;;   call drawBox
    ;;   ex af, af'
    ;;   exx
-;;
+   ;;
    ;;   add ix, bc
-;;
+   ;;
    ;;   dec a
    ;;jr nz, drawBox_loop
 
-   ld ix, #Ventities2
-   ld a, vector_n(ix)
-   ld b, #0
-   ld c, vector_s(ix)
+   ;;ld ix, #Ventities2
+   ;;ld a, vector_n(ix)
+   ;;ld b, #0
+   ;;ld c, vector_s(ix)
 
-   drawSpecialBox_loop:
-      exx
-      ex af, af'
-      call drawBox
-      ex af, af'
-      exx
-
-      add ix, bc
-
-      dec a
-   jr nz, drawSpecialBox_loop
+   ;;drawSpecialBox_loop:
+   ;;   exx
+   ;;   ex af, af'
+   ;;   call drawBox
+   ;;   ex af, af'
+   ;;   exx
+   ;;
+   ;;   add ix, bc
+   ;;
+   ;;   dec a
+   ;;jr nz, drawSpecialBox_loop
 
 ld ix, #player
 
 ;; Loop forever
 loop:
-
-   ;;ld iy, #player
-   ;;call drawBackground
 
    ld d, dde_preX(ix)
    ld a, de_w(ix)
@@ -537,7 +539,7 @@ collisionEnt_loop:
       bit 1, a
       jr z, check_gatherable
 
-         ;jp die
+         jr .
 
       ;; Se puede coger?
       check_gatherable:

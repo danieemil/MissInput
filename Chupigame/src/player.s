@@ -1,6 +1,6 @@
 .include "player.h.s"
 
-DefinePlayer player, #12, #152, #4, #16, #128, #0, #0, #0, #0, #0, #0
+DefinePlayer player, #12, #150, #4, #16, #128, #0, #0, #0, #0, #0, #0
 
 ;; Tabla de saltos, nos permite simular la gravedad
 _jumptable:
