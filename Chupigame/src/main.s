@@ -121,53 +121,21 @@ _main::
    call cpct_setPALColour_asm          ;;Destruye F, BC, HL
    
 
-   
-
-   ;;En este método preparámos el nivel para que sea jugable
-   call initializeLevel
-
-
-   ;;---------------------------
-   ;; Dibujar mapa
-   ;;---------------------------
-
-
    ;; Descomprimimos de memoria
 
    ld de, #levels_buffer_end
    ld hl, #_mylevel_0_end
    call cpct_zx7b_decrunch_s_asm
+   
 
-   ;ld c,    #_map_W
-   ;ld b,    #_map_H
-   ;ld de,   #_map_W
-   ;ld hl,   #levels_tileset
-   ;call cpct_etm_setDrawTilemap4x8_agf_asm ;; Elegimos el tileset para dibujar el mapa
-
-   ;ld hl,   #0xC000
-   ;ld de,   #levels_buffer
-   ;call cpct_etm_drawTilemap4x8_ag_asm    ;; Dibujamos el mapa de tilesets entero
+   
 
 
-   ld a, (_backbuffer)
-   ld d, a
-   ld e, #00
-   ld hl, #levels_buffer
-   ld bc, #500
-   call draw_tilemap
+   
 
-   ld hl, #0x8000
-   ld de, #0xC000
-   ld bc, #0x4000
-   ldir
+   ;;En este método preparámos el nivel para que sea jugable
+   call initializeLevel
 
-
-
-   ld ix, #player
-   ld b, #76
-   ld c, #60
-
-   call initializePlayer
 
 
    ;;---------------------------
@@ -186,9 +154,9 @@ _main::
    ;;   call drawBox
    ;;   ex af, af'
    ;;   exx
-;;
+   ;;
    ;;   add ix, bc
-;;
+   ;;
    ;;   dec a
    ;;jr nz, drawBox_loop
 
@@ -217,6 +185,11 @@ loop:
    ;;ld iy, #player
    ;;call drawBackground
 
+
+   bit 1, de_type(ix)
+   call nz, initializeLevel
+
+   ;; Clear player
    ld d, dde_preX(ix)
    ld a, de_w(ix)
    add d
@@ -537,7 +510,8 @@ collisionEnt_loop:
       bit 1, a
       jr z, check_gatherable
 
-         ;jp die
+         set 1, de_type(ix)
+         ret
 
       ;; Se puede coger?
       check_gatherable:
@@ -579,15 +553,9 @@ collisionEnt_loop:
 
       check_doubleJump:
       cp a, #00
-      jr nz, end_level
+      jp nz, end_level
 
       set 3, de_type(ix)
-
-
-      ;;Fin del nivel
-      ;jp z, end_level
-
-
 
 
    noCollisionEnt:
@@ -605,7 +573,7 @@ collisionEnt_loop:
 ret
 
 end_level:
-   jr .
+   jp initializeLevel
 ret
 
 
@@ -669,13 +637,14 @@ ret
 ;;===============================================================================
 initializeLevel:
 
-;; Reiniciamos todos los vectores a los valores por defecto
-;; 
-
+;; Reiniciamos al jugador
    ld ix, #player
+   ld b, #12
+   ld c, #152
    call initializePlayer
 
 
+;; Reiniciamos todos los vectores a los valores por defecto
    ld hl, #enemies
    ld de, #Venemies
    push hl
@@ -715,6 +684,25 @@ initializeLevel:
    pop de
    pop hl
    call vectorloader
+
+
+   ;;------------------------------------------------------------------
+   ;; Dibujamos mapa en el backbuffer
+   ;;------------------------------------------------------------------
+   ld a, (_backbuffer)
+   ld d, a
+   ld e, #00
+   ld hl, #levels_buffer
+   ld bc, #500
+   call draw_tilemap
+
+   ;; Copiamos del backbuffer al frontbuffer
+   ld hl, (_frontbuffer)
+   ld d, l
+   ld l, #0
+   ld e, #0
+   ld bc, #0x4000
+   ldir
 
 ret
 

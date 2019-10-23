@@ -10,11 +10,20 @@ _jumptable:
 ;;Definition: Inicializa los valores del jugador 
 ;;Entrada: 
 ;;  IX  ->  Puntero que contiene al jugador
+;;  B   ->  Origen en X
+;;  C   ->  Origen en Y
 ;;Salida:
 ;;  IX  ->  Jugador con sus datos actualizados
 ;;Destruye: HL,
 ;;====================================================
 initializePlayer:
+    
+    ;; Seteamos su posición inicial
+    ld de_x(ix), b
+    ld de_y(ix), c
+    
+    ld dde_preX(ix), b
+    ld dde_preY(ix), c
 
     ;; Seteamos su tamaño
     ld de_w(ix), #player_width
