@@ -1,4 +1,7 @@
 .include "entity.h.s"
+.include "bins/tilemap.h.s"
+.include "bins/mylevel_0.h.s"
+.include "bins/tileset.h.s"
 
 
 ;; Macros
@@ -31,8 +34,16 @@ power_height    = 8
     .globl cpct_drawSprite_asm
     .globl cpct_getScreenPtr_asm
     .globl cpct_drawSolidBox_asm
+    .globl cpct_drawTileAligned4x8_asm
+    .globl cpct_drawTileAligned4x8_f_asm
 
     .globl Vpowers
+
+    ;; Tilemaps
+    .globl levels_buffer
+    .globl levels_buffer_max_size  
+    .globl levels_buffer_end       
+    .globl levels_tileset        
 
 
     ;;Funciones

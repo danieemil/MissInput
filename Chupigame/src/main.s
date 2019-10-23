@@ -19,9 +19,7 @@
 ;; Include all CPCtelera constant definitions, macros and variables
 .include "main.h.s"
 .include "player.h.s"
-.include "bins/tilemap.h.s"
-.include "bins/mylevel_0.h.s"
-.include "bins/tileset.h.s"
+
 
 
 ;;
@@ -93,11 +91,7 @@ enemies:
    .db #0x80
 
 
-;; Tilemaps
-levels_buffer           = 0x0040
-levels_buffer_max_size  = 0x05B4
-levels_buffer_end       = levels_buffer + levels_buffer_max_size - 1
-levels_tileset          = levels_buffer + _mylevel_0_OFF_001
+
 
 
 ;;
@@ -729,10 +723,14 @@ draw_tilemap:
    push hl
    ld hl, #levels_tileset
 
+
+   cp a, #0
+   jr z, draw_tilemap_loop_end
    draw_tilemap_loop:
       add hl, bc
       dec a
    jr nz, draw_tilemap_loop
+   draw_tilemap_loop_end:
 
    push de
    call cpct_drawTileAligned4x8_asm       ;; se lo carga toh
