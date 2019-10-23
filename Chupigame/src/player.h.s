@@ -45,6 +45,7 @@ jp_end      = 18   ;;Posición en la tabla cuando caes a velocidad máxima
     ;;Dependencias
     .globl _player_spr
 
+    .globl player
 
 
     ;;Funciones

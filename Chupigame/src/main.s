@@ -45,8 +45,6 @@
 ;;
 
 
-DefineEntity caja, #78, #48, #1, #16, #0xFF
-
 entities:
    .db #50, #65, #04, #100, #0x20
    .db #40, #76, #04, #80, #0x20
@@ -68,7 +66,6 @@ special_entities:
    .db #0x80
 
 
-
 power_ups:
    .db #20, #99, #power_width, #power_height, #0x09
    .dw _power1_spr
@@ -81,18 +78,22 @@ power_ups:
 
    .db #0x80
 
-enemies:
 
+enemies:
+   ;;Enemigo que rebota
    .db #08, #160, #enemy_width, #enemy_height, #0x02   ;;Entity
    .dw _enemy_spr                                      ;;Render
-   .db #01, #-4, #20, #20, #08, #160, #01, #00         ;;Enemy
+   .db #01, #-4, #20, #20, #08, #160, #06, #00         ;;Enemy
+
+   ;;Enemigo que detecta y persigue
+   .db #08, #60, #enemy_width, #enemy_height, #0x82   ;;Entity
+   .dw _enemy_spr                                     ;;Render
+   .db #00, #00, #20, #20, #08, #60, #01, #00         ;;Enemy
 
    .db #0x80
 
 
-
-DefinePlayer player, #50, #60, #4, #16, #128, #0, #0, #0, #0, #0, #0
-
+;; Tilemaps
 levels_buffer           = 0x0040
 levels_buffer_max_size  = 0x0274
 levels_buffer_end       = levels_buffer + levels_buffer_max_size - 1
@@ -107,9 +108,9 @@ _main::
    
    ;;-------------------------------------------
    ;; Inicializar paleta, modo de video, etc...
+   ;; Solo se hace una vez, al iniciar el juego
    ;;-------------------------------------------
-   
-   ;; Disable firmware to prevent it from interfering with string drawing
+
    call cpct_disableFirmware_asm
 
    ld c, #1
@@ -119,11 +120,12 @@ _main::
    ld de, #4
    call cpct_setPalette_asm            ;;Destruye AF, BC, DE, HL
 
-
    ld hl, #0x0B10
    call cpct_setPALColour_asm          ;;Destruye F, BC, HL
    
-   call vectorsLoader
+
+   ;;En este método preparámos el nivel para que sea jugable
+   call initializeLevel
 
 
    ;;---------------------------
@@ -150,23 +152,17 @@ _main::
    ;ld hl,   #levels_tileset
    ;ld de,   #0xC000
    ;call cpct_drawTileAligned4x8_f_asm
-   
-
-   ld ix, #player
-   ld b, #50
-   ld c, #60
-
-   call initializePlayer
 
 
    ;;---------------------------
-   ;; Dibujar cajas
+   ;; Dibujar cajas (temporal)
    ;;---------------------------
 
 
-   ld ix, #vector
-   ld a, (v_num)
-   ld bc, #de_size
+   ld ix, #Ventities
+   ld a, vector_n(ix)
+   ld b, #0
+   ld c, vector_s(ix)
 
    drawBox_loop:
       exx
@@ -180,9 +176,10 @@ _main::
       dec a
    jr nz, drawBox_loop
 
-   ld ix, #vector_2
-   ld a, (v2_num)
-   ld bc, #de_size
+   ld ix, #Ventities2
+   ld a, vector_n(ix)
+   ld b, #0
+   ld c, vector_s(ix)
 
    drawSpecialBox_loop:
       exx
@@ -196,22 +193,24 @@ _main::
       dec a
    jr nz, drawSpecialBox_loop
 
+ld ix, #player
 
-   ld ix, #player
-   ;; Loop forever
+;; Loop forever
 loop:
 
    ld iy, #player
    call drawBackground
 
-   ld iy, #vectorPowers 
-   ld a, (vP_num)       
-   ld bc, #dde_size     
+   ld iy, #Vpowers
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)  
    call cleanVector
 
-   ld iy, #vectorEnemies
-   ld a, (vE_num)
-   ld bc, #dE_size
+   ld iy, #Venemies
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)
    call cleanVector
 
 
@@ -241,17 +240,19 @@ loop:
 
    call playerMoveX
 
-   ld iy, #vector
-   ld a, (v_num)
-   ld bc, #de_size
+   ld iy, #Ventities
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)  
    call collisionBoxX_loop
 
 
    call playerMoveY
 
-   ld iy, #vector
-   ld a, (v_num)
-   ld bc, #de_size
+   ld iy, #Ventities
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)  
    call collisionBoxY_loop
 
 
@@ -263,15 +264,17 @@ loop:
 
 
    ;; Colisiones de los power-ups
-   ld iy, #vectorPowers ;;[14]
-   ld a, (vP_num)       ;;[13]
-   ld bc, #dde_size     ;;[10]
+   ld iy, #Vpowers
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)  
    call collisionEnt_loop
 
    ;; Colisiones de las entidades especiales :/
-   ld iy, #vector_2     ;;[14]
-   ld a, (v2_num)       ;;[13]
-   ld bc, #de_size      ;;[10]
+   ld iy, #Ventities2
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)  
    call collisionEnt_loop
 
 
@@ -296,22 +299,25 @@ loop:
    
 
    update_enemies:
-   ld iy, #vectorEnemies
-   ld a, (vE_num)
-   ld bc, #dE_size
+   ld iy, #Venemies
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)
    call enemy_updateAll
 
 
    draw:
 
-   ld iy, #vectorPowers 
-   ld a, (vP_num)       
-   ld bc, #dde_size     
+   ld iy, #Vpowers
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)   
    call drawVector
 
-   ld iy, #vectorEnemies
-   ld a, (vE_num)
-   ld bc, #dE_size
+   ld iy, #Venemies
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)
    call drawVector
 
    ld iy, #player
@@ -394,118 +400,6 @@ inputManager:
 
 ret
 
-
-;;====================================================
-;;Definition: Carga datos en los vectores
-;;Entrada:
-;;Salida:
-;;Destruye: A, BC, DE, HL
-;;====================================================
-vectorsLoader:
-
-
-   ld hl, #entities
-
-   ent_loop:
-   
-      ld a, (hl)
-      cp #0x80
-      jr z, load2_ent
-
-      ex de, hl
-      ld hl, #v_num
-      ld bc, #v_entity_next
-      call ent_new_default
-      ex de, hl
-      push hl
-
-      call ent_copy
-      pop hl
-
-      ld bc, #de_size
-      add hl, bc
-
-   jr #ent_loop
-
-
-   load2_ent:
-   ld hl, #special_entities
-
-   ent2_loop:
-   
-      ld a, (hl)
-      cp #0x80
-      jr z, load_power_ups
-
-      ex de, hl
-      ld hl, #v2_num
-      ld bc, #v2_entity_next
-      call ent_new_default
-      ex de, hl
-      push hl
-
-      call ent_copy
-      pop hl
-
-      ld bc, #de_size
-      add hl, bc
-
-   jr #ent2_loop
-
-
-
-
-   load_power_ups:
-
-   ld hl, #power_ups
-
-   power_loop:
-   
-      ld a, (hl)
-      cp #0x80
-      jr z, load_enemies
-
-      ex de, hl
-      call power_new_default
-      ex de, hl
-      push hl
-
-      call power_copy
-      pop hl
-
-      ld bc, #dde_size
-      add hl, bc
-
-   jr #power_loop
-
-   
-
-
-   load_enemies:
-
-   ld hl, #enemies
-
-   enemy_loop:
-   
-      ld a, (hl)
-      cp #0x80
-      ret z
-
-      ex de, hl
-      call enemy_new_default
-      ex de, hl
-      push hl
-
-      call enemy_copy
-      pop hl
-
-      ld bc, #dE_size
-      add hl, bc
-
-      jr #enemy_loop
-
-
-ret
 
 
 ;;===============================================================================
@@ -691,3 +585,111 @@ end_level:
 ret
 
 
+
+
+;;===============================================================================
+;;Definition: Carga datos de múltiples elementos en un vector
+;;Entrada:
+;; HL -> Datos
+;; DE -> Vector
+;;Salida:
+;;Destruye: A, BC, DE, HL
+;;===============================================================================
+vectorloader:
+
+   ;; Cargamos en BC el tamaño de cada elemento del vector
+   push de
+   ex de, hl
+
+   dec hl
+   dec hl
+   dec hl
+   dec hl
+   ld b, #0
+   ld c, (hl)
+
+   ex de, hl
+   pop de
+
+   load_loop:
+   
+   ld a, #0x80
+   cp (hl)
+   jr z, end_load
+
+   ;; Pasamos los datos al vector
+   push hl
+   push de
+   push bc
+   ex de, hl
+   call new_elem
+   ex de, hl
+   pop bc
+   pop de
+   pop hl
+   
+
+   add hl, bc
+   jr load_loop
+
+   end_load:
+   
+ret
+
+
+;;===============================================================================
+;;Definition: Reinicia un nivel con los datos hay en memoria
+;;Entrada:
+;;Salida:
+;;Destruye: AF, BC, DE, HL
+;;===============================================================================
+initializeLevel:
+
+;; Reiniciamos todos los vectores a los valores por defecto
+;; 
+
+   ld ix, #player
+   call initializePlayer
+
+
+   ld hl, #enemies
+   ld de, #Venemies
+   push hl
+   push de
+   ex de, hl
+   call vector_reset
+   pop de
+   pop hl
+   call vectorloader
+
+   ld hl, #entities
+   ld de, #Ventities
+   push hl
+   push de
+   ex de, hl
+   call vector_reset
+   pop de
+   pop hl
+   call vectorloader
+
+   ld hl, #special_entities
+   ld de, #Ventities2
+   push hl
+   push de
+   ex de, hl
+   call vector_reset
+   pop de
+   pop hl
+   call vectorloader
+
+   ld hl, #power_ups
+   ld de, #Vpowers
+   push hl
+   push de
+   ex de, hl
+   call vector_reset
+   pop de
+   pop hl
+   call vectorloader
+
+ret

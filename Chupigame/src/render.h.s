@@ -10,21 +10,6 @@ _name:
     _name'_size = . - _name ;; Saves the number of bytes that fills a DefineEntity
 .endm
 
-
-.macro DefineDrawableEntityDefault _name, _suf
-    DefineDrawableEntity _name'_suf, #0xFF, #0, #0, #0, #0xEE, #0xFFFF
-.endm
-
-
-.macro DefineDrawableEntityVector _name, _num
-_name:
-    _c = 0
-    .rept _num
-        DefineDrawableEntityDefault _name, \_c
-        _c = _c + 1
-    .endm
-.endm
-
 ;; Macro positions
 
 dde_spr_l = 0 + de_size
@@ -47,14 +32,10 @@ power_height    = 8
     .globl cpct_getScreenPtr_asm
     .globl cpct_drawSolidBox_asm
 
-    .globl vectorPowers
-    .globl vP_num
-    .globl vP_entity_next
+    .globl Vpowers
 
 
     ;;Funciones
-    .globl power_new_default
-    .globl power_copy
     .globl drawSprite
     .globl drawBox
     .globl drawBackground

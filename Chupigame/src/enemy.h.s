@@ -13,22 +13,6 @@ _name:
 .endm
 
 
-.macro DefineEnemyDefault _name, _suf
-    DefineEnemy _name'_suf, #0xFF, #0, #0, #0, #0xEE, #0xFFFF, #0, #0, #0, #0, #0, #0, #0, #0xFF
-.endm
-
-
-.macro DefineEnemyVector _name, _num
-_name:
-    _c = 0
-    .rept _num
-        DefineEnemyDefault _name, \_c
-        _c = _c + 1
-    .endm
-.endm
-
-
-
 ;; Macro positions
 
 dE_dirX     = 0 + dde_size
@@ -47,21 +31,19 @@ dE_size     = 8 + dde_size
 enemy_width    = 4
 enemy_height   = 16
 
+enemy_near_counter  = 4
+enemy_far_counter   = 1
+
 
 
 ;; Globales
     ;;Dependencias
     .globl _enemy_spr
 
-    .globl vectorEnemies
-    .globl vE_num
-    .globl vE_entity_next
-
+    .globl Venemies
 
 
     ;;Funciones
-    .globl enemy_new_default
-    .globl enemy_copy
     .globl enemy_updateAll
 
 

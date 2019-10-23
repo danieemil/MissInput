@@ -5,73 +5,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-
-
-DefineDrawableEntityVector vectorPowers, 4
-
-
-vP_num:          .db 0
-vP_entity_next:  .dw #vectorPowers
-
-
-;;=============================================================
-;;Definition: Registra un nuevo power-up
-;;Entrada:
-;;Salida:
-;;  HL  ->  Apunta al power-up registrado
-;;Destruye: AF, BC, HL
-;;Comentario: 
-;;==============================================================
-power_new_default:
-
-    ld hl, #vP_num
-    inc (hl)
-
-    ld hl, #vP_entity_next
-
-    push de
-
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-
-    ex de, hl
-
-    push hl
-
-    ld bc, #dde_size
-    add hl, bc
-
-    ld (vP_entity_next), hl
-
-    pop hl
-
-    pop de
-
-ret
-
-
-
-
-;;====================================================
-;;Definition: Copia un power-up
-;;Entrada:
-;;  HL -> Apunta al dirección del power-up origen
-;;  DE -> Apunta al dirección del power-up destino
-;;Salida:
-;;  HL -> Apunta al power-up registrado
-;;Destruye: BC, HL
-;;====================================================
-power_copy:
-
-    ld bc, #dde_size
-    ldir
-
-ret
-
-
-
-
+ReserveVector Vpowers, dde_size, 4
 
 
 

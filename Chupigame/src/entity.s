@@ -2,88 +2,13 @@
 .include "player.h.s"
 
 ;; En este vector estarán las entidades que corrigen la posición del jugador
-vector:
-DefineEntityVector v_entity, 20
 
-v_num:          .db 0
-v_entity_next:  .dw #vector
-
+ReserveVector Ventities, de_size, 20
 
 
 ;; En este vector... el resto de entidades
-vector_2:
-DefineEntityVector v2_entity, 20
 
-v2_num:          .db 0
-v2_entity_next:  .dw #vector_2
-
-
-;;=============================================================
-;;Definition: Registra una nueva entidad
-;;Entrada:
-;;  HL -> Dirección donde está guardado el número de entidades
-;;  BC -> Dirección donde está guardado la dirección a la siguiente entidad
-;;Salida:
-;;  HL  ->  Apunta a la entidad registrada
-;;Destruye: AF, BC, HL
-;;Comentario: 
-;;==============================================================
-ent_new_default:
-
-    inc (hl)
-
-    inc hl
-
-    push de
-
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-
-    ex de, hl
-
-    push hl
-
-    push bc
-
-    ld bc, #de_size
-    add hl, bc
-
-    pop bc
-
-    ld a, l
-    ld (bc), a
-    inc bc
-
-    ld a, h
-    ld (bc), a
-
-    pop hl
-
-    pop de
-
-ret
-
-
-
-
-;;====================================================
-;;Definition: Copia una entidad
-;;Entrada:
-;;  HL -> Apunta a la dirección de la entidad origen
-;;  DE -> Apunta a la dirección de la entidad destino
-;;Salida:
-;;  HL -> Apunta a la entidad registrada
-;;Destruye: BC, HL
-;;====================================================
-ent_copy:
-
-    ld bc, #de_size
-    ldir
-
-ret
-
-
+ReserveVector Ventities2, de_size, 20
 
 ;; Colisiones en GENERAL
 ;;====================================================
@@ -117,7 +42,7 @@ ret
 ;;==================================================================================
 collisionY:
     bit 4, de_type(iy)
-    jr nz, etiqueta
+    jr nz, no_detection
 
     ld b, #0
     ld c, #0
@@ -125,7 +50,7 @@ collisionY:
 
     
 
-    etiqueta:
+    no_detection:
 ret
 
 

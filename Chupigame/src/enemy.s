@@ -1,66 +1,7 @@
 .include "enemy.h.s"
 
-DefineEnemyVector vectorEnemies, 4
 
-
-vE_num:          .db 0
-vE_entity_next:  .dw #vectorEnemies
-
-
-;;=============================================================
-;;Definition: Registra un nuevo enemigo
-;;Entrada:
-;;Salida:
-;;  HL  ->  Apunta al enemigo registrado
-;;Destruye: AF, BC, HL
-;;Comentario: 
-;;==============================================================
-enemy_new_default:
-
-    ld hl, #vE_num
-    inc (hl)
-
-    ld hl, #vE_entity_next
-
-    push de
-
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-
-    ex de, hl
-
-    push hl
-
-    ld bc, #dE_size
-    add hl, bc
-
-    ld (vE_entity_next), hl
-
-    pop hl
-
-    pop de
-
-ret
-
-
-;;====================================================
-;;Definition: Copia un enemigo
-;;Entrada:
-;;  HL -> Apunta al dirección del enemigo origen
-;;  DE -> Apunta al dirección del enemigo destino
-;;Salida:
-;;  HL -> Apunta al enemigo registrado
-;;Destruye: BC, HL
-;;====================================================
-enemy_copy:
-
-    ld bc, #dE_size
-    ldir
-
-ret
-
-
+ReserveVector Venemies, dE_size, 4
 
 ;;====================================================
 ;;Definition: Updatea todos los enemigos del vector
@@ -112,11 +53,100 @@ ret
 ;;==========================================================
 ;;Definition: Actualiza los datos de un enemigo que persigue
 ;;Entrada:
+;;  IX  ->  Puntero al player
 ;;  IY  ->  Puntero al enemigo
 ;;Salida:
-;;Destruye: 
+;;Destruye: A, BC
 ;;==========================================================
 enemy_updateP:
+    xor a
+    cp dE_counter(iy)
+    jr z, follow
+
+        check_counter:
+        ld a, de_x(ix)
+        sub de_x(iy)
+        jp p, check_counterX
+            neg
+        
+        check_counterX:
+        cp dE_counter(iy)
+        ret p
+
+        ld a, de_y(ix)
+        sub de_y(iy)
+        jp p, check_counterY
+            neg
+        
+        check_counterY:
+        ld b, dE_range(iy)
+        sla b
+        sla b
+        cp b
+        ret p
+
+        ld dE_counter(iy), #0
+
+    ret
+
+    follow:
+        ;;Cuando se acerca el enemigo va más despacio
+        ld dE_res(iy), #enemy_far_counter
+        
+        check_range:
+        ld a, de_x(ix)
+        sub de_x(iy)
+        jp p, check_rangeX
+            neg
+        
+        check_rangeX:
+        cp dE_range(iy)
+        jp p, follow_X
+
+        ld a, de_y(ix)
+        sub de_y(iy)
+        jp p, check_rangeY
+            neg
+        
+        check_rangeY:
+        ld b, dE_range(iy)
+        sla b
+        sla b
+        cp b
+        jp p, follow_X
+
+        ld dE_res(iy), #enemy_near_counter
+
+        
+    follow_X:
+
+        ld dE_dirX(iy), #0 
+        ld dE_dirY(iy), #0
+
+        ld a, de_x(ix)
+        sub de_x(iy)
+        jp m, player_left
+        jr z, follow_Y 
+
+    player_right:
+        ld dE_dirX(iy), #1
+        jr follow_Y
+
+    player_left:
+        ld dE_dirX(iy), #-1
+
+    follow_Y:
+        ld a, de_y(ix)
+        sub de_y(iy)
+        jp m, player_up
+        ret z
+
+    player_down:
+        ld dE_dirY(iy), #4
+        ret
+
+    player_up:
+        ld dE_dirY(iy), #-4
 
 ret
 
@@ -124,6 +154,7 @@ ret
 ;;==========================================================
 ;;Definition: Actualiza los datos de un enemigo que "rebota"
 ;;Entrada:
+;;  IX  ->  Puntero al player
 ;;  IY  ->  Puntero al enemigo
 ;;Salida:
 ;;Destruye: A

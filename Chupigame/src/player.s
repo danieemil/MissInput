@@ -1,5 +1,6 @@
 .include "player.h.s"
 
+DefinePlayer player, #50, #60, #4, #16, #128, #0, #0, #0, #0, #0, #0
 
 ;; Tabla de saltos, nos permite simular la gravedad
 _jumptable:
@@ -9,17 +10,11 @@ _jumptable:
 ;;Definition: Inicializa los valores del jugador 
 ;;Entrada: 
 ;;  IX  ->  Puntero que contiene al jugador
-;;  B   ->  Posición en x del jugador
-;;  C   ->  Posición en y del jugador
 ;;Salida:
 ;;  IX  ->  Jugador con sus datos actualizados
 ;;Destruye: HL,
 ;;====================================================
 initializePlayer:
-    
-    ;; Seteamos posición
-    ld de_x(ix), b
-    ld de_y(ix), c
 
     ;; Seteamos su tamaño
     ld de_w(ix), #player_width
