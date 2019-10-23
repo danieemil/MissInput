@@ -19,7 +19,7 @@
 ;; Include all CPCtelera constant definitions, macros and variables
 .include "main.h.s"
 .include "player.h.s"
-.include "bins/MapaPruebas2.h.s"
+.include "bins/tilemap.h.s"
 .include "bins/mylevel_0.h.s"
 .include "bins/tileset.h.s"
 
@@ -95,7 +95,7 @@ enemies:
 
 ;; Tilemaps
 levels_buffer           = 0x0040
-levels_buffer_max_size  = 0x0274
+levels_buffer_max_size  = 0x05B4
 levels_buffer_end       = levels_buffer + levels_buffer_max_size - 1
 levels_tileset          = levels_buffer + _mylevel_0_OFF_001
 
@@ -149,9 +149,17 @@ _main::
    ;ld de,   #levels_buffer
    ;call cpct_etm_drawTilemap4x8_ag_asm    ;; Dibujamos el mapa de tilesets entero
 
-   ;ld hl,   #levels_tileset
-   ;ld de,   #0xC000
-   ;call cpct_drawTileAligned4x8_f_asm
+
+   ld de, #0xC000
+   ld hl, #levels_buffer
+   ld bc, #500
+   call draw_tilemap
+
+   ld ix, #player
+   ld b, #76
+   ld c, #60
+
+   call initializePlayer
 
 
    ;;---------------------------
@@ -164,17 +172,17 @@ _main::
    ld b, #0
    ld c, vector_s(ix)
 
-   drawBox_loop:
-      exx
-      ex af, af'
-      call drawBox
-      ex af, af'
-      exx
-
-      add ix, bc
-
-      dec a
-   jr nz, drawBox_loop
+   ;;drawBox_loop:
+   ;;   exx
+   ;;   ex af, af'
+   ;;   call drawBox
+   ;;   ex af, af'
+   ;;   exx
+;;
+   ;;   add ix, bc
+;;
+   ;;   dec a
+   ;;jr nz, drawBox_loop
 
    ld ix, #Ventities2
    ld a, vector_n(ix)
@@ -692,4 +700,55 @@ initializeLevel:
    pop hl
    call vectorloader
 
+ret
+
+
+
+
+
+;;====================================================
+;;Definition: Dibuja el tilemap entero
+;;
+;; IMPORTANTE: Asume que el tileset seimpre va a ser el mismo para toda la ejecución (levels_tileset)
+;;
+;;Entrada:
+;;  BC -> Tamaño del tilemap en tiles (si es de 4x4, BC valdrá 16)
+;;  HL -> Apunta al inicio del tilemap
+;;  DE -> Apunta al inicio de la memoria de video
+;;Salida:
+;;
+;;
+;;  
+;;Destruye: AF, BC, DE, HL
+;;====================================================
+draw_tilemap:
+
+   push bc
+   ld a, (hl)
+   ld bc, #0032
+   push hl
+   ld hl, #levels_tileset
+
+   draw_tilemap_loop:
+      add hl, bc
+      dec a
+   jr nz, draw_tilemap_loop
+
+   push de
+   call cpct_drawTileAligned4x8_asm       ;; se lo carga toh
+   pop de
+   pop hl
+
+   inc hl
+   ld bc, #0004
+   ex de, hl
+   add hl, bc
+   ex de, hl
+
+   pop bc
+   dec bc
+   ld a, b
+   or c
+   jr nz, draw_tilemap
+   
 ret

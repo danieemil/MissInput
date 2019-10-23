@@ -155,3 +155,20 @@ cleanVector:
     dec a
     jr nz, cleanVector
 ret
+
+
+
+;;==============================================================
+;;Definition: redibuja los tiles que hay al fondo del sprite
+;;Entrada: 
+;;  IX  ->  Puntero que apunta al vector
+;;  A   ->  Número de elementos
+;;  BC  ->  Tamaño de cada elemento
+;;Salida:
+;;Destruye: AF, BC, DE, HL
+;;===============================================================
+redrawTiles:
+
+    
+    
+ret
