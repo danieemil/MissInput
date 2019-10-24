@@ -16,6 +16,8 @@
 	.globl _player_spr_00
 
 
+.globl _flip_aux
+
 
 ;;ANIMATIONS
 .globl _player_run_left

@@ -1,6 +1,9 @@
 .include "animation_data.h.s"
 
 
+_flip_aux:
+    .dw 0x0000
+
 
 
 _player_run_left:

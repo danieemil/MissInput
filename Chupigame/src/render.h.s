@@ -38,6 +38,7 @@ animTimeConst = 3               ;; Numero de iteraciones entre frames de animaci
     ;;Dependencias
     .globl cpct_drawSprite_asm
     .globl cpct_drawSpriteMasked_asm
+    .globl cpct_drawSpriteVFlipMasked_asm
     .globl cpct_getScreenPtr_asm
     .globl cpct_drawSolidBox_asm
     .globl cpct_drawTileAligned4x8_asm
@@ -55,6 +56,7 @@ animTimeConst = 3               ;; Numero de iteraciones entre frames de animaci
     ;;Funciones
     .globl drawSprite
     .globl drawSpriteMasked
+    .globl drawSpriteMaskedFlipped
     .globl drawBox
     .globl drawBackground
     .globl drawVector

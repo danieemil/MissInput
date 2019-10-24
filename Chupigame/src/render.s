@@ -132,6 +132,52 @@ drawSpriteMasked:
 ret
 
 
+;;=====================================================================
+;;Definition: Dibuja el sprite con máscara que contiene el DrawableEntity en IX
+;;Entrada: 
+;;  IY  ->  Puntero que apunta al DrawableEntity
+;;Salida:
+;;Destruye: AF, BC, DE, HL
+;;=====================================================================
+;;
+;; Sprite 
+;;   80 + (84 + 20W)16 + ((36)H)H            (+36)Worst case
+;; Player -> 2704 + 9216 = 11920 ciclos
+;
+;; Sprite Masked
+;;   84 + (88 + 72W)H + 40HH                 (+40)Worst case
+;;
+;;======================================================================
+drawSpriteMaskedFlipped:
+
+    
+
+    ;; Calculate a video-memory location for printing a string
+   ld   a, (_backbuffer)         ;; DE = Pointer to start of the screen
+   ld   d, a
+   ld   e, #00
+   ld   b, de_y(iy)              ;; B = y coordinate
+   ld   a, de_h(iy)
+   add  b
+   ld   b, a
+   ld   c, de_x(iy)              ;; C = x coordinate
+   call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
+
+
+
+   ld e, dde_spr_l(iy)
+   ld d, dde_spr_h(iy) 
+   ld a, de_w(iy)
+   ld b, de_h(iy)
+   ld c, #0x00
+   ld ix, #0x0000
+   add ix, bc
+
+   call cpct_drawSpriteVFlipMasked_asm
+
+ret
+
+
 ;;====================================================
 ;;Definition: Dibuja un cuadrado
 ;;Entrada:

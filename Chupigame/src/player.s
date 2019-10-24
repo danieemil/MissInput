@@ -407,6 +407,7 @@ ret
 drawPlayer:
 
     ld a, de_type(ix)
+    push af
     bit 0, a
     jp z, player_facing_right
 
@@ -577,4 +578,11 @@ drawPlayer:
     dec dde_animTime(ix)
 
     draw_player_end:
-jp drawSpriteMasked
+    pop af
+    bit 2, a
+    jr z, draw_normal
+    
+    jp drawSpriteMaskedFlipped
+
+    draw_normal:
+    jp drawSpriteMasked

@@ -255,6 +255,7 @@ main_loop:
    ;call drawSprite
    ;call drawSpriteMasked
    call drawPlayer
+   ld ix, #player
 
    
    
