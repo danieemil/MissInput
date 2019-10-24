@@ -35,15 +35,15 @@ special_entities:
 power_ups:
    .db #5*tw, #14*th, #power_width, #power_height, #p_djump
    .dw _power1_spr
-   .db #5*tw, #14*th
+   .db #5*tw, #14*th, #0, #0, #0, #0
 
    .db #12*tw, #18*th, #power_width, #power_height, #p_gup
    .dw _power1_spr
-   .db #12*tw, #18*th
+   .db #12*tw, #18*th, #0, #0, #0, #0
 
    .db #1*tw, #2*th, #power_width, #power_height, #p_gdown
    .dw _power1_spr
-   .db #1*tw, #2*th
+   .db #1*tw, #2*th, #0, #0, #0, #0
 
    .db #end_of_data
 
@@ -53,13 +53,13 @@ enemies:
    ;;Enemigo que rebota
    .db #3*tw, #6*th, #enemy_width, #enemy_height, #e_bounce     ;;Entity
    .dw _enemy_spr                                               ;;Render
-   .db #3*tw, #6*th                                   
+   .db #3*tw, #6*th, #0, #0, #0, #0                              
    .db #01, #0, #4*tw, #4*tw, #3*tw, #6*th, #02, #00            ;;Dirx  Diry  Range  Counter  OrX  OrY  Res  ResCount
 
    ;;Enemigo que detecta y persigue
    .db #17*tw, #16*th, #enemy_width, #enemy_height, #e_chase    ;;Entity
    .dw _enemy_spr                                               ;;Render
-   .db #17*tw, #16*th  
+   .db #17*tw, #16*th, #0, #0, #0, #0
    .db #00, #00, #20, #20, #17*tw, #16*th, #01, #00             ;;Enemy
 
    .db #end_of_data

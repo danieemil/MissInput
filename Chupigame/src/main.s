@@ -252,7 +252,9 @@ main_loop:
    call drawVector
 
    ld iy, #player
-   call drawSprite
+   ;call drawSprite
+   ;call drawSpriteMasked
+   call drawPlayer
 
    
    
@@ -667,7 +669,7 @@ draw_tilemap:
    ld a, (hl)
    ld bc, #0032
    push hl
-   ld hl, #levels_tileset
+   ld hl, #_tileset_00
 
 
    cp a, #0

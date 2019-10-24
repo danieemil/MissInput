@@ -6,9 +6,8 @@
 
 
 levels_buffer           = 0x0040
-levels_buffer_max_size  = 0x05B4
+levels_buffer_max_size  = 0x01F4
 levels_buffer_end       = levels_buffer + levels_buffer_max_size - 1
-levels_tileset          = levels_buffer + _mylevel_0_OFF_001
 
 _frontbuffer:
 .db 0xC0
@@ -93,6 +92,42 @@ drawSprite:
    ld c, de_w(iy)
    ld b, de_h(iy)
    call cpct_drawSprite_asm            ;;Destruye AF, BC, DE, HL
+
+ret
+
+
+;;=====================================================================
+;;Definition: Dibuja el sprite con máscara que contiene el DrawableEntity en IX
+;;Entrada: 
+;;  IY  ->  Puntero que apunta al DrawableEntity
+;;Salida:
+;;Destruye: AF, BC, DE, HL
+;;=====================================================================
+;;
+;; Sprite 
+;;   80 + (84 + 20W)16 + ((36)H)H            (+36)Worst case
+;; Player -> 2704 + 9216 = 11920 ciclos
+;
+;; Sprite Masked
+;;   84 + (88 + 72W)H + 40HH                 (+40)Worst case
+;;
+;;======================================================================
+drawSpriteMasked:
+
+    ;; Calculate a video-memory location for printing a string
+   ld   a, (_backbuffer)         ;; DE = Pointer to start of the screen
+   ld   d, a
+   ld   e, #00
+   ld   b, de_y(iy)              ;; B = y coordinate
+   ld   c, de_x(iy)              ;; C = x coordinate
+   call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
+
+   ex de, hl
+   ld l, dde_spr_l(iy)
+   ld h, dde_spr_h(iy) 
+   ld c, de_w(iy)
+   ld b, de_h(iy)
+   call cpct_drawSpriteMasked_asm           ;;Destruye AF, BC, DE, HL
 
 ret
 
@@ -315,7 +350,7 @@ redrawTiles:
         exx
         ex de, hl
         ld bc, #32
-        ld hl, #levels_tileset
+        ld hl, #_tileset_00
 
         cp a, #0
         jr z, findTile_loop_end

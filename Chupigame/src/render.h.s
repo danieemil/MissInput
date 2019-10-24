@@ -1,7 +1,8 @@
 .include "entity.h.s"
 .include "bins/tilemap.h.s"
 .include "bins/mylevel_0.h.s"
-.include "bins/tileset.h.s"
+.include "animation_data.h.s"
+
 
 
 ;; Macros
@@ -11,6 +12,7 @@ _name:
     DefineEntity _name'_de, _x, _y, _w, _h, _type
     .dw _sprite
     .db _x, _y
+    .db #0, #0, #0, #0
     _name'_size = . - _name ;; Saves the number of bytes that fills a DefineEntity
 .endm
 
@@ -20,28 +22,39 @@ dde_spr_l = 0 + de_size
 dde_spr_h = 1 + de_size
 dde_preX  = 2 + de_size
 dde_preY  = 3 + de_size
-dde_size  = 4 + de_size
 
+dde_actualAnim = 4 + de_size
+dde_prevAnim = 5 + de_size
+dde_animCounter = 6 + de_size
+dde_animTime = 7 + de_size
+
+dde_size  = 8 + de_size
+
+
+animTimeConst = 3               ;; Numero de iteraciones entre frames de animacion
 
 
 ;; Global
     ;;Dependencias
     .globl cpct_drawSprite_asm
+    .globl cpct_drawSpriteMasked_asm
     .globl cpct_getScreenPtr_asm
     .globl cpct_drawSolidBox_asm
     .globl cpct_drawTileAligned4x8_asm
     .globl cpct_drawTileAligned4x8_f_asm
     .globl cpct_setVideoMemoryPage_asm
 
+    .globl _tileset_00
+
     ;; Tilemaps
     .globl levels_buffer
     .globl levels_buffer_max_size  
-    .globl levels_buffer_end       
-    .globl levels_tileset        
+    .globl levels_buffer_end     
 
 
     ;;Funciones
     .globl drawSprite
+    .globl drawSpriteMasked
     .globl drawBox
     .globl drawBackground
     .globl drawVector

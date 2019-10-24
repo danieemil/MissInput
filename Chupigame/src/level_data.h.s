@@ -39,7 +39,7 @@ end_of_data = 0x80
     ;; Dependencias
     .globl _enemy_spr
     .globl _power1_spr
-
+    
     .globl entities
     .globl special_entities
     .globl power_ups

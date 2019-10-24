@@ -41,9 +41,10 @@ jp_wallCol  = 9   ;;Posición en la tabla cuando colisiona con la pared
 jp_end      = 18   ;;Posición en la tabla cuando caes a velocidad máxima
 
 
+
 ;; Globls
     ;;Dependencias
-    .globl _player_spr
+    .globl _player_spr_01
     
     .globl player
 
@@ -57,13 +58,14 @@ jp_end      = 18   ;;Posición en la tabla cuando caes a velocidad máxima
     .globl pl_fixY
     .globl pl_setJumptable
     .globl pl_setJumptableOnGravity
+    .globl drawPlayer
 
 
 ;Flags del jugador(almacenados en la variable _type de entidad)
 ;Estos flags solo se corresponden si el primer bit está activo
 ;
 ;7   I -> Sá pulsao salto?
-;6   S -> Colisiona con suelo?
+;6   S -> Colisiona con suelo? (1=suelo 0=aire)
 ;5   D -> Colisiona con pared_derecha?
 ;4   I -> Colisiona con pared_izquierda?
 ;3   P -> Power-up de doble salto?

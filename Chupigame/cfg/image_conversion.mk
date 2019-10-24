@@ -29,7 +29,7 @@
 
 ## 16 colours palette
 #PALETTE=0 1 2 3 6 9 11 12 13 15 16 18 20 24 25 26
-PALETTE=0 2 3 26
+PALETTE=11 0 6 26
 
 ## Default values
 #$(eval $(call IMG2SP, SET_MODE        , 0                  ))  { 0, 1, 2 }
@@ -43,20 +43,22 @@ PALETTE=0 2 3 26
 #$(eval $(call IMG2SP, CONVERT         , img.png , w, h, array, palette, tileset))
 
 $(eval $(call IMG2SP, SET_MODE        , 1                  						))
-$(eval $(call IMG2SP, SET_FOLDER      , src/bins/ 								))
+$(eval $(call IMG2SP, SET_FOLDER      , src/spr/ 								))
 $(eval $(call IMG2SP, SET_PALETTE_FW  , $(PALETTE)								))
 $(eval $(call IMG2SP, CONVERT_PALETTE , $(PALETTE), g_palette 					))
 $(eval $(call IMG2SP, SET_IMG_FORMAT  , sprites									))
-$(eval $(call IMG2SP, SET_OUTPUT      , bin                						))
-$(eval $(call IMG2SP, CONVERT         , assets/maps/tileset.png , 16, 8, ztiles	))
+$(eval $(call IMG2SP, SET_OUTPUT      , c                						))
+$(eval $(call IMG2SP, CONVERT         , assets/maps/tileset.png , 16, 8, tileset))
 
 
 $(eval $(call IMG2SP, SET_MASK        , none               						))
 $(eval $(call IMG2SP, SET_IMG_FORMAT  , sprites            						))
-$(eval $(call IMG2SP, SET_OUTPUT      , c                  					))
-$(eval $(call IMG2SP, CONVERT         , assets/sprite.png , 16, 16, player_spr	))
+$(eval $(call IMG2SP, SET_OUTPUT      , c                  						))
 $(eval $(call IMG2SP, CONVERT         , assets/enemy1.png , 16, 16, enemy_spr	))
 $(eval $(call IMG2SP, CONVERT         , assets/powerUp01.png , 8, 8, power1_spr	))
+
+$(eval $(call IMG2SP, SET_MASK        , interlaced               				))
+$(eval $(call IMG2SP, CONVERT         , assets/sprites/spr_player.png , 16, 16, player_spr))
 
 ##
 ## OLD MACROS (For compatibility)

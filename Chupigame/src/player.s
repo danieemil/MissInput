@@ -31,7 +31,7 @@ initializePlayer:
     ld de_type(ix), #128
 
     ;; Seteamos sprite
-    ld hl,#_player_spr
+    ld hl,#_player_spr_01
     ld dde_spr_l(ix), l
     ld dde_spr_h(ix), h
 
@@ -89,11 +89,13 @@ inputPlayer:
     ld dp_dir(ix), #0
     bit 0, a
     jr z, check_right
+        set 0, de_type(ix)
         dec dp_dir(ix)
 
     check_right:
     bit 1, a
     jr z, check_jump
+        res 0, de_type(ix)
         inc dp_dir(ix)
         
 
@@ -392,3 +394,187 @@ pl_setJumptableOnGravity:
     ld dp_jump_l(ix), l
     ld dp_jump_h(ix), h
 ret
+
+
+;;================================================================
+;;Definition: Setea la jumptable al coger el power up de gravedad
+;;Entrada:
+;;  IX  ->  Player
+;;  DE  ->  Jumptable pos
+;;Salida:
+;;Destruye: A, BC, HL
+;;================================================================
+drawPlayer:
+
+    ld a, de_type(ix)
+    bit 0, a
+    jp z, player_facing_right
+
+        ;; Mirando a la izquierda
+        bit 6, a
+        jr z, pfl_wall
+
+            ld a, dp_dir(ix)
+            cp #0
+            jr nz, pfl_floor_mov
+
+                ;;Mirando a la izquierda en el suelo quieto 
+                ld dde_actualAnim(ix), #0x00
+                ld hl, #_player_spr_01
+                ld dde_spr_h(ix), h
+                ld dde_spr_l(ix), l
+                jp draw_player_end
+
+            pfl_floor_mov:
+            ;;Mirando a la izquierda en el suelo moviendose         ;; CORREGIR PARA QUE SE ANIME
+                 ld hl, #_player_run_left
+                ld a, dde_actualAnim(ix)
+                cp #0x02
+                jr z, continue_player_run_left_animation
+
+                    ld dde_animCounter(ix), #0x00
+                    ld dde_animTime(ix), #animTimeConst
+
+                continue_player_run_left_animation:
+
+                ld b, #0x00
+                ld c, dde_animCounter(ix)
+
+                add hl, bc
+                ld a, (hl)
+                inc hl
+                ld b, (hl)
+                dec hl  
+                or b
+                jr nz, apply_player_run_left_animation
+
+                    ld hl, #_player_run_left
+                    ld dde_animCounter(ix), #0x00
+
+                apply_player_run_left_animation:         
+                ld a, (hl)
+                ld dde_spr_l(ix), a
+                inc hl
+                ld a, (hl)
+                ld dde_spr_h(ix), a
+                
+                ld dde_actualAnim(ix), #0x02
+                
+                ld a, dde_animTime(ix)
+                cp a, #0
+                jp nz, decrement_animTime
+
+                    inc dde_animCounter(ix)
+                    inc dde_animCounter(ix)
+                    ld dde_animTime(ix), #animTimeConst
+                    jp draw_player_end
+
+
+        pfl_wall:
+        and #0x30
+        jr z, pfl_jumping
+            ;;Mirando a la izquierda en el aire, en una pared 
+            ld dde_actualAnim(ix), #0x00
+            ld hl, #_player_spr_03
+            ld dde_spr_h(ix), h
+            ld dde_spr_l(ix), l
+            jp draw_player_end
+
+        pfl_jumping:
+            ;;Mirando a la izquierda en el aire, saltando
+            ld dde_actualAnim(ix), #0x00
+            ld hl, #_player_spr_00
+            ld dde_spr_h(ix), h
+            ld dde_spr_l(ix), l
+            jp draw_player_end
+
+    ;;----------------------------
+    ;; FACING RIGHT
+    ;;----------------------------
+
+    player_facing_right:
+
+        ;; Mirando a la derecha
+        bit 6, a
+        jr z, pfr_wall
+
+            ld a, dp_dir(ix)
+            cp #0
+            jr nz, pfr_floor_mov
+
+                ;;Mirando a la derecha en el suelo quieto 
+                ld dde_actualAnim(ix), #0x00
+                ld hl, #_player_spr_05
+                ld dde_spr_h(ix), h
+                ld dde_spr_l(ix), l
+                jr draw_player_end
+
+            pfr_floor_mov:
+            ;;Mirando a la derecha en el suelo moviendose       ;; CORREGIR PARA QUE SE ANIME
+                ld hl, #_player_run_right
+                ld a, dde_actualAnim(ix)
+                cp #0x02
+                jr z, continue_player_run_right_animation
+
+                    ld dde_animCounter(ix), #0x00
+                    ld dde_animTime(ix), #animTimeConst
+
+                continue_player_run_right_animation:
+
+                ld b, #0x00
+                ld c, dde_animCounter(ix)
+
+                add hl, bc
+                ld a, (hl)
+                inc hl
+                ld b, (hl)
+                dec hl  
+                or b
+                jr nz, apply_player_run_right_animation
+
+                    ld hl, #_player_run_right
+                    ld dde_animCounter(ix), #0x00
+
+                apply_player_run_right_animation:         
+                ld a, (hl)
+                ld dde_spr_l(ix), a
+                inc hl
+                ld a, (hl)
+                ld dde_spr_h(ix), a
+                
+                ld dde_actualAnim(ix), #0x02
+                
+                ld a, dde_animTime(ix)
+                cp a, #0
+                jr nz, decrement_animTime
+
+                    inc dde_animCounter(ix)
+                    inc dde_animCounter(ix)
+                    ld dde_animTime(ix), #animTimeConst
+                    jr draw_player_end
+
+
+        pfr_wall:
+        and #0x30
+        jr z, pfr_jumping
+            ;;Mirando a la derecha en el aire, en una pared 
+            ld dde_actualAnim(ix), #0x00
+            ld hl, #_player_spr_07
+            ld dde_spr_h(ix), h
+            ld dde_spr_l(ix), l
+            jr draw_player_end
+
+        pfr_jumping:
+            ;;Mirando a la derecha en el aire, saltando
+            ld dde_actualAnim(ix), #0x00
+            ld hl, #_player_spr_04
+            ld dde_spr_h(ix), h
+            ld dde_spr_l(ix), l
+            jr draw_player_end
+
+
+    decrement_animTime:
+    dec dde_animTime(ix)
+
+    draw_player_end:
+jp drawSpriteMasked
