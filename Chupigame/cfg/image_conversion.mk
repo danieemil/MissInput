@@ -54,11 +54,12 @@ $(eval $(call IMG2SP, CONVERT         , assets/maps/tileset.png , 16, 8, tileset
 $(eval $(call IMG2SP, SET_MASK        , none               						))
 $(eval $(call IMG2SP, SET_IMG_FORMAT  , sprites            						))
 $(eval $(call IMG2SP, SET_OUTPUT      , c                  						))
-$(eval $(call IMG2SP, CONVERT         , assets/enemy1.png , 16, 16, enemy_spr	))
-$(eval $(call IMG2SP, CONVERT         , assets/powerUp01.png , 8, 8, power1_spr	))
+$(eval $(call IMG2SP, CONVERT         , assets/sprites/spr_enemy02.png , 16, 16, enemy02_spr	))
+$(eval $(call IMG2SP, CONVERT         , assets/sprites/spr_powerUps.png , 8, 8, powerUps_spr	))
 
 $(eval $(call IMG2SP, SET_MASK        , interlaced               				))
 $(eval $(call IMG2SP, CONVERT         , assets/sprites/spr_player.png , 16, 16, player_spr))
+$(eval $(call IMG2SP, CONVERT         , assets/sprites/spr_enemy01.png , 16, 16, enemy01_spr))
 
 ##
 ## OLD MACROS (For compatibility)

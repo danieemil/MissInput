@@ -243,13 +243,13 @@ main_loop:
    ld a, vector_n(iy)
    ld b, #0
    ld c, vector_s(iy)   
-   call drawVector
+   call drawPowerUpVector
 
    ld iy, #Venemies
    ld a, vector_n(iy)
    ld b, #0
    ld c, vector_s(iy)
-   call drawVector
+   call drawEnemyVector
 
    ld iy, #player
    ;call drawSprite

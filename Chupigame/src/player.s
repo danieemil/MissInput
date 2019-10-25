@@ -428,13 +428,13 @@ drawPlayer:
 
             pfl_floor_mov:
             ;;Mirando a la izquierda en el suelo moviendose         ;; CORREGIR PARA QUE SE ANIME
-                 ld hl, #_player_run_left
+                ld hl, #_player_run_left
                 ld a, dde_actualAnim(ix)
                 cp #0x02
                 jr z, continue_player_run_left_animation
 
                     ld dde_animCounter(ix), #0x00
-                    ld dde_animTime(ix), #animTimeConst
+                    ld dde_animTime(ix), #animTimeConstPlayer
 
                 continue_player_run_left_animation:
 
@@ -463,11 +463,11 @@ drawPlayer:
                 
                 ld a, dde_animTime(ix)
                 cp a, #0
-                jp nz, decrement_animTime
+                jp nz, decrement_animTime_Player
 
                     inc dde_animCounter(ix)
                     inc dde_animCounter(ix)
-                    ld dde_animTime(ix), #animTimeConst
+                    ld dde_animTime(ix), #animTimeConstPlayer
                     jp draw_player_end
 
 
@@ -518,7 +518,7 @@ drawPlayer:
                 jr z, continue_player_run_right_animation
 
                     ld dde_animCounter(ix), #0x00
-                    ld dde_animTime(ix), #animTimeConst
+                    ld dde_animTime(ix), #animTimeConstPlayer
 
                 continue_player_run_right_animation:
 
@@ -547,11 +547,11 @@ drawPlayer:
                 
                 ld a, dde_animTime(ix)
                 cp a, #0
-                jr nz, decrement_animTime
+                jr nz, decrement_animTime_Player
 
                     inc dde_animCounter(ix)
                     inc dde_animCounter(ix)
-                    ld dde_animTime(ix), #animTimeConst
+                    ld dde_animTime(ix), #animTimeConstPlayer
                     jr draw_player_end
 
 
@@ -574,14 +574,14 @@ drawPlayer:
             jr draw_player_end
 
 
-    decrement_animTime:
+    decrement_animTime_Player:
     dec dde_animTime(ix)
 
     draw_player_end:
     pop af
     bit 2, a
     jr z, draw_normal
-    
+
     jp drawSpriteMaskedFlipped
 
     draw_normal:

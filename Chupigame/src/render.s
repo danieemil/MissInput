@@ -1,5 +1,7 @@
 .include "render.h.s"
 
+dE_dirX     = 0 + dde_size
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GRÁFICOS;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -238,22 +240,52 @@ ret
 ;;Salida:
 ;;Destruye: AF, BC, DE, HL
 ;;====================================================
-drawVector:
+drawPowerUpVector:
 
     bit 5, de_type(iy)
-    jr nz, next_elem
+    jr nz, dpuv_next_elem
 
-    exx
-    ex af, af'
-    call drawSprite
-    ex af, af'
-    exx
+    push af
+    push bc
+    call powerUpAnimation
+    ;;call drawSprite
+    pop bc
+    pop af
 
-    next_elem:
+    dpuv_next_elem:
     add iy, bc
 
     dec a
-    jr nz, drawVector
+    jr nz, drawPowerUpVector
+ret
+
+
+;;====================================================
+;;Definition: Dibuja todos los elementos de un vector
+;;Entrada: 
+;;  IY  ->  Puntero que apunta al vector
+;;  A   ->  Número de elementos
+;;  BC  ->  Tamaño de cada elemento
+;;Salida:
+;;Destruye: AF, BC, DE, HL
+;;====================================================
+drawEnemyVector:
+
+    bit 5, de_type(iy)
+    jr nz, dev_next_elem
+
+    push af
+    push bc
+    call enemyAnimation
+    ;call drawSprite
+    pop bc
+    pop af
+
+    dev_next_elem:
+    add iy, bc
+
+    dec a
+    jr nz, drawEnemyVector
 ret
 
 
@@ -443,3 +475,185 @@ redrawTiles:
     
     jr drawTile_X_loop
     
+
+
+;;==============================================================
+;;Definition: dibuja el frame de animacion del Power Up
+;;Entrada: 
+;;  IY = Puntero al Power Up
+;;Salida:
+;;Destruye: AF, BC, HL
+;;===============================================================
+powerUpAnimation:
+
+    ld a, de_type(iy)
+    and #0x0C
+    pua_check_djump:
+    cp #00
+    jr nz, pua_check_gup
+        ld hl, #_power_up_djump
+        jr pua_end_check
+
+    pua_check_gup:
+    cp #0x04
+    jr nz, pua_set_gdown
+        ld hl, #_power_up_gup
+        jr pua_end_check
+
+    pua_set_gdown:
+    ld hl, #_power_up_gdown
+
+    pua_end_check:
+    ld b, #0x00
+    ld c, dde_animCounter(iy)
+
+    push hl
+
+    add hl, bc
+    ld a, (hl)
+    inc hl
+    ld b, (hl)
+    dec hl  
+    or b
+    jr nz, apply_power_up_animation
+
+        pop hl
+        ld dde_animCounter(iy), #0x00
+        push hl
+
+    apply_power_up_animation:         
+    ld a, (hl)
+    ld dde_spr_l(iy), a
+    inc hl
+    ld a, (hl)
+    ld dde_spr_h(iy), a
+
+    pop hl
+                
+    ld a, dde_animTime(iy)
+    cp a, #0
+    jr nz, decrement_animTime_Powerup
+
+        inc dde_animCounter(iy)
+        inc dde_animCounter(iy)
+        ld dde_animTime(iy), #animTimeConstPowerUp
+        jp drawSprite
+
+    decrement_animTime_Powerup:
+    dec dde_animTime(iy)
+    jp drawSprite
+
+
+
+;;==============================================================
+;;Definition: dibuja el frame de animacion del Enemigo
+;;Entrada: 
+;;  IY = Puntero al enemigo
+;;Salida:
+;;Destruye: AF, BC, HL
+;;===============================================================
+enemyAnimation:
+
+    ld a, dde_actualAnim(iy)
+    cp dde_prevAnim(iy)
+    jr z, continue_enemy_animation
+
+        ld dde_animCounter(ix), #0x00
+        ld dde_animTime(ix), #animTimeConstPlayer
+
+    continue_enemy_animation:
+    ld dde_prevAnim(iy), a
+
+    ld a, de_type(iy)
+    and #0xC0
+    ea_check_bounce:
+    cp #0x00
+    jr nz, ea_check_reset
+
+        ld a, dE_dirX(iy)
+        cp #1
+        jr nz, ea_bounce_left
+
+            ld dde_actualAnim(iy), #0x01        ;; Bounce_right = anim 01
+            ld hl, #_enemy_02_right
+            jr ea_end_check
+                                     
+        ea_bounce_left:
+
+            ld dde_actualAnim(iy), #0x00        ;; Bounce_right = anim 01
+            ld hl, #_enemy_02_left
+            jr ea_end_check
+
+    ea_check_reset:
+    cp #0x40
+    jr nz, ea_set_chase
+
+        ld dde_actualAnim(iy), #0x00        ;; Bounce_right = anim 01
+        ld hl, #_enemy_03_anim
+        jr ea_end_check
+
+    ea_set_chase:
+
+        ld a, dE_dirX(iy)
+        cp #1
+        jr nz, ea_chase_left
+
+            ld dde_actualAnim(iy), #0x01        ;; Bounce_right = anim 01
+            ld hl, #_enemy_01_right
+            jr ea_end_check
+
+        ea_chase_left:
+        cp #-1
+        jr nz, ea_chase_none
+        
+            ld dde_actualAnim(iy), #0x00        ;; Bounce_right = anim 01
+            ld hl, #_enemy_01_left
+            jr ea_end_check
+
+        ea_chase_none:
+        jp drawSpriteMasked
+
+
+    ea_end_check:
+    ld b, #0x00
+    ld c, dde_animCounter(iy)
+
+    push hl
+
+    add hl, bc
+    ld a, (hl)
+    inc hl
+    ld b, (hl)
+    dec hl  
+    or b
+    jr nz, apply_enemy_animation
+
+        pop hl
+        ld dde_animCounter(iy), #0x00
+        push hl
+
+    apply_enemy_animation:         
+    ld a, (hl)
+    ld dde_spr_l(iy), a
+    inc hl
+    ld a, (hl)
+    ld dde_spr_h(iy), a
+
+    pop hl
+                
+    ld a, dde_animTime(iy)
+    cp a, #0
+    jr nz, decrement_animTime_Enemy
+
+        inc dde_animCounter(iy)
+        inc dde_animCounter(iy)
+        ld dde_animTime(iy), #animTimeConstEnemy
+        jr dde_draw_sprite
+
+    decrement_animTime_Enemy:
+    dec dde_animTime(iy)
+
+    dde_draw_sprite:
+    bit 7, de_type(iy)
+    jp nz, drawSpriteMasked
+    jp drawSprite
