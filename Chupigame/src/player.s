@@ -233,14 +233,14 @@ jump:
     check_doubleJump:
     bit 3, b
     ret z
+    res 3, de_type(ix)
 
     init_jump:
     ld hl, #_jumptable
 
     ld dp_jump_l(ix), l
     ld dp_jump_h(ix), h
-
-    res 3, de_type(ix)
+    
 
 
 ret
@@ -316,6 +316,7 @@ pl_fixY:
 
     ld de_y(ix), a
     set 6, de_type(ix)
+    res 3, de_type(ix)
 
     ld hl, #_jumptable
     ld a, #-1
@@ -340,6 +341,7 @@ pl_fixY:
     ret z
 
     set 6, de_type(ix)
+    res 3, de_type(ix)
 
 ret
 

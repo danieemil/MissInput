@@ -24,6 +24,10 @@ enemy_updateAll:
     jr z, do_update
 
         dec dE_resCount(iy)
+        ld a, de_x(iy)
+        ld dde_preX(iy), a
+        ld a, de_y(iy)
+        ld dde_preY(iy), a
         jr next_enemy
 
     do_update:
@@ -212,12 +216,10 @@ ret
 enemy_move:
 
     ld a, de_x(iy)
-    ld dde_preX(iy), a
     add a, dE_dirX(iy)
     ld de_x(iy), a
 
     ld a, de_y(iy)
-    ld dde_preY(iy), a
     add a, dE_dirY(iy)
     ld de_y(iy), a
 

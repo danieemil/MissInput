@@ -33,7 +33,7 @@ special_entities:
 
 ;;.db #*tw, #*th, #power_width, #power_height, #
 power_ups:
-   .db #5*tw, #14*th, #power_width, #power_height, #p_djump
+   .db #5*tw, #14*th, #power_width, #power_height, #(p_djump-1)
    .dw _power1_spr
    .db #5*tw, #14*th, #0, #0, #0, #0
 
@@ -51,7 +51,7 @@ power_ups:
 
 enemies:
    ;;Enemigo que rebota
-   .db #3*tw, #6*th, #enemy_width, #enemy_height, #e_bounce     ;;Entity
+   .db #3*tw, #6*th, #enemy_width, #enemy_height, #e_line     ;;Entity
    .dw _enemy_spr                                               ;;Render
    .db #3*tw, #6*th, #0, #0, #0, #0                              
    .db #01, #0, #4*tw, #4*tw, #3*tw, #6*th, #02, #00            ;;Dirx  Diry  Range  Counter  OrX  OrY  Res  ResCount
