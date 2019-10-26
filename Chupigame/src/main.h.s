@@ -9,3 +9,5 @@
 .globl cpct_isKeyPressed_asm
 .globl cpct_scanKeyboard_asm
 .globl cpct_waitVSYNC_asm
+.globl cpct_akp_musicInit_asm
+.globl cpct_akp_musicPlay_asm

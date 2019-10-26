@@ -20,6 +20,7 @@
 .include "main.h.s"
 .include "player.h.s"
 .include "level_data.h.s"
+.include "bins/ambient_sound.h.s"
 
 
 
@@ -59,6 +60,10 @@ ReserveVector Venemies, dE_size, 4
 actual_level: .db  #00
 
 
+ambient_frequency = #0x01
+ambient_speed: .db #00
+
+
 ;;
 ;; MAIN function. This is the entry point of the application.
 ;;    _main:: global symbol is required for correctly compiling and linking
@@ -91,6 +96,8 @@ _main::
    
    call initializeLevel
 
+   ld de, #_ambient
+   call cpct_akp_musicInit_asm
 
    ;;------------
    ;;Dibujar mapa
@@ -257,6 +264,19 @@ main_loop:
    call switchBuffers
    call cpct_waitVSYNC_asm
 
+   ld a, (ambient_speed)
+   cp #0
+   jr z, playing_now
+
+      dec a
+      jr not_playing_now
+
+   playing_now:
+   call cpct_akp_musicPlay_asm
+   ld a, #ambient_frequency
+
+   not_playing_now:
+   ld (ambient_speed), a
 
 jp  main_loop
 
