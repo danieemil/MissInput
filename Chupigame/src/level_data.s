@@ -46,10 +46,10 @@ lvl_01:
    .db #0x80
    
    ;; ENEMIGOS
-   ;.db #3*tw, #6*th, #enemy_width, #enemy_height, e_bounce     ;;Entity
-   ;.dw _enemy02_spr_4                                               ;;Render
-   ;.db #3*tw, #6*th, #0, #0, #0, #0                              
-   ;.db #01, #0, #4*tw, #4*tw, #3*tw, #6*th, #02, #00   
+   .db #3*tw, #6*th, #enemy_width, #enemy_height, e_bounce     ;;Entity
+   .dw _enemy02_spr_4                                               ;;Render
+   .db #3*tw, #6*th, #0, #0, #0, #0                              
+   .db #01, #0, #4*tw, #4*tw, #3*tw, #6*th, #02, #00   
    .db #0x80
 
 

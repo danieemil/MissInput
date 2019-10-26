@@ -11,3 +11,4 @@
 .globl cpct_waitVSYNC_asm
 .globl cpct_akp_musicInit_asm
 .globl cpct_akp_musicPlay_asm
+.globl cpct_akp_stop_asm

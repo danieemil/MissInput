@@ -120,6 +120,7 @@ ld ix, #player
 
 main_loop:
 
+
    bit 1, de_type(ix)
    call nz, deathLoop
 
@@ -146,6 +147,7 @@ main_loop:
    call cleanVector
 
 
+
    ld a, dp_counter(ix)
    cp #0
    jr z, input
@@ -162,9 +164,6 @@ main_loop:
    
    call inputPlayer
 
-
-
-
    ;; Reseteamos los bits del walljump
    res 4, de_type(ix)
    res 5, de_type(ix)
@@ -178,6 +177,16 @@ main_loop:
    ld c, vector_s(iy)  
    call collisionBoxX_loop
 
+   ld a, de_type(ix)
+   and #0x30
+   jr z, free
+      ld a, dp_counter(ix)
+      cp #11
+      jp p, free
+
+         ld dp_counter(ix), #0
+
+   free:
 
    call playerMoveY
 
@@ -258,8 +267,6 @@ main_loop:
    
    call drawPlayer
    ld ix, #player
-
-   
    
    call switchBuffers
    call cpct_waitVSYNC_asm
@@ -277,6 +284,7 @@ main_loop:
 
    not_playing_now:
    ld (ambient_speed), a
+
 
 jp  main_loop
 
@@ -535,6 +543,10 @@ end_level:
    ld a, (actual_level)
    inc a
    ld (actual_level), a
+
+
+   call cpct_akp_stop_asm
+
    jp initializeLevel
 ret
 
@@ -706,6 +718,7 @@ initializeLevel:
    ld bc, #0x4000
    ldir
 
+
 ret
 
 
@@ -837,6 +850,21 @@ deathLoop:
    call switchBuffers
    call cpct_waitVSYNC_asm
    
+   ld a, (ambient_speed)
+   cp #0
+   jr z, dying_and_playing_now
+
+      dec a
+      jr dying_and_not_playing_now
+
+   dying_and_playing_now:
+   call cpct_akp_musicPlay_asm
+   ld a, #ambient_frequency
+
+   dying_and_not_playing_now:
+   ld (ambient_speed), a
+
+
    pop hl
    pop af   
 

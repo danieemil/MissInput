@@ -50,6 +50,9 @@ initializePlayer:
     ;; Seteamos su dirección
     ld dp_dir(ix), #0
 
+    ;; Resolvemos bugs
+    ld dp_counter(ix), #0
+
 ret
 
 
@@ -219,7 +222,7 @@ jump:
     bit 5, b
     jr z, check_wallLeft
 
-    ld dp_counter(ix), #15
+    ld dp_counter(ix), #13
     ld dp_forcedDir(ix), #5
     jr init_jump
 
