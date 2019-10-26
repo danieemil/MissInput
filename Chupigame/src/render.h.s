@@ -1,6 +1,6 @@
 .include "entity.h.s"
-.include "bins/tilemap.h.s"
-.include "bins/mylevel_0.h.s"
+.include "maps/map01.h.s"
+.include "bins/level_01.h.s"
 .include "animation_data.h.s"
 
 
