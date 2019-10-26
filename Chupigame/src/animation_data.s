@@ -22,7 +22,13 @@ _player_run_right:
 
 
 _player_die:
-
+    .dw #_player_spr_09
+    .dw #_player_spr_10
+    .dw #_player_spr_11
+    .dw #_player_spr_13
+    .dw #_player_spr_14
+    .dw #_player_spr_15
+    .dw #0x0000
 
 
 

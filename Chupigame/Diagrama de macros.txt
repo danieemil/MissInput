@@ -118,3 +118,52 @@ Jugador:
    .db #00, #00, #20, #20, #17*tw, #16*th, #01, #00             ;;Enemy
 
    .db #end_of_data
+
+
+
+
+
+
+
+
+    push af
+   
+   ;; Clear player
+   ld d, dde_preX(ix)
+   ld a, de_w(ix)
+   add d
+   ld e, a
+   ld b, dde_preY(ix)
+   ld a, de_h(ix)
+   add b
+   call redrawTiles
+
+   ld a, (hl)
+   inc hl
+   ld b, (hl)
+   dec hl  
+   or b
+   jr nz, continue_dloop
+
+      pop af
+      dec a
+      push af
+      jr check_end_dloop
+
+   continue_dloop:
+   ld a, (hl)
+   ld dde_spr_l(iy), a
+   inc hl
+   ld a, (hl)
+   ld dde_spr_h(iy), a
+   inc hl
+
+   push hl
+   call drawSpriteMasked
+   pop hl
+
+   call switchBuffers
+   call cpct_waitVSYNC_asm
+
+   check_end_dloop:
+   pop af

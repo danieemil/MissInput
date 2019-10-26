@@ -479,8 +479,16 @@ drawPlayer:
         and #0x30
         jr z, pfl_jumping
             ;;Mirando a la izquierda en el aire, en una pared 
-            ld dde_actualAnim(ix), #0x00
+            
+            cp #0x10
+            jr nz, pfl_wall_right
             ld hl, #_player_spr_03
+            jr pfl_wall_continue
+            pfl_wall_right:
+            ld hl, #_player_spr_07
+            pfl_wall_continue:
+
+            ld dde_actualAnim(ix), #0x00
             ld dde_spr_h(ix), h
             ld dde_spr_l(ix), l
             jp draw_player_end
@@ -488,7 +496,7 @@ drawPlayer:
         pfl_jumping:
             ;;Mirando a la izquierda en el aire, saltando
             ld dde_actualAnim(ix), #0x00
-            ld hl, #_player_spr_00
+            ld hl, #_player_spr_08
             ld dde_spr_h(ix), h
             ld dde_spr_l(ix), l
             jp draw_player_end
@@ -563,8 +571,17 @@ drawPlayer:
         and #0x30
         jr z, pfr_jumping
             ;;Mirando a la derecha en el aire, en una pared 
+            cp #0x10
+            jr nz, pfr_wall_right
+                ld hl, #_player_spr_03
+                jr pfr_wall_continue
+                
+
+            pfr_wall_right:
+                ld hl, #_player_spr_07
+            pfr_wall_continue:
+
             ld dde_actualAnim(ix), #0x00
-            ld hl, #_player_spr_07
             ld dde_spr_h(ix), h
             ld dde_spr_l(ix), l
             jr draw_player_end
@@ -572,7 +589,7 @@ drawPlayer:
         pfr_jumping:
             ;;Mirando a la derecha en el aire, saltando
             ld dde_actualAnim(ix), #0x00
-            ld hl, #_player_spr_04
+            ld hl, #_player_spr_12
             ld dde_spr_h(ix), h
             ld dde_spr_l(ix), l
             jr draw_player_end

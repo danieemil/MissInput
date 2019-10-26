@@ -118,7 +118,7 @@ ld ix, #player
 main_loop:
 
    bit 1, de_type(ix)
-   call nz, initializeLevel
+   call nz, deathLoop
 
    ;; Clear player
    ld d, dde_preX(ix)
@@ -699,3 +699,83 @@ draw_tilemap:
    jr nz, draw_tilemap
 
 ret
+
+
+
+
+deathLoop:
+   ld iy, #player
+   ld hl, #_player_die
+   ld a, #1
+
+   dloop:
+   push af
+   push hl
+   ;; Clear player
+   ld d, dde_preX(iy)
+   ld a, de_w(iy)
+   add d
+   ld e, a
+   ld b, dde_preY(iy)
+   ld a, de_h(iy)
+   add b
+   call redrawTiles
+   ld a, de_x(iy)
+   ld dde_preX(iy), a
+   ld a, de_y(iy)
+   ld dde_preY(iy), a
+
+   pop hl
+   ld a, (hl)
+   inc hl
+   ld b, (hl)
+   dec hl  
+   or b
+   jr nz, continue_dloop
+
+      pop af
+      dec a
+      push af
+      push hl
+
+      jr check_end_dloop
+
+   continue_dloop:
+   
+   ld a, dde_animTime(iy)
+   cp #0
+   jr nz, draw_dloop
+
+   ld dde_animTime(iy), #animTimeConstPlayer
+   ;ld hl, #_player_die
+   ld a, (hl)
+   ld dde_spr_l(iy), a
+   inc hl
+   ld a, (hl)
+   ld dde_spr_h(iy), a
+   inc hl
+   
+
+   draw_dloop:
+   push hl
+   dec dde_animTime(iy)
+
+   bit 2, de_type(iy)
+   jr z, draw_dloop_normal
+
+   call drawSpriteMaskedFlipped
+
+   draw_dloop_normal:
+   call drawSpriteMasked
+
+
+   check_end_dloop:
+
+   call switchBuffers
+   call cpct_waitVSYNC_asm
+   
+   pop hl
+   pop af
+   jp z, initializeLevel         ;; Salida del metodo
+
+   jr dloop

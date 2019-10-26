@@ -57,6 +57,7 @@
 ;;ANIMATIONS
 .globl _player_run_left
 .globl _player_run_right
+.globl _player_die
 
 
 .globl _power_up_djump
