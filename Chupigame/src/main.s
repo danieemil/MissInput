@@ -88,7 +88,7 @@ _main::
 
    ;; Descomprimimos el mapa y tileset de memoria
    ld de, #levels_buffer_end
-   ld hl, #_mylevel_0_end
+   ld hl, #_level_01_end
    call cpct_zx7b_decrunch_s_asm
    
 

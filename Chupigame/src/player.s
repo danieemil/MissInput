@@ -2,7 +2,9 @@
 
 ;; Tabla de saltos, nos permite simular la gravedad
 _jumptable:
-    .db -12, -9, -7, -5, -4, -3, -1, -1, 0, 1, 1, 1, 1, 1, 3, 3, 3, 4, 0x80
+    ;.db -12, -9, -7, -5, -4, -3, -1, -1, 0, 1, 1, 1, 1, 1, 3, 3, 3, 4, 0x80
+    .db -10, -8, -6, -4, -4, -2, -2, -2, -1, -1, 0, 1, 1, 1, 1, 1, 3, 3, 3, 4, 0x80
+
 
 ;;====================================================
 ;;Definition: Inicializa los valores del jugador 
@@ -217,7 +219,7 @@ jump:
     bit 5, b
     jr z, check_wallLeft
 
-    ld dp_counter(ix), #10
+    ld dp_counter(ix), #15
     ld dp_forcedDir(ix), #5
     jr init_jump
 
@@ -226,7 +228,7 @@ jump:
     bit 4, b
     jr z, check_doubleJump
 
-    ld dp_counter(ix), #10
+    ld dp_counter(ix), #13
     ld dp_forcedDir(ix), #6
     jr init_jump
 
