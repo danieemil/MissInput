@@ -1,12 +1,29 @@
 .include "level_data.h.s"
 
 
+
+
+
+
+levels:
+
+   .dw #lvl_01
+
+
+
+
 ;;===============================
 ;;
 ;;       LEVEL 01
 ;;
 ;;===============================
 lvl_01:
+
+   .dw #_level_01_end
+
+   ;;POSICIÓN INICIAL DEL JUGADOR
+   .db #2*tw, #19*th
+
    ;; ENTIDADES DE COLISION
    .db #0*tw, #21*th, #4*tw, #3*th, #0x00
    .db #4*tw, #19*th, #3*tw, #5*th, #0x00

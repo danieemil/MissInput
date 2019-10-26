@@ -1,6 +1,5 @@
 .include "entity.h.s"
 .include "maps/map01.h.s"
-.include "bins/level_01.h.s"
 .include "animation_data.h.s"
 
 
@@ -35,6 +34,12 @@ animTimeConstPlayer = 3               ;; Numero de iteraciones entre frames de a
 animTimeConstPowerUp = 3
 animTimeConstEnemy = 5
 
+
+levels_buffer           = 0x0040
+levels_buffer_max_size  = 0x01F4
+levels_buffer_end       = levels_buffer + levels_buffer_max_size - 1
+
+
 ;; Global
     ;;Dependencias
     .globl cpct_drawSprite_asm
@@ -47,11 +52,6 @@ animTimeConstEnemy = 5
     .globl cpct_setVideoMemoryPage_asm
 
     .globl _tileset_00
-
-    ;; Tilemaps
-    .globl levels_buffer
-    .globl levels_buffer_max_size  
-    .globl levels_buffer_end     
 
 
     ;;Funciones

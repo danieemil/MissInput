@@ -7,10 +7,6 @@ dE_dirX     = 0 + dde_size
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-levels_buffer           = 0x0040
-levels_buffer_max_size  = 0x01F4
-levels_buffer_end       = levels_buffer + levels_buffer_max_size - 1
-
 _frontbuffer:
 .db 0xC0
 

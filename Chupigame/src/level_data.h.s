@@ -1,4 +1,5 @@
 .include "animation_data.h.s"
+.include "bins/level_01.h.s"
 
 
 
@@ -33,11 +34,15 @@
 
 end_of_data = 0x80
 
+;; Cosas de la etiqueta de los niveles
+levels_l = 0
+levels_h = 1
 
 
 ;; Globales
     ;; Dependencias
     
+    .globl levels
     .globl lvl_01
 
 

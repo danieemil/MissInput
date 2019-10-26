@@ -56,6 +56,7 @@ ReserveVector Vpowers, dde_size, 4
 ;;Enemigos
 ReserveVector Venemies, dE_size, 4
 
+actual_level: .db  #00
 
 
 ;;
@@ -86,14 +87,8 @@ _main::
    call cpct_setPALColour_asm          ;;Destruye F, BC, HL
    
 
-   ;; Descomprimimos el mapa y tileset de memoria
-   ld de, #levels_buffer_end
-   ld hl, #_level_01_end
-   call cpct_zx7b_decrunch_s_asm
+   ;;En este método preparámos DEL TODO el nivel para que sea jugable
    
-
-   ;;En este método preparámos el nivel para que sea jugable
-   ld hl, #lvl_01
    call initializeLevel
 
 
@@ -583,18 +578,50 @@ ret
 ;;===============================================================================
 initializeLevel:
 
+   ld hl, #levels
+   ld a, (actual_level)
+   ld d, #0
+   ld e, a
+   add hl, de
+   add hl, de
+   ld e, (hl)
+   inc hl
+   ld d, (hl)
+   ex de, hl
+
+   ;; .dw _level_XX_end en HL
+   ld e, (hl)
+   inc hl
+   ld d, (hl)
+   inc hl
+   push hl
+   ex de, hl
+
+   ;; Descomprimimos el mapa de memoria
+   ld de, #levels_buffer_end
+   call cpct_zx7b_decrunch_s_asm
+
+   pop hl
+   
+
+   ;; BC -> X e Y de la posicion del jugador
+   ld ix, #player
+   ld b, (hl)
+   inc hl
+   ld c, (hl)
+   inc hl
+
    push hl
 
 ;; Reiniciamos al jugador
-   ld ix, #player
-   ld b, #12
-   ld c, #144
+
    call initializePlayer
 
    pop hl
 
 ;; Reiniciamos todos los vectores a los valores por defecto
 
+   
    
    ld de, #Ventities
    push hl
