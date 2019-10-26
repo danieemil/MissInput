@@ -38,10 +38,7 @@ end_of_data = 0x80
 ;; Globales
     ;; Dependencias
     
-    .globl entities
-    .globl special_entities
-    .globl power_ups
-    .globl enemies
+    .globl lvl_01
 
 
     ;;Funciones

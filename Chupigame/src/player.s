@@ -14,7 +14,7 @@ _jumptable:
 ;;  C   ->  Origen en Y
 ;;Salida:
 ;;  IX  ->  Jugador con sus datos actualizados
-;;Destruye: HL,
+;;Destruye: HL, BC
 ;;====================================================
 initializePlayer:
     

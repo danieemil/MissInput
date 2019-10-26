@@ -12,6 +12,10 @@
 ;;====================================================
 enemy_updateAll:
 
+    cp #0
+    ret z
+
+    enemiesU_not_empty:
     bit 5, de_type(iy)
     jr nz, next_enemy
 
@@ -46,7 +50,7 @@ enemy_updateAll:
     add iy, bc
 
     dec a
-    jr nz, enemy_updateAll
+    jr nz, enemiesU_not_empty
 ret
 
 

@@ -93,6 +93,7 @@ _main::
    
 
    ;;En este método preparámos el nivel para que sea jugable
+   ld hl, #lvl_01
    call initializeLevel
 
 
@@ -252,8 +253,7 @@ main_loop:
    call drawEnemyVector
 
    ld iy, #player
-   ;call drawSprite
-   ;call drawSpriteMasked
+   
    call drawPlayer
    ld ix, #player
 
@@ -427,6 +427,11 @@ ret
 ;;===============================================================================
 collisionEnt_loop:
 
+   cp #0
+   ret z
+
+
+   not_cel_empty:
    ;; Si está inhabilitado pasamos a la siguiente entidad
    bit 5, de_type(iy)
    jr nz, next_Ent
@@ -508,10 +513,11 @@ collisionEnt_loop:
 
    dec a
 
-   jr nz, collisionEnt_loop
+   jr nz, not_cel_empty
 ret
 
 end_level:
+   ld hl, #lvl_01
    jp initializeLevel
 ret
 
@@ -564,17 +570,20 @@ vectorloader:
    jr load_loop
 
    end_load:
-   
+   inc hl
 ret
 
 
 ;;===============================================================================
 ;;Definition: Reinicia un nivel con los datos hay en memoria
 ;;Entrada:
+;; HL -> Datos del nivel
 ;;Salida:
 ;;Destruye: AF, BC, DE, HL
 ;;===============================================================================
 initializeLevel:
+
+   push hl
 
 ;; Reiniciamos al jugador
    ld ix, #player
@@ -582,19 +591,11 @@ initializeLevel:
    ld c, #144
    call initializePlayer
 
+   pop hl
 
 ;; Reiniciamos todos los vectores a los valores por defecto
-   ld hl, #enemies
-   ld de, #Venemies
-   push hl
-   push de
-   ex de, hl
-   call vector_reset
-   pop de
-   pop hl
-   call vectorloader
 
-   ld hl, #entities
+   
    ld de, #Ventities
    push hl
    push de
@@ -604,7 +605,6 @@ initializeLevel:
    pop hl
    call vectorloader
 
-   ld hl, #special_entities
    ld de, #Ventities2
    push hl
    push de
@@ -614,8 +614,16 @@ initializeLevel:
    pop hl
    call vectorloader
 
-   ld hl, #power_ups
    ld de, #Vpowers
+   push hl
+   push de
+   ex de, hl
+   call vector_reset
+   pop de
+   pop hl
+   call vectorloader
+
+   ld de, #Venemies
    push hl
    push de
    ex de, hl
@@ -775,7 +783,9 @@ deathLoop:
    call cpct_waitVSYNC_asm
    
    pop hl
-   pop af
-   jp z, initializeLevel         ;; Salida del metodo
+   pop af   
 
-   jr dloop
+jr nz, dloop
+
+   ld hl, #lvl_01
+   jp initializeLevel         ;; Salida del metodo

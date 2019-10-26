@@ -242,6 +242,10 @@ ret
 ;;====================================================
 drawPowerUpVector:
 
+    cp #0
+    ret z
+
+    not_dpuv_empty:
     bit 5, de_type(iy)
     jr nz, dpuv_next_elem
 
@@ -256,7 +260,7 @@ drawPowerUpVector:
     add iy, bc
 
     dec a
-    jr nz, drawPowerUpVector
+    jr nz, not_dpuv_empty
 ret
 
 
@@ -271,6 +275,10 @@ ret
 ;;====================================================
 drawEnemyVector:
 
+    cp #0
+    ret z
+
+    not_dev_empty:
     bit 5, de_type(iy)
     jr nz, dev_next_elem
 
@@ -285,7 +293,7 @@ drawEnemyVector:
     add iy, bc
 
     dec a
-    jr nz, drawEnemyVector
+    jr nz, not_dev_empty
 ret
 
 
@@ -300,6 +308,10 @@ ret
 ;;===============================================================
 cleanVector:
 
+    cp #0
+    ret z
+
+    not_cv_empty:
     bit 5, de_type(iy)
     jr nz, next_celem
 
@@ -328,7 +340,7 @@ cleanVector:
     add iy, bc
 
     dec a
-    jr nz, cleanVector
+    jr nz, not_cv_empty
 ret
 
 
