@@ -512,7 +512,9 @@ collisionEnt_loop:
 ret
 
 end_level:
-   ld hl, #lvl_01
+   ld a, (actual_level)
+   inc a
+   ld (actual_level), a
    jp initializeLevel
 ret
 
@@ -588,7 +590,13 @@ initializeLevel:
    inc hl
    ld d, (hl)
    ex de, hl
-
+   ld a, h
+   or l
+   jr nz, start_decrunch
+      ld hl, #lvl_01
+      ld a, #00
+      ld (actual_level), a
+   start_decrunch:
    ;; .dw _level_XX_end en HL
    ld e, (hl)
    inc hl

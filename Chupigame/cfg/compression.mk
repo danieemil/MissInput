@@ -40,8 +40,14 @@
 
 
 
-$(eval $(call ADD2PACK,level_01,src/maps/map01.bin))
-$(eval $(call PACKZX7B,level_01,src/bins/))
+$(eval $(call ADD2PACK,map_01,src/maps/map01.bin))
+$(eval $(call PACKZX7B,map_01,src/bins/))
+
+$(eval $(call ADD2PACK,map_02,src/maps/map02.bin))
+$(eval $(call PACKZX7B,map_02,src/bins/))
+
+$(eval $(call ADD2PACK,map_06,src/maps/map06.bin))
+$(eval $(call PACKZX7B,map_06,src/bins/))
 
 #$(eval $(call ADD2PACK,mylevel_0,src/bins/tileset.bin))
 

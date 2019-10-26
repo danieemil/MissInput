@@ -1,5 +1,7 @@
 .include "animation_data.h.s"
-.include "bins/level_01.h.s"
+.include "bins/map_01.h.s"
+.include "bins/map_02.h.s"
+.include "bins/map_06.h.s"
 
 
 

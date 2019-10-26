@@ -42,6 +42,8 @@ $(eval $(call TMX2DATA, SET_OUTPUTS     , hs bin       ))
 $(eval $(call TMX2DATA, SET_FOLDER      , src/maps/     ))
 $(eval $(call TMX2DATA, SET_BITSPERITEM , 8         )) 
 $(eval $(call TMX2DATA, CONVERT, assets/maps/map01.tmx, map01 ))
+$(eval $(call TMX2DATA, CONVERT, assets/maps/map02.tmx, map02 ))
+$(eval $(call TMX2DATA, CONVERT, assets/maps/map06.tmx, map06 ))
 
 ##
 ## OLD MACROS (For compatibility)
