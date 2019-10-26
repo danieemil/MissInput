@@ -2,6 +2,8 @@
 .include "bins/map_01.h.s"
 .include "bins/map_02.h.s"
 .include "bins/map_06.h.s"
+.include "bins/map_03.h.s"
+.include "bins/map_04.h.s"
 
 
 
