@@ -1,4 +1,4 @@
-
+.include "animation_data.h.s"
 
 
 
@@ -37,8 +37,6 @@ end_of_data = 0x80
 
 ;; Globales
     ;; Dependencias
-    .globl _enemy_spr
-    .globl _power1_spr
     
     .globl entities
     .globl special_entities

@@ -36,6 +36,10 @@
 #$(eval $(call AKS2DATA, CONVERT      , music.aks , array , mem_address ))
 
 
+#$(eval $(call AKS2DATA, SET_FOLDER   , src/ ))
+#$(eval $(call AKS2DATA, SET_OUTPUTS  , h s  ))
+
+#$(eval $(call AKS2DATA, CONVERT      , assets/music/minisong_experiment.aks , ambient , 0x4000 ))
 
 ##
 ## OLD MACROS (For compatibility)

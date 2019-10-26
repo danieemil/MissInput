@@ -31,8 +31,9 @@ dde_animTime = 7 + de_size
 dde_size  = 8 + de_size
 
 
-animTimeConst = 3               ;; Numero de iteraciones entre frames de animacion
-
+animTimeConstPlayer = 3               ;; Numero de iteraciones entre frames de animacion
+animTimeConstPowerUp = 3
+animTimeConstEnemy = 5
 
 ;; Global
     ;;Dependencias
@@ -59,7 +60,8 @@ animTimeConst = 3               ;; Numero de iteraciones entre frames de animaci
     .globl drawSpriteMaskedFlipped
     .globl drawBox
     .globl drawBackground
-    .globl drawVector
+    .globl drawPowerUpVector
+    .globl drawEnemyVector
     .globl cleanVector
     .globl switchBuffers
     .globl initBuffers
