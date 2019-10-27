@@ -1,5 +1,8 @@
 .include "player.h.s"
 
+
+jump_sound: .db #00
+
 ;; Tabla de saltos, nos permite simular la gravedad
 _jumptable:
     ;.db -12, -9, -7, -5, -4, -3, -1, -1, 0, 1, 1, 1, 1, 1, 3, 3, 3, 4, 0x80
@@ -246,6 +249,8 @@ jump:
     ld dp_jump_l(ix), l
     ld dp_jump_h(ix), h
 
+    ld a, #1
+    ld (jump_sound), a
 
 ret
 
