@@ -135,12 +135,14 @@ interruption_handler:
    check_jump_sound:
    ld a, (jump_sound)
    cp #0
-   jr z, sound_playing
-
+   jr z, _check
 
       xor a
       ld (jump_sound), a
       jr sound_playing
+
+   _check:
+
 
    sound_playing:
 
@@ -155,8 +157,6 @@ interruption_handler:
 
 
 ret
-
-
 
 
 ;;
@@ -696,6 +696,8 @@ ret
 ;;===============================================================================
 initializeLevel:
 
+
+
    ld hl, #levels
    ld a, (actual_level)
    ld d, #0
@@ -713,6 +715,17 @@ initializeLevel:
       ld a, #00
       ld (actual_level), a
    start_decrunch:
+
+   push hl
+
+   ld de, #4
+   call cpct_setPalette_asm            ;;Destruye AF, BC, DE, HL
+
+   pop hl
+   ld de, #4
+   add hl, de
+
+
    ;; .dw _level_XX_end en HL
    ld e, (hl)
    inc hl
@@ -801,6 +814,7 @@ initializeLevel:
    ld e, #0
    ld bc, #0x4000
    ldir
+
 
 
 ret

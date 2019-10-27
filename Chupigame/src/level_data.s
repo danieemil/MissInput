@@ -22,6 +22,11 @@ levels:
 ;;
 ;;===============================
 lvl_01:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x56, #0x4e, #0x53
+
+
    ;;POSICION FINAL DEL MAPA COMPRIMIDO
    .dw #_map_01_end
 
@@ -61,6 +66,10 @@ lvl_01:
 ;;
 ;;===============================
    lvl_02:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x56, #0x4e, #0x4a
+
    ;;POSICION FINAL DEL MAPA COMPRIMIDO
    .dw #_map_02_end
 
@@ -101,6 +110,10 @@ lvl_01:
 ;;
 ;;===============================
    lvl_03:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x56, #0x4e, #0x53
+
    ;;POSICION FINAL DEL MAPA COMPRIMIDO
    .dw #_map_06_end                       ;; El nivel 3 utiliza el mapa 6 (esta bien, no preguntar)
 
@@ -140,6 +153,10 @@ lvl_01:
 ;;
 ;;===============================
    lvl_04:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x56, #0x4e, #0x53
+
    ;;POSICION FINAL DEL MAPA COMPRIMIDO
    .dw #_map_03_end                       ;; El nivel 4 utiliza el mapa 3
 
@@ -179,6 +196,10 @@ lvl_01:
 ;;
 ;;===============================
    lvl_05:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x56, #0x4e, #0x53
+
    ;;POSICION FINAL DEL MAPA COMPRIMIDO
    .dw #_map_04_end                       ;; El nivel 5 utiliza el mapa 4
 
@@ -232,6 +253,10 @@ lvl_01:
 ;;
 ;;===============================
    lvl_06:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x56, #0x4e, #0x53
+
    ;;POSICION FINAL DEL MAPA COMPRIMIDO
    .dw #_map_07_end                       ;; El nivel 5 utiliza el mapa 4
 
@@ -282,6 +307,10 @@ lvl_01:
 ;;
 ;;===============================
    lvl_07:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x56, #0x4e, #0x53
+
    ;;POSICION FINAL DEL MAPA COMPRIMIDO
    .dw #_map_05_end                       ;; El nivel 5 utiliza el mapa 4
 
@@ -324,6 +353,10 @@ lvl_01:
 ;;
 ;;===============================
    lvl_08:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x56, #0x4e, #0x53
+
    ;;POSICION FINAL DEL MAPA COMPRIMIDO
    .dw #_map_08_end                       
 
