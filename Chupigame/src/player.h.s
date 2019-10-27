@@ -51,6 +51,8 @@ jp_end      = 20   ;;Posición en la tabla cuando caes a velocidad máxima
 
 ;; Globls
     ;;Dependencias
+    .globl cpct_akp_SFXPlay_asm
+
     .globl _player_spr_01
     
     .globl player

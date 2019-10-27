@@ -16,10 +16,10 @@ _backbuffer:
 
 
 ;;====================================================
-;;Definition: Intercambia los buffers
+;;Definition: Limpia los buffers
 ;;Entrada:
 ;;Salida:
-;;Destruye: AF, HL
+;;Destruye: BC, DE, HL
 ;;====================================================
 initBuffers:
     ld hl, #0x8000

@@ -245,7 +245,6 @@ jump:
 
     ld dp_jump_l(ix), l
     ld dp_jump_h(ix), h
-    
 
 
 ret

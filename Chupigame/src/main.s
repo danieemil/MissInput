@@ -21,6 +21,7 @@
 .include "player.h.s"
 .include "level_data.h.s"
 .include "bins/ambient_sound.h.s"
+.include "bins/death_effect.h.s"
 
 
 
@@ -59,9 +60,103 @@ ReserveVector Venemies, dE_size, 4
 
 actual_level: .db  #00
 
+death_sound: .db #00
+jump_sound: .db #00
 
-ambient_frequency = #0x01
+
+ambient_frequency = #12
 ambient_speed: .db #00
+
+
+
+;;==============================================================================
+;; ATENCIÓN:
+;; Este código se ejecuta en paralelo a nuestro código, y cada vez
+;; que ocurre una interrupción. Si se destruye AF', BC', DE', HL' o IY, PETARÁ  
+;;
+;; Yo lo uso para la música, pero también se pueden poner el escaneo de
+;; pulsaciones del teclado para mayor control del personaje, hay una función
+;; específica para esto...
+;;==============================================================================
+interruption_handler:
+
+   ex af, af'
+   exx
+   push af
+   push bc
+   push de
+   push hl
+   push iy
+
+   ;; Música ambiente
+   ld a, (ambient_speed)
+   cp #0
+   jr z, playing_now
+
+      dec a
+      jr not_playing_now
+
+   playing_now:
+   call cpct_akp_musicPlay_asm
+   ld a, #ambient_frequency
+
+   not_playing_now:
+   ld (ambient_speed), a
+
+
+   ;; Efectos de sonido
+   ;; Si ya hay algún sonido sonando, no toques nada
+   
+   call cpct_akp_SFXGetInstrument_asm
+   ld h, a
+   and l
+   cp #0
+   jr nz, sound_playing
+
+   ;; Tenemos que tocar el sonido de muerte?
+   check_death_sound:
+   ld a, (death_sound)
+   cp #0
+   jr z, check_jump_sound
+
+      ;; Reproducimos a la muerte sonificada ;/
+      ld l, #1       ;; Instrumento
+      ld h, #15      ;; Volumen(15 -> max)
+      ld e, #24      ;; Nota (24 -> C-2)
+      ld d, #0       ;; (1-255), 0 = original
+      ld bc, #0      ;; Pitch (más pitch, más grave)
+      ld a, #1       ;; Canal, bit-flag, tres bits de derecha (C1->001, C2->010, C3->100)
+      call cpct_akp_SFXPlay_asm
+
+      xor a
+      ld (death_sound), a
+      jr sound_playing
+
+   check_jump_sound:
+   ld a, (jump_sound)
+   cp #0
+   jr z, sound_playing
+
+
+      xor a
+      ld (jump_sound), a
+      jr sound_playing
+
+   sound_playing:
+
+
+   pop iy
+   pop hl
+   pop de
+   pop bc
+   pop af
+   exx
+   ex af, af'
+
+
+ret
+
+
 
 
 ;;
@@ -76,10 +171,7 @@ _main::
    ;;-------------------------------------------
    ld sp, #0x8000
 
-
    call cpct_disableFirmware_asm
-
-   call initBuffers
 
    ld c, #1
    call cpct_setVideoMode_asm          ;;Destruye AF, BC, HL
@@ -90,14 +182,24 @@ _main::
 
    ld hl, #0x0B10
    call cpct_setPALColour_asm          ;;Destruye F, BC, HL
+
+   ;; Inicializamos la música
+   ld de, #_ambient
+   call cpct_akp_musicInit_asm
+
+   ld de, #_death
+   call cpct_akp_SFXInit_asm
+
+   ;;HL -> Qué método hará cada vez que salte una interrupción
+   ld hl, #interruption_handler
+   call cpct_setInterruptHandler_asm
+
+   call initBuffers
+
    
 
    ;;En este método preparámos DEL TODO el nivel para que sea jugable
-   
    call initializeLevel
-
-   ld de, #_ambient
-   call cpct_akp_musicInit_asm
 
    ;;------------
    ;;Dibujar mapa
@@ -270,21 +372,6 @@ main_loop:
    
    call switchBuffers
    call cpct_waitVSYNC_asm
-
-   ld a, (ambient_speed)
-   cp #0
-   jr z, playing_now
-
-      dec a
-      jr not_playing_now
-
-   playing_now:
-   call cpct_akp_musicPlay_asm
-   ld a, #ambient_frequency
-
-   not_playing_now:
-   ld (ambient_speed), a
-
 
 jp  main_loop
 
@@ -544,9 +631,6 @@ end_level:
    inc a
    ld (actual_level), a
 
-
-   call cpct_akp_stop_asm
-
    jp initializeLevel
 ret
 
@@ -780,6 +864,10 @@ ret
 
 
 deathLoop:
+
+   ld a, #1
+   ld (death_sound), a
+
    ld iy, #player
    ld hl, #_player_die
    ld a, #1
@@ -849,26 +937,10 @@ deathLoop:
 
    call switchBuffers
    call cpct_waitVSYNC_asm
-   
-   ld a, (ambient_speed)
-   cp #0
-   jr z, dying_and_playing_now
-
-      dec a
-      jr dying_and_not_playing_now
-
-   dying_and_playing_now:
-   call cpct_akp_musicPlay_asm
-   ld a, #ambient_frequency
-
-   dying_and_not_playing_now:
-   ld (ambient_speed), a
-
 
    pop hl
    pop af   
 
 jr nz, dloop
 
-   ld hl, #lvl_01
    jp initializeLevel         ;; Salida del metodo
