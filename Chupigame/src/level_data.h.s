@@ -4,6 +4,9 @@
 .include "bins/map_06.h.s"
 .include "bins/map_03.h.s"
 .include "bins/map_04.h.s"
+.include "bins/map_07.h.s"
+.include "bins/map_05.h.s"
+.include "bins/map_08.h.s"
 
 
 
