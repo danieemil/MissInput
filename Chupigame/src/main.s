@@ -898,6 +898,34 @@ deathLoop:
    ld a, de_h(iy)
    add b
    call redrawTiles
+
+   ld iy, #Vpowers
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)  
+   call cleanVector
+
+   ld iy, #Venemies
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)
+   call cleanVector
+
+
+   ld iy, #Vpowers
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)   
+   call drawPowerUpVector
+
+   ld iy, #Venemies
+   ld a, vector_n(iy)
+   ld b, #0
+   ld c, vector_s(iy)
+   call drawEnemyVector
+
+   ld iy, #player
+
    ld a, de_x(iy)
    ld dde_preX(iy), a
    ld a, de_y(iy)
@@ -956,6 +984,6 @@ deathLoop:
    pop hl
    pop af   
 
-jr nz, dloop
+jp nz, dloop
 
    jp initializeLevel         ;; Salida del metodo

@@ -184,7 +184,7 @@ lvl_01:
    .db #4*tw+1, #19*th, #enemy_width, #enemy_height, e_bounce     ;; Entity
    .dw _enemy02_spr_4                                             ;; Render
    .db #4*tw+1, #19*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
-   .db #01, #0, #11*tw-1, #11*tw-1, #3*tw, #6*th, #01, #00              ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+   .db #01, #0, #11*tw-1, #11*tw-1, #3*tw, #6*th, #01, #00        ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
    .db #0x80
 
 
@@ -474,7 +474,7 @@ lvl_01:
    .db #3*tw, #0*th, #5*tw, #2*th, #e_pinchos
    .db #10*tw, #0*th, #2*tw, #2*th, #e_pinchos
    .db #1*tw, #7*th, #2*tw, #1*th, #e_pinchos
-   .db #13*tw, #7*th, #6*tw, #1*th, #e_pinchos
+   .db #15*tw, #7*th, #4*tw, #1*th, #e_pinchos
    .db #1*tw, #21*th, #5*tw, #2*th, #e_pinchos
    .db #19*tw+2, #2*th, #1*tw-2, #4*th, #e_salida
    .db #0x80
@@ -487,6 +487,10 @@ lvl_01:
    .db #0x80
    
    ;; ENEMIGOS
+   .db #3*tw+1, #12*th, #enemy_width, #enemy_height, e_bounce     ;; Entity
+   .dw _enemy02_spr_4                                             ;; Render
+   .db #4*tw+1, #19*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   .db #01, #0, #10*tw-1, #10*tw-1, #3*tw, #12*th, #01, #00        ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
    .db #0x80
 
 
