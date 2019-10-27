@@ -49,6 +49,12 @@ $(eval $(call PACKZX7B,map_02,src/bins/))
 $(eval $(call ADD2PACK,map_06,src/maps/map06.bin))
 $(eval $(call PACKZX7B,map_06,src/bins/))
 
+$(eval $(call ADD2PACK,map_03,src/maps/map03.bin))
+$(eval $(call PACKZX7B,map_03,src/bins/))
+
+$(eval $(call ADD2PACK,map_04,src/maps/map04.bin))
+$(eval $(call PACKZX7B,map_04,src/bins/))
+
 #$(eval $(call ADD2PACK,mylevel_0,src/bins/tileset.bin))
 
 
