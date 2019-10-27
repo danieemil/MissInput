@@ -942,6 +942,7 @@ deathLoop:
    jr z, draw_dloop_normal
 
    call drawSpriteMaskedFlipped
+   jr check_end_dloop
 
    draw_dloop_normal:
    call drawSpriteMasked
