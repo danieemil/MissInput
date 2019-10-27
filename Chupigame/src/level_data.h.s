@@ -7,6 +7,8 @@
 .include "bins/map_07.h.s"
 .include "bins/map_05.h.s"
 .include "bins/map_08.h.s"
+.include "bins/map_09.h.s"
+.include "bins/map_10.h.s"
 
 
 
