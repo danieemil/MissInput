@@ -22,6 +22,8 @@
 .include "level_data.h.s"
 .include "bins/ambient_sound.h.s"
 .include "bins/effects.h.s"
+.include "bins/title_screen_c.h.s"
+.include "bins/credits_c.h.s"
 
 .globl _reference01
 .globl _reference02
@@ -62,23 +64,34 @@ ReserveVector Vpowers, dde_size, 4
 ReserveVector Venemies, dE_size, 4
 
 ;;Referencias a Astro Marine Corps
-DefineDrawableEntity reference01, #00, #00, #12, #7, #00, _reference01
+DefineDrawableEntity reference01, #00, #00, #12, #7, #0x7E, _reference01
 DefineDrawableEntity reference02, #00, #00, #16, #7, #00, _reference02
-reference_counter: .db #00 ;;Indica cada cuante se aplica el movimiento a las referencias
 
-const_reference_counter = 3
+const_reference_counter = 2
 
+;; Estados del juego: 
+;; 0 -> Pantalla del título 
+;; 1 -> In-game
+;; 2 -> Transición entre niveles
+;; 3 -> Créditos
+;; 4 -> Help
+
+game_state: .db #00
+
+;; Nivel actual
 actual_level: .db  #00
 death_counter: .db #10
 
 
+;; Música y sonidos
 death_sound: .db #00
 power_up_sound: .db #00
-
 
 ambient_frequency = #11
 ambient_speed: .db #00
 
+keyboard_frequency = #5
+keyboard_counter: .db #00
 
 
 ;;==============================================================================
@@ -100,6 +113,7 @@ interruption_handler:
    push hl
    push iy
    push ix
+
 
    ;; Música ambiente
    ld a, (ambient_speed)
@@ -189,6 +203,24 @@ interruption_handler:
 
    sound_playing:
 
+
+   ; ld a, (keyboard_counter)
+   ; cp #0
+   ; jr z, scanning
+
+   ;    dec a
+   ;    ld (keyboard_counter), a
+   ;    jr not_scanning
+
+   ;    scanning:
+   ;    ld a, #keyboard_frequency
+   ;    ld (keyboard_counter), a
+   ;    call cpct_scanKeyboard_if_asm
+
+
+   ; not_scanning:
+
+
    pop ix
    pop iy
    pop hl
@@ -239,32 +271,22 @@ _main::
 
    call initBuffers
 
-   
+   ld ix, #player
 
-   ;;En este método preparámos DEL TODO el nivel para que sea jugable
+   ;; Indicamos que el juego estará en la pantalla del título
+   xor a
+   ld (game_state), a
+
+   jp init_menu
+
+
+   ld ix, #player
+
+game_init:
+
    call initializeLevel
 
-   ;;------------
-   ;;Dibujar mapa
-   ;;------------
-
-   ;ld a, (_backbuffer)
-   ;ld d, a
-   ;ld e, #00
-   ;ld hl, #levels_buffer
-   ;ld bc, #500
-   ;call draw_tilemap
-   
-   ;ld hl, #0x8000
-   ;ld de, #0xC000
-   ;ld bc, #0x4000
-   ;ldir
-
-
-ld ix, #player
-
-main_loop:
-
+game_loop:
 
    bit 1, de_type(ix)
    call nz, deathLoop
@@ -279,6 +301,7 @@ main_loop:
    add b
    call redrawTiles
 
+   
    ld iy, #Vpowers
    ld a, vector_n(iy)
    ld b, #0
@@ -291,7 +314,14 @@ main_loop:
    ld c, vector_s(iy)
    call cleanVector
 
+   ;; Comprueba si en algún momento tenemos que saltar a los menús
+   ld a, (game_state)
+   cp #1
+   jr z, keep_looping
 
+      jp init_menu
+
+   keep_looping:
 
    ld a, dp_counter(ix)
    cp #0
@@ -304,6 +334,8 @@ main_loop:
       jr no_input
 
    input:
+
+
    call inputManager
    no_input:
    
@@ -343,8 +375,6 @@ main_loop:
 
    ld a, de_type(ix)
    push af
-
-
 
    ;; Colisiones de los power-ups
    ld iy, #Vpowers
@@ -412,11 +442,190 @@ main_loop:
    
    call drawPlayer
    ld ix, #player
-   
+
+
    call switchBuffers
    call cpct_waitVSYNC_asm
 
-jp  main_loop
+jp  game_loop
+
+
+
+
+;;=============================================;;
+;;Bucle que se ejecuta cuando está en los menús;;
+;;=============================================;;
+
+
+init_menu:
+
+
+   ;; Descomprimimos el mapa de memoria
+
+   ld a, (game_state)
+   cp #0
+   jr nz, check_level_complete
+
+      draw_title_screen:
+      ld de, #_title_screen_c_end
+      ld a, (#_frontbuffer)
+      ld h, a
+      ld l, #0
+      ld bc, #0x4000
+      add hl, bc
+      dec hl
+      ex de, hl
+      call cpct_zx7b_decrunch_s_asm
+
+   check_level_complete:
+   ld a, (game_state)
+   cp #2
+   jr nz, check_credits
+
+      draw_level_complete:
+      ld de, #_credits_c_end
+      ld a, (#_frontbuffer)
+      ld h, a
+      ld l, #0
+      ld bc, #0x4000
+      add hl, bc
+      dec hl
+      ex de, hl
+      call cpct_zx7b_decrunch_s_asm
+
+
+   check_credits:
+   ld a, (game_state)
+   cp #3
+   jr nz, check_help
+
+      draw_credits:
+      ld de, #_credits_c_end
+      ld a, (#_frontbuffer)
+      ld h, a
+      ld l, #0
+      ld bc, #0x4000
+      add hl, bc
+      dec hl
+      ex de, hl
+      call cpct_zx7b_decrunch_s_asm
+
+   check_help:
+   ld a, (game_state)
+   cp #4
+   jr nz, start_menu_loop
+
+      draw_help:
+      ld de, #_credits_c_end
+      ld a, (#_frontbuffer)
+      ld h, a
+      ld l, #0
+      ld bc, #0x4000
+      add hl, bc
+      dec hl
+      ex de, hl
+      call cpct_zx7b_decrunch_s_asm
+
+start_menu_loop:
+
+   ld a, #0xFF
+   waiting_loop:
+   halt
+   dec a
+   jr nz, waiting_loop
+
+menu_loop:
+
+   call menuInputManager
+
+
+   ex af, af'
+
+   check_state:
+   ld a, (game_state)
+   cp #0
+   jr z, check_start
+
+      check_any_key:
+      ex af, af'
+      cp #0
+      jp m, finalize_loop
+
+         ;; De dónde venimos y a dónde vamos
+         ;; De Transición del nivel
+         from_level_complete:
+         ld a, (game_state)
+         cp #2
+         jr nz, from_credits
+
+
+            ld hl, #levels
+            ld a, (actual_level)
+            ld d, #0
+            ld e, a
+            add hl, de
+            add hl, de
+            ld e, (hl)
+            inc hl
+            ld d, (hl)
+            ex de, hl
+            ld a, h
+            or l
+            jr nz, next_level
+
+               ld a, #3
+               ld (game_state), a
+               jp init_menu
+
+            next_level:
+            ld a, #1
+            ld (game_state), a
+            jp game_init
+
+         from_credits:
+         cp #3
+         jr nz, from_help
+
+            ld a, #0
+            ld (game_state), a
+            jp init_menu
+
+         from_help:
+         ld a, #0
+         ld (game_state), a
+         jp init_menu
+
+
+   check_start:
+   ex af, af'
+   cp #1
+   jr nz, check_info
+
+      ld a, #1
+      ld (game_state), a
+
+      jp game_init
+
+   check_info:
+   cp #2
+   jr nz, check_about
+
+      ld a, #4
+      ld (game_state), a
+      jp init_menu
+
+   ;; Créditos
+   check_about:
+   cp #3
+   jr nz, finalize_loop
+
+      ld a, #3
+      ld (game_state), a
+      jp init_menu
+
+   finalize_loop:
+
+jr menu_loop
 
 
 ;;====================================================
@@ -486,6 +695,63 @@ inputManager:
    ex af, af'
 
    
+
+ret
+
+
+
+
+;;====================================================
+;; Key Definitions:
+;; Key_1       
+;; Key_2        
+;; Key_3   
+;;
+;;
+;;
+;;=============================================================
+;;Definition: Controla las pulsaciones por teclado en los menús
+;;Entrada:
+;;Salida:
+;; A     -> Número pulsado
+;;Destruye: A, BC, D, HL
+;;=============================================================
+menuInputManager:
+
+   call cpct_scanKeyboard_asm
+   call cpct_isAnyKeyPressed_asm ;;Destruye: A, B, HL
+      jr nz, key_number_pressed  ;;Es 0
+      ld a, #-1                  ;; Ponemos A a 0
+      ret
+
+   key_number_pressed:
+   xor a                         ;; Ponemos A a 0
+
+   check_1:
+   ld hl, #Key_1
+   call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
+   jr z, check_2
+      ld a, #1
+      ret
+
+
+   check_2:
+   ld hl, #Key_2
+   call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
+   jr z, check_3
+      ld a, #2
+      ret
+
+   check_3:
+   ld hl, #Key_3
+   call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
+   jr z, final_menu_input
+      ld a, #3
+      ret
+
+   final_menu_input:
+   xor a
+
 
 ret
 
@@ -677,11 +943,18 @@ collisionEnt_loop:
 ret
 
 end_level:
+
+   ld a, #10
+   ld (death_counter), a
+
+   ld a, #2
+   ld (game_state), a
+
    ld a, (actual_level)
    inc a
    ld (actual_level), a
 
-   jp initializeLevel
+   jp init_menu
 ret
 
 
@@ -768,6 +1041,7 @@ initializeLevel:
 
    push hl
 
+   ;; Ponemos la paleta que le corresponde a cada nivel
    ld de, #4
    call cpct_setPalette_asm            ;;Destruye AF, BC, DE, HL
 
@@ -866,7 +1140,6 @@ initializeLevel:
    ldir
 
 
-
 ret
 
 
@@ -933,21 +1206,46 @@ deathLoop:
    dec a
    jr nz, no_set_references
 
-      
       ex af, af'
       
       ld ix, #player     ;;<-- Quitar una vez funcione para ver que pasa
       ld iy, #reference01
       ld a, de_x(ix)
+
+      ld hl, #_reference01
+      ld dde_spr_h(iy), h
+      ld dde_spr_l(iy), l
+
+      ld de_w(iy), #12
+
       sub a, #04
       cp #0
-      jp p, rf01_set_coordinates
+      jp p, rf01_set_x_coordinate_left
          ld a, #0
-      rf01_set_coordinates:
+      rf01_set_x_coordinate_left:
       ld de_x(iy), a
+      ld dde_preX(iy), a
+
+      add a, de_w(iy)
+      sub #80
+      jp m, rf01_set_x_coordinate_right
+
+         ld a, #80
+         sub a, de_w(iy)
+         ld de_x(iy), a
+         ld dde_preX(iy), a
+
+      rf01_set_x_coordinate_right:
       ld a, de_y(ix)
       add a, de_h(ix) 
+      add a, #8
       ld de_y(iy), a
+      ld dde_preY(iy), a
+
+      ld dde_animTime(iy), #const_reference_counter
+      ld dde_animCounter(iy), #40
+
+      ld de_type(iy), #0x7E
 
       ex af, af'
 
@@ -964,6 +1262,7 @@ deathLoop:
    dloop:
    push af
    push hl
+
    ;; Clear player
    ld iy, #player
    ld d, dde_preX(iy)
@@ -986,6 +1285,24 @@ deathLoop:
    ld b, #0
    ld c, vector_s(iy)
    call cleanVector
+
+   ;;Clear references
+   ld a, (death_counter)
+   cp #0
+   jr nz, no_clear_references
+
+      ld iy, #reference01
+      ld d, dde_preX(iy)
+      ld a, de_w(iy)
+      add d
+      ld e, a
+      ld b, dde_preY(iy)
+      ld a, de_h(iy)
+      add b
+      call redrawTiles
+
+   no_clear_references:
+
 
 
    ld iy, #Vpowers
@@ -1059,10 +1376,18 @@ deathLoop:
    cp #0
    jr nz, no_draw_references
 
-      ld a, #10
-      ld(death_counter), a
+      
+      ld iy, #reference01
       call drawReferences
 
+      pop hl
+      pop af
+      ld a, b
+      push af
+      push hl
+      
+
+      
    no_draw_references:
 
    call switchBuffers
@@ -1071,7 +1396,8 @@ deathLoop:
    pop hl
    pop af   
 
-jp nz, dloop
+   cp #0
+   jp nz, dloop
 
    jp initializeLevel         ;; Salida del metodo
 
@@ -1090,6 +1416,92 @@ jp nz, dloop
 ;;Destruye: AF, BC, DE, HL
 ;;====================================================
 drawReferences:
+
+   ld a, dde_animTime(iy)
+   dec a
+   jr nz, no_decrement_y_reference
+
+      ld a, dde_animCounter(iy)
+      dec a
+      jr nz, no_cambiar_type_reference
+         call setReference2
+         inc de_type(iy)
+         ld a, #40
+         ld dde_animCounter(iy), a
+         ld a, #const_reference_counter
+         ld dde_animTime(iy), a
+         jr check_reference_type
+         
+
+      no_cambiar_type_reference:
+      ld dde_animCounter(iy), a
+
+
+      ld a, de_y(iy)
+      dec a
+      jr nz, no_corregir_y_reference
+         ld a, #1
+
+
+      no_corregir_y_reference:
+      ld de_y(iy), a
+      ld dde_preY(iy), a
+
+      ld a, #const_reference_counter
+
+   no_decrement_y_reference:
+   ld dde_animTime(iy), a
+   call drawSprite
+
+   check_reference_type:
+
+   ld b, #1
+   ld a, de_type(iy)
+   cp #0x80
+   ret nz
+
+   ld a, #10
+   ld (death_counter), a
+   ld b, #0
+   ret
+
+
+setReference2:
+
+   ld ix, #player     ;;<-- Quitar una vez funcione para ver que pasa
+   ld iy, #reference01
+
+   ld hl, #_reference02
+   ld dde_spr_h(iy), h
+   ld dde_spr_l(iy), l
+
+   ld de_w(iy), #16
+
+   ld a, de_x(ix)
+
+   sub a, #06
+   cp #0
+   jp p, rf02_set_x_coordinate_left
+      ld a, #0
+   rf02_set_x_coordinate_left:
+   ld de_x(iy), a
+   ld dde_preX(iy), a
+
+   add a, de_w(iy)
+   sub #80
+   jp m, rf02_set_x_coordinate_right
+
+      ld a, #80
+      sub a, de_w(iy)
+      ld de_x(iy), a
+      ld dde_preX(iy), a
+
+   rf02_set_x_coordinate_right:
+   ld a, de_y(ix)
+   add a, de_h(ix) 
+   add a, #8
+   ld de_y(iy), a
+   ;ld dde_preY(iy), a
 
 
 ret

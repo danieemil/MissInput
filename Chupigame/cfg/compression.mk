@@ -70,7 +70,11 @@ $(eval $(call PACKZX7B,map_09,src/bins/))
 $(eval $(call ADD2PACK,map_10,src/maps/map10.bin))
 $(eval $(call PACKZX7B,map_10,src/bins/))
 
-#$(eval $(call ADD2PACK,mylevel_0,src/bins/tileset.bin))
+$(eval $(call ADD2PACK,title_screen_c,src/bins/title_screen.bin))
+$(eval $(call PACKZX7B,title_screen_c,src/bins/))
+
+$(eval $(call ADD2PACK,credits_c,src/bins/ImagenCreditos.bin))
+$(eval $(call PACKZX7B,credits_c,src/bins/))
 
 
 

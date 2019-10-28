@@ -345,7 +345,7 @@ ret
 ;;Definition: redibuja los tiles que hay al fondo del sprite
 ;;Entrada: 
 ;;  DE  ->  X y X+W
-;;  A   ->  Y+W
+;;  A   ->  Y+H
 ;;  B   ->  Y
 ;;Salida:
 ;;Destruye: AF, BC, DE, HL
@@ -378,6 +378,9 @@ redrawTiles:
 
     pop af
 
+    cp #0
+    jr z, continue_redraw_tiles
+    
     redrawTiles_loop:
 
         add hl, de              ;; Back Buffer
@@ -388,6 +391,7 @@ redrawTiles:
 
     jr nz, redrawTiles_loop
 
+    continue_redraw_tiles:
     exx                         ;; HL - Tilemap  |  HL' - Video mem
     pop de
 
