@@ -23,6 +23,9 @@
 .include "bins/ambient_sound.h.s"
 .include "bins/effects.h.s"
 
+.globl _reference01
+.globl _reference02
+
 
 
 ;;
@@ -58,7 +61,15 @@ ReserveVector Vpowers, dde_size, 4
 ;;Enemigos
 ReserveVector Venemies, dE_size, 4
 
+;;Referencias a Astro Marine Corps
+DefineDrawableEntity reference01, #00, #00, #12, #7, #00, _reference01
+DefineDrawableEntity reference02, #00, #00, #16, #7, #00, _reference02
+reference_counter: .db #00 ;;Indica cada cuante se aplica el movimiento a las referencias
+
+const_reference_counter = 3
+
 actual_level: .db  #00
+death_counter: .db #10
 
 
 death_sound: .db #00
@@ -918,6 +929,31 @@ ret
 
 deathLoop:
 
+   ld a, (death_counter)
+   dec a
+   jr nz, no_set_references
+
+      
+      ex af, af'
+      
+      ld ix, #player     ;;<-- Quitar una vez funcione para ver que pasa
+      ld iy, #reference01
+      ld a, de_x(ix)
+      sub a, #04
+      cp #0
+      jp p, rf01_set_coordinates
+         ld a, #0
+      rf01_set_coordinates:
+      ld de_x(iy), a
+      ld a, de_y(ix)
+      add a, de_h(ix) 
+      ld de_y(iy), a
+
+      ex af, af'
+
+   no_set_references:
+   ld (death_counter), a
+
    ld a, #1
    ld (death_sound), a
 
@@ -929,6 +965,7 @@ deathLoop:
    push af
    push hl
    ;; Clear player
+   ld iy, #player
    ld d, dde_preX(iy)
    ld a, de_w(iy)
    add d
@@ -962,6 +999,7 @@ deathLoop:
    ld b, #0
    ld c, vector_s(iy)
    call drawEnemyVector
+
 
    ld iy, #player
 
@@ -1017,6 +1055,16 @@ deathLoop:
 
    check_end_dloop:
 
+   ld a, (death_counter)
+   cp #0
+   jr nz, no_draw_references
+
+      ld a, #10
+      ld(death_counter), a
+      call drawReferences
+
+   no_draw_references:
+
    call switchBuffers
    call cpct_waitVSYNC_asm
 
@@ -1026,3 +1074,22 @@ deathLoop:
 jp nz, dloop
 
    jp initializeLevel         ;; Salida del metodo
+
+
+
+
+
+
+;;====================================================
+;;Definition: Dibuja las referencias
+;;Entrada:
+;;  IY = Puntero a la referencia
+;;
+;;Salida:
+;;
+;;Destruye: AF, BC, DE, HL
+;;====================================================
+drawReferences:
+
+
+ret

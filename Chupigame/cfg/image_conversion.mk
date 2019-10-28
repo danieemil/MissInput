@@ -53,6 +53,8 @@ $(eval $(call IMG2SP, CONVERT_PALETTE , $(PALETTE), g_palette 					))
 $(eval $(call IMG2SP, SET_IMG_FORMAT  , sprites									))
 $(eval $(call IMG2SP, SET_OUTPUT      , c                						))
 $(eval $(call IMG2SP, CONVERT         , assets/maps/tileset.png , 16, 8, tileset))
+$(eval $(call IMG2SP, CONVERT         , assets/sprites/reference01.png , 48, 7, reference01))
+$(eval $(call IMG2SP, CONVERT         , assets/sprites/reference02.png , 64, 7, reference02))
 
 
 $(eval $(call IMG2SP, SET_MASK        , none               						))
