@@ -55,6 +55,8 @@ jp_end      = 20   ;;Posición en la tabla cuando caes a velocidad máxima
 
     .globl _player_spr_01
     
+
+    .globl jump_sound
     .globl player
 
 

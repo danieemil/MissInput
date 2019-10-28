@@ -21,7 +21,7 @@
 .include "player.h.s"
 .include "level_data.h.s"
 .include "bins/ambient_sound.h.s"
-.include "bins/death_effect.h.s"
+.include "bins/effects.h.s"
 
 
 
@@ -60,11 +60,12 @@ ReserveVector Venemies, dE_size, 4
 
 actual_level: .db  #00
 
+
 death_sound: .db #00
-jump_sound: .db #00
+power_up_sound: .db #00
 
 
-ambient_frequency = #12
+ambient_frequency = #11
 ambient_speed: .db #00
 
 
@@ -87,6 +88,7 @@ interruption_handler:
    push de
    push hl
    push iy
+   push ix
 
    ;; Música ambiente
    ld a, (ambient_speed)
@@ -113,12 +115,17 @@ interruption_handler:
    cp #0
    jr nz, sound_playing
 
-   ;; Tenemos que tocar el sonido de muerte?
+
    check_death_sound:
    ld a, (death_sound)
    cp #0
    jr z, check_jump_sound
 
+      ;; Paramos la reproducción de efectos de sonido en el canal 1
+      ;; para poder hacer sonar la muerte del jugador sin interferencias
+      ld a, #1
+      call cpct_akp_SFXStop_asm
+      
       ;; Reproducimos a la muerte sonificada ;/
       ld l, #1       ;; Instrumento
       ld h, #15      ;; Volumen(15 -> max)
@@ -135,18 +142,43 @@ interruption_handler:
    check_jump_sound:
    ld a, (jump_sound)
    cp #0
-   jr z, _check
+   jr z, check_power_up_sound
+
+      ;; Reproducimos el salto/doble salto
+
+      ld l, #2       ;; Instrumento
+      ld h, #15      ;; Volumen(15 -> max)
+      ld e, #48      ;; Nota (48 -> C-4, Do4)
+      ld d, #0       ;; (1-255), 0 = original
+      ld bc, #0      ;; Pitch (más pitch, más grave)
+      ld a, #1       ;; Canal, bit-flag, tres bits de derecha (C1->001, C2->010, C3->100)
+      call cpct_akp_SFXPlay_asm
 
       xor a
       ld (jump_sound), a
       jr sound_playing
 
-   _check:
+   check_power_up_sound:
+   ld a, (power_up_sound)
+   cp #0
+   jr z, sound_playing
 
+      ;; Reproducimos el salto/doble salto
+      ld l, #2       ;; Instrumento
+      ld h, #15      ;; Volumen(15 -> max)
+      ld e, #64      ;; Nota (64 -> E-5, Mi5)
+      ld d, #1       ;; Velocidad (1-255), 0 = original
+      ld bc, #0      ;; Pitch (más pitch, más grave)
+      ld a, #3       ;; Canal, bit-flag, tres bits de derecha (C1->001, C2->010, C3->100)
+      call cpct_akp_SFXPlay_asm
+
+      xor a
+      ld (power_up_sound), a
+      jr sound_playing
 
    sound_playing:
 
-
+   pop ix
    pop iy
    pop hl
    pop de
@@ -187,7 +219,7 @@ _main::
    ld de, #_ambient
    call cpct_akp_musicInit_asm
 
-   ld de, #_death
+   ld de, #_effects
    call cpct_akp_SFXInit_asm
 
    ;;HL -> Qué método hará cada vez que salte una interrupción
@@ -573,6 +605,13 @@ collisionEnt_loop:
       jr z, check_type
 
          set 5, de_type(iy)
+         
+         ex af, af'
+
+         ld a, #1
+         ld (power_up_sound), a
+      
+         ex af, af'
 
       ;; T _ T 
       check_type:
