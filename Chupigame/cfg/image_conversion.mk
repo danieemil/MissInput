@@ -65,6 +65,14 @@ $(eval $(call IMG2SP, SET_MASK        , interlaced               				))
 $(eval $(call IMG2SP, CONVERT         , assets/sprites/spr_player.png , 16, 16, player_spr))
 $(eval $(call IMG2SP, CONVERT         , assets/sprites/spr_enemy01.png , 16, 16, enemy01_spr))
 
+
+$(eval $(call IMG2SP, SET_MASK        , none               				))
+$(eval $(call IMG2SP, SET_FOLDER      , src/bins/ 								))
+$(eval $(call IMG2SP, SET_OUTPUT      , bin                  					))
+$(eval $(call IMG2SP, SET_IMG_FORMAT  , screen  								))
+$(eval $(call IMG2SP, CONVERT         , assets/title_screen.png , 320,200, title))
+$(eval $(call IMG2SP, CONVERT         , assets/ImagenCreditos.png , 320,200, credits))
+
 ##
 ## OLD MACROS (For compatibility)
 ##

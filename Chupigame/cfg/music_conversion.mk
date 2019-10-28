@@ -40,12 +40,11 @@
 $(eval $(call AKS2DATA, SET_FOLDER   , src/bins ))
 $(eval $(call AKS2DATA, SET_OUTPUTS  , hs s  ))
 
-$(eval $(call AKS2DATA, CONVERT      , assets/music/ambient_sound.aks , ambient , 0x5000 ))
-
+$(eval $(call AKS2DATA, CONVERT      , assets/music/ambient_sound.aks , ambient , 0x6000 ))
 
 
 $(eval $(call AKS2DATA, SET_SFXONLY  , yes   ))
-$(eval $(call AKS2DATA, CONVERT      , assets/music/effects.aks , effects , 0x5090 ))
+$(eval $(call AKS2DATA, CONVERT      , assets/music/effects.aks , effects , 0x6090 ))
 
 ##
 ## OLD MACROS (For compatibility)

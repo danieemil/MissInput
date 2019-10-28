@@ -17,3 +17,4 @@
 .globl cpct_akp_SFXStopAll_asm
 .globl cpct_akp_SFXGetInstrument_asm
 .globl cpct_setInterruptHandler_asm
+.globl cpct_scanKeyboard_if_asm
