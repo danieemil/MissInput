@@ -458,7 +458,7 @@ lvl_01:
    .db #1*tw, #6*th, #2*tw, #1*th, #0x00
    .db #3*tw, #6*th, #2*tw, #2*th, #0x00
    .db #13*tw, #6*th, #7*tw, #1*th, #0x00
-   .db #3*tw, #14*th, #5*tw, #5*th, #0x00
+   .db #3*tw, #14*th, #5*tw, #4*th, #0x00
    .db #8*tw, #14*th, #6*tw, #2*th, #0x00
    .db #14*tw, #11*th, #2*tw, #7*th, #0x00
    .db #6*tw, #21*th, #13*tw, #2*th, #0x00
