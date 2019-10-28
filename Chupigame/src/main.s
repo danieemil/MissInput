@@ -24,6 +24,9 @@
 .include "bins/effects.h.s"
 .include "bins/title_screen_c.h.s"
 .include "bins/credits_c.h.s"
+.include "bins/the_end_small_c.h.s"
+.include "bins/level_complete_big_c.h.s"
+.include "bins/help_c.h.s"
 
 
 
@@ -304,15 +307,6 @@ game_loop:
    ld c, vector_s(iy)
    call cleanVector
 
-   ;; Comprueba si en algún momento tenemos que saltar a los menús
-   ld a, (game_state)
-   cp #1
-   jr z, keep_looping
-
-      jp init_menu
-
-   keep_looping:
-
    ld a, dp_counter(ix)
    cp #0
    jr z, input
@@ -379,6 +373,17 @@ game_loop:
    ld b, #0
    ld c, vector_s(iy)  
    call collisionEnt_loop
+
+   ;; Comprueba si en algún momento tenemos que saltar a los menús
+   ld a, (game_state)
+   cp #1
+   jr z, keep_looping
+
+      jp init_menu
+
+   keep_looping:
+
+
 
    update_enemies:
    ld iy, #Venemies
@@ -466,6 +471,7 @@ init_menu:
       dec hl
       ex de, hl
       call cpct_zx7b_decrunch_s_asm
+      jp start_menu_loop
 
    check_level_complete:
    ld a, (game_state)
@@ -473,7 +479,37 @@ init_menu:
    jr nz, check_credits
 
       draw_level_complete:
-      ld de, #_credits_c_end
+      ld hl, #levels
+      ld a, (actual_level)
+      ld d, #0
+      ld e, a
+      add hl, de
+      add hl, de
+      ld e, (hl)
+      inc hl
+      ld d, (hl)
+      ex de, hl
+      ld a, h
+      or l
+      jr nz, draw_middle_level
+
+         ld de, #_level_complete_big_c_end
+         ld a, (#_frontbuffer)
+         ld h, a
+         ld l, #0
+         ld bc, #0x4000
+         add hl, bc
+         dec hl
+         ex de, hl
+         call cpct_zx7b_decrunch_s_asm
+
+         ld b, #3
+         call waitSeconds
+
+         jr start_menu_loop
+
+      draw_middle_level:
+      ld de, #_level_complete_big_c_end
       ld a, (#_frontbuffer)
       ld h, a
       ld l, #0
@@ -483,6 +519,7 @@ init_menu:
       ex de, hl
       call cpct_zx7b_decrunch_s_asm
 
+      jr start_menu_loop
 
    check_credits:
    ld a, (game_state)
@@ -499,6 +536,7 @@ init_menu:
       dec hl
       ex de, hl
       call cpct_zx7b_decrunch_s_asm
+      jr start_menu_loop
 
    check_help:
    ld a, (game_state)
@@ -506,7 +544,7 @@ init_menu:
    jr nz, start_menu_loop
 
       draw_help:
-      ld de, #_credits_c_end
+      ld de, #_help_c_end
       ld a, (#_frontbuffer)
       ld h, a
       ld l, #0
@@ -518,11 +556,8 @@ init_menu:
 
 start_menu_loop:
 
-   ld a, #0xFF
-   waiting_loop:
-   halt
-   dec a
-   jr nz, waiting_loop
+   ld b, #1
+   call waitSeconds
 
 menu_loop:
 
@@ -535,6 +570,9 @@ menu_loop:
    ld a, (game_state)
    cp #0
    jr z, check_start
+   ;; Si es level complete, no necesitamos pulsar ninguna tecla
+   cp #2
+   jr z, from_level_complete
 
       check_any_key:
       ex af, af'
@@ -612,6 +650,7 @@ menu_loop:
       ld a, #3
       ld (game_state), a
       jp init_menu
+
 
    finalize_loop:
 
@@ -940,7 +979,6 @@ end_level:
    inc a
    ld (actual_level), a
 
-   jp init_menu
 ret
 
 
@@ -1296,3 +1334,37 @@ deathLoop:
 jp nz, dloop
 
    jp initializeLevel         ;; Salida del metodo
+
+
+
+
+;;====================================================
+;;Definition: Espera B segundos
+;;Entrada:
+;; B -> Segundos
+;;Salida:
+;;Destruye: AF, AF', B
+;;====================================================
+waitSeconds:
+
+ld a, b
+cp #0
+ret z
+
+waiting_loop:
+
+   ex af, af'
+
+      ld a, #0xB0
+      second_loop:
+         halt
+         halt
+         dec a
+      jr nz, second_loop
+
+   ex af, af'
+
+   dec a
+jr nz, waiting_loop
+
+ret
