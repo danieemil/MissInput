@@ -20,7 +20,7 @@
 .include "main.h.s"
 .include "player.h.s"
 .include "level_data.h.s"
-.include "bins/ambient_sound.h.s"
+.include "bins/ambient_sound_extended.h.s"
 .include "bins/effects.h.s"
 .include "bins/title_screen_c.h.s"
 .include "bins/credits_c.h.s"
@@ -87,6 +87,8 @@ death_counter: .db #10
 
 
 ;; Música y sonidos
+mute: .db #00
+
 death_sound: .db #00
 power_up_sound: .db #00
 
@@ -117,6 +119,13 @@ interruption_handler:
    push iy
    push ix
 
+   ld a, (mute)
+   cp #0
+   jr z, start_playing
+
+      jp sound_playing
+
+   start_playing:
 
    ;; Música ambiente
    ld a, (ambient_speed)
@@ -221,7 +230,7 @@ interruption_handler:
    ;    call cpct_scanKeyboard_if_asm
 
 
-   ; not_scanning:
+    not_scanning:
 
 
    pop ix
@@ -467,7 +476,6 @@ init_menu:
 
 
    ;; Descomprimimos el mapa de memoria
-
    ld a, (game_state)
    cp #0
    jr nz, check_level_complete
@@ -488,6 +496,7 @@ init_menu:
    ld a, (game_state)
    cp #2
    jr nz, check_credits
+
 
       draw_level_complete:
       ld hl, #levels
@@ -726,15 +735,33 @@ inputManager:
    check_jump:
    ld hl, #Key_Space
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
-   jr z, final_input
+   jr z, check_mute
       ex af, af'
       add a, #4
-      ret
+      ex af, af'
+
+   check_mute:
+   ;; Check mute
+   ld hl, #Key_M
+   call cpct_isKeyPressed_asm
+   jr z, final_input
+      ld a, (mute)
+      cp #0
+      jr nz, not_to_mute
+
+         ld a, #1
+         ld (mute), a
+         call cpct_akp_stop_asm
+         jr final_menu_input
+
+      not_to_mute:
+      xor a
+      ld (mute), a
+
 
    final_input:
    ex af, af'
 
-   
 
 ret
 
@@ -766,32 +793,55 @@ menuInputManager:
 
    key_number_pressed:
    xor a                         ;; Ponemos A a 0
+   ex af, af'
 
    check_1:
    ld hl, #Key_1
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
    jr z, check_2
+      ex af, af'
       ld a, #1
-      ret
+      ex af, af'
+      jr check_menu_mute
 
 
    check_2:
    ld hl, #Key_2
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
    jr z, check_3
+      ex af, af'
       ld a, #2
-      ret
+      ex af, af'
+      jr check_menu_mute
 
    check_3:
    ld hl, #Key_3
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
-   jr z, final_menu_input
+   jr z, check_menu_mute
+      ex af, af'
       ld a, #3
-      ret
+      ex af, af'
+
+   check_menu_mute:
+   ;; Check mute
+   ld hl, #Key_M
+   call cpct_isKeyPressed_asm
+   jr z, final_menu_input
+      ld a, (mute)
+      cp #0
+      jr nz, not_muted
+
+         ld a, #1
+         ld (mute), a
+         call cpct_akp_stop_asm
+         jr final_menu_input
+
+      not_muted:
+      xor a
+      ld (mute), a
 
    final_menu_input:
-   xor a
-
+   ex af, af'
 
 ret
 
