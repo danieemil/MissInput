@@ -24,7 +24,7 @@
 .include "bins/effects.h.s"
 .include "bins/title_screen_c.h.s"
 .include "bins/credits_c.h.s"
-.include "bins/the_end_small_c.h.s"
+.include "bins/the_end_big_c.h.s"
 .include "bins/level_complete_big_c.h.s"
 .include "bins/help_c.h.s"
 
@@ -535,7 +535,7 @@ init_menu:
       or l
       jr nz, draw_middle_level
 
-         ld de, #_level_complete_big_c_end
+         ld de, #_the_end_big_c_end
          ld a, (#_frontbuffer)
          ld h, a
          ld l, #0
