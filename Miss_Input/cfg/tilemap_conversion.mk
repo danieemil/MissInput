@@ -52,6 +52,7 @@ $(eval $(call TMX2DATA, CONVERT, assets/maps/map05.tmx, map05 ))
 $(eval $(call TMX2DATA, CONVERT, assets/maps/map08.tmx, map08 ))
 $(eval $(call TMX2DATA, CONVERT, assets/maps/map09.tmx, map09 ))
 $(eval $(call TMX2DATA, CONVERT, assets/maps/map10.tmx, map10 ))
+$(eval $(call TMX2DATA, CONVERT, assets/maps/map15.tmx, map15 ))
 
 ##
 ## OLD MACROS (For compatibility)
