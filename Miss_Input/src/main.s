@@ -1,6 +1,6 @@
 ;;-----------------------------LICENSE NOTICE------------------------------------
-;;  This file is part of CPCtelera: An Amstrad CPC Game Engine 
-;;  Copyright (C) 2018 ronaldo / Fremos / Cheesetea / ByteRealms (@FranGallegoBR)
+;;  This file is part of Miss Input: An Amstrad CPC Game 
+;;  Copyright (C) 2019 Enrique Vidal Cayuela, Daniel Saura Martínez
 ;;
 ;;  This program is free software: you can redistribute it and/or modify
 ;;  it under the terms of the GNU Lesser General Public License as published by
@@ -714,7 +714,7 @@ jr menu_loop
 ;; Key Definitions:
 ;; Key_O       
 ;; Key_P        
-;; Key_Space   
+;; Key_Q   
 ;;
 ;;
 ;;
@@ -766,7 +766,7 @@ inputManager:
       ex af, af'
 
    check_jump:
-   ld hl, #Key_Space
+   ld hl, #Key_Q
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
    jr z, final_input
       ex af, af'

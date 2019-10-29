@@ -1,0 +1,9 @@
+﻿Authors of the game:
+   - Enrique Vidal Cayuela
+
+   - Daniel Saura Martínez
+
+   
+Licensed content used:
+
+    - CPCtelera:
