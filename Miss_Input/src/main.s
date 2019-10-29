@@ -28,6 +28,9 @@
 .include "bins/level_complete_big_c.h.s"
 .include "bins/help_c.h.s"
 
+.globl _reference01
+.globl _reference02
+
 
 
 ;;
@@ -63,6 +66,12 @@ ReserveVector Vpowers, dde_size, 4
 ;;Enemigos
 ReserveVector Venemies, dE_size, 4
 
+;;Referencias a Astro Marine Corps
+DefineDrawableEntity reference01, #00, #00, #12, #7, #0x7E, _reference01
+DefineDrawableEntity reference02, #00, #00, #16, #7, #00, _reference02
+
+const_reference_counter = 2
+
 ;; Estados del juego: 
 ;; 0 -> Pantalla del título 
 ;; 1 -> In-game
@@ -74,6 +83,7 @@ game_state: .db #00
 
 ;; Nivel actual
 actual_level: .db  #00
+death_counter: .db #10
 
 
 ;; Música y sonidos
@@ -208,18 +218,18 @@ interruption_handler:
    sound_playing:
 
 
-   ld a, (keyboard_counter)
-   cp #0
-   jr z, scanning
+   ; ld a, (keyboard_counter)
+   ; cp #0
+   ; jr z, scanning
 
-      dec a
-      ld (keyboard_counter), a
-      jr not_scanning
+   ;    dec a
+   ;    ld (keyboard_counter), a
+   ;    jr not_scanning
 
-      scanning:
-      ld a, #keyboard_frequency
-      ld (keyboard_counter), a
-      call cpct_scanKeyboard_if_asm
+   ;    scanning:
+   ;    ld a, #keyboard_frequency
+   ;    ld (keyboard_counter), a
+   ;    call cpct_scanKeyboard_if_asm
 
 
    not_scanning:
@@ -360,11 +370,11 @@ game_loop:
       jr no_input
 
    input:
+
+
    call inputManager
    no_input:
    
-   
-
    call inputPlayer
 
    ;; Reseteamos los bits del walljump
@@ -420,7 +430,8 @@ game_loop:
    ld a, (game_state)
    cp #1
    jr z, keep_looping
-      
+
+      pop af
       jp init_menu
 
    keep_looping:
@@ -717,7 +728,7 @@ jr menu_loop
 inputManager:
 
 
-   ;;call cpct_scanKeyboard_asm    ;;Destruye: AF, BC, DE, HL
+   call cpct_scanKeyboard_asm    ;;Destruye: AF, BC, DE, HL
 
    call cpct_isAnyKeyPressed_asm ;;Destruye: A, B, HL
       jr nz, key_pressed         ;;Es 0
@@ -788,6 +799,7 @@ ret
 ;;=============================================================
 menuInputManager:
 
+   call cpct_scanKeyboard_asm
    call cpct_isAnyKeyPressed_asm ;;Destruye: A, B, HL
       jr nz, key_number_pressed  ;;Es 0
       ld a, #-1                  ;; Ponemos A a 0
@@ -1017,6 +1029,9 @@ collisionEnt_loop:
 ret
 
 end_level:
+
+   ld a, #10
+   ld (death_counter), a
 
    ld a, #2
    ld (game_state), a
@@ -1272,6 +1287,56 @@ ret
 
 deathLoop:
 
+   ld a, (death_counter)
+   dec a
+   jr nz, no_set_references
+
+      ex af, af'
+      
+      ld ix, #player     ;;<-- Quitar una vez funcione para ver que pasa
+      ld iy, #reference01
+      ld a, de_x(ix)
+
+      ld hl, #_reference01
+      ld dde_spr_h(iy), h
+      ld dde_spr_l(iy), l
+
+      ld de_w(iy), #12
+
+      sub a, #04
+      cp #0
+      jp p, rf01_set_x_coordinate_left
+         ld a, #0
+      rf01_set_x_coordinate_left:
+      ld de_x(iy), a
+      ld dde_preX(iy), a
+
+      add a, de_w(iy)
+      sub #80
+      jp m, rf01_set_x_coordinate_right
+
+         ld a, #80
+         sub a, de_w(iy)
+         ld de_x(iy), a
+         ld dde_preX(iy), a
+
+      rf01_set_x_coordinate_right:
+      ld a, de_y(ix)
+      add a, de_h(ix) 
+      add a, #8
+      ld de_y(iy), a
+      ld dde_preY(iy), a
+
+      ld dde_animTime(iy), #const_reference_counter
+      ld dde_animCounter(iy), #40
+
+      ld de_type(iy), #0x7E
+
+      ex af, af'
+
+   no_set_references:
+   ld (death_counter), a
+
    ld a, #1
    ld (death_sound), a
 
@@ -1282,7 +1347,9 @@ deathLoop:
    dloop:
    push af
    push hl
+
    ;; Clear player
+   ld iy, #player
    ld d, dde_preX(iy)
    ld a, de_w(iy)
    add d
@@ -1304,6 +1371,24 @@ deathLoop:
    ld c, vector_s(iy)
    call cleanVector
 
+   ;;Clear references
+   ld a, (death_counter)
+   cp #0
+   jr nz, no_clear_references
+
+      ld iy, #reference01
+      ld d, dde_preX(iy)
+      ld a, de_w(iy)
+      add d
+      ld e, a
+      ld b, dde_preY(iy)
+      ld a, de_h(iy)
+      add b
+      call redrawTiles
+
+   no_clear_references:
+
+
 
    ld iy, #Vpowers
    ld a, vector_n(iy)
@@ -1316,6 +1401,7 @@ deathLoop:
    ld b, #0
    ld c, vector_s(iy)
    call drawEnemyVector
+
 
    ld iy, #player
 
@@ -1371,15 +1457,139 @@ deathLoop:
 
    check_end_dloop:
 
+   ld a, (death_counter)
+   cp #0
+   jr nz, no_draw_references
+
+      
+      ld iy, #reference01
+      call drawReferences
+
+      pop hl
+      pop af
+      ld a, b
+      push af
+      push hl
+      
+
+      
+   no_draw_references:
+
    call switchBuffers
    call cpct_waitVSYNC_asm
 
    pop hl
    pop af   
 
-jp nz, dloop
+   cp #0
+   jp nz, dloop
 
    jp initializeLevel         ;; Salida del metodo
+
+
+
+
+
+
+;;====================================================
+;;Definition: Dibuja las referencias
+;;Entrada:
+;;  IY = Puntero a la referencia
+;;
+;;Salida:
+;;
+;;Destruye: AF, BC, DE, HL
+;;====================================================
+drawReferences:
+
+   ld a, dde_animTime(iy)
+   dec a
+   jr nz, no_decrement_y_reference
+
+      ld a, dde_animCounter(iy)
+      dec a
+      jr nz, no_cambiar_type_reference
+         call setReference2
+         inc de_type(iy)
+         ld a, #40
+         ld dde_animCounter(iy), a
+         ld a, #const_reference_counter
+         ld dde_animTime(iy), a
+         jr check_reference_type
+         
+
+      no_cambiar_type_reference:
+      ld dde_animCounter(iy), a
+
+
+      ld a, de_y(iy)
+      dec a
+      jr nz, no_corregir_y_reference
+         ld a, #1
+
+
+      no_corregir_y_reference:
+      ld de_y(iy), a
+      ld dde_preY(iy), a
+
+      ld a, #const_reference_counter
+
+   no_decrement_y_reference:
+   ld dde_animTime(iy), a
+   call drawSprite
+
+   check_reference_type:
+
+   ld b, #1
+   ld a, de_type(iy)
+   cp #0x80
+   ret nz
+
+   ld a, #10
+   ld (death_counter), a
+   ld b, #0
+   ret
+
+
+setReference2:
+
+   ld ix, #player     ;;<-- Quitar una vez funcione para ver que pasa
+   ld iy, #reference01
+
+   ld hl, #_reference02
+   ld dde_spr_h(iy), h
+   ld dde_spr_l(iy), l
+
+   ld de_w(iy), #16
+
+   ld a, de_x(ix)
+
+   sub a, #06
+   cp #0
+   jp p, rf02_set_x_coordinate_left
+      ld a, #0
+   rf02_set_x_coordinate_left:
+   ld de_x(iy), a
+   ld dde_preX(iy), a
+
+   add a, de_w(iy)
+   sub #80
+   jp m, rf02_set_x_coordinate_right
+
+      ld a, #80
+      sub a, de_w(iy)
+      ld de_x(iy), a
+      ld dde_preX(iy), a
+
+   rf02_set_x_coordinate_right:
+   ld a, de_y(ix)
+   add a, de_h(ix) 
+   add a, #8
+   ld de_y(iy), a
+   ;ld dde_preY(iy), a
+
+
+ret
 
 
 
