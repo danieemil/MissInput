@@ -74,6 +74,11 @@ $(eval $(call IMG2SP, SET_OUTPUT      , bin                  					))
 $(eval $(call IMG2SP, SET_IMG_FORMAT  , screen  								))
 $(eval $(call IMG2SP, CONVERT         , assets/title_screen.png , 320,200, title))
 $(eval $(call IMG2SP, CONVERT         , assets/ImagenCreditos.png , 320,200, credits))
+$(eval $(call IMG2SP, CONVERT         , assets/ImagenInfo.png , 320,200, help))
+$(eval $(call IMG2SP, CONVERT         , assets/LevelComplete_big.png , 320,200, level_complete_big))
+
+$(eval $(call IMG2SP, SET_IMG_FORMAT  , sprites  								))
+$(eval $(call IMG2SP, CONVERT         , assets/ImagenTheEnd_small.png , 81,60, the_end_small))
 
 ##
 ## OLD MACROS (For compatibility)

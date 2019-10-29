@@ -76,6 +76,15 @@ $(eval $(call PACKZX7B,title_screen_c,src/bins/))
 $(eval $(call ADD2PACK,credits_c,src/bins/ImagenCreditos.bin))
 $(eval $(call PACKZX7B,credits_c,src/bins/))
 
+$(eval $(call ADD2PACK,help_c,src/bins/ImagenInfo.bin))
+$(eval $(call PACKZX7B,help_c,src/bins/))
+
+$(eval $(call ADD2PACK,level_complete_big_c,src/bins/LevelComplete_big.bin))
+$(eval $(call PACKZX7B,level_complete_big_c,src/bins/))
+
+$(eval $(call ADD2PACK,the_end_small_c,src/bins/ImagenTheEnd_small.bin))
+$(eval $(call PACKZX7B,the_end_small_c,src/bins/))
+
 
 
 
