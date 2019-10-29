@@ -703,7 +703,7 @@ jr menu_loop
 ;; Key Definitions:
 ;; Key_O       
 ;; Key_P        
-;; Key_Space   
+;; Key_Q   
 ;;
 ;;
 ;;
@@ -755,7 +755,7 @@ inputManager:
       ex af, af'
 
    check_jump:
-   ld hl, #Key_Space
+   ld hl, #Key_Q
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
    jr z, final_input
       ex af, af'
