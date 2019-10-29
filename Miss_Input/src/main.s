@@ -616,8 +616,7 @@ menu_loop:
 
    call menuInputManager
 
-
-   ex af, af'
+   ld b, a
 
    check_state:
    ld a, (game_state)
@@ -628,7 +627,7 @@ menu_loop:
    jr z, from_level_complete
 
       check_any_key:
-      ex af, af'
+      ld a, b
       cp #0
       jp m, finalize_loop
 
@@ -678,7 +677,7 @@ menu_loop:
 
 
    check_start:
-   ex af, af'
+   ld a, b
    cp #1
    jr nz, check_info
 
