@@ -9,6 +9,7 @@
 .include "bins/map_08.h.s"
 .include "bins/map_09.h.s"
 .include "bins/map_10.h.s"
+.include "bins/map_15.h.s"
 
 
 
