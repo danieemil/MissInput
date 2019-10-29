@@ -77,6 +77,8 @@ actual_level: .db  #00
 
 
 ;; Música y sonidos
+mutex = #0xFF
+mute_counter: .db #00
 mute: .db #00
 
 death_sound: .db #00
@@ -221,7 +223,38 @@ interruption_handler:
 
 
    not_scanning:
-   
+
+   ld a, (mute_counter)
+   cp #0
+   jr z, can_mute
+
+      dec a
+      ld (mute_counter), a
+      jr can_not_mute
+
+   can_mute:
+   ld hl, #Key_M
+   call cpct_isKeyPressed_asm
+   jr z, can_not_mute
+
+      ld a, #mutex
+      ld (mute_counter), a
+
+      ld a, (mute)
+      cp #0
+      jr nz, already_muted
+
+         ld a, #1
+         ld (mute), a
+         call cpct_akp_stop_asm
+         jr can_not_mute
+
+      already_muted:
+
+      xor a
+      ld (mute), a
+
+   can_not_mute:
 
    pop ix
    pop iy
@@ -724,29 +757,10 @@ inputManager:
    check_jump:
    ld hl, #Key_Space
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
-   jr z, check_mute
+   jr z, final_input
       ex af, af'
       add a, #4
-      ex af, af'
-
-   check_mute:
-   ;; Check mute
-   ld hl, #Key_M
-   call cpct_isKeyPressed_asm
-   jr z, final_input
-      ld a, (mute)
-      cp #0
-      jr nz, not_to_mute
-
-         ld a, #1
-         ld (mute), a
-         call cpct_akp_stop_asm
-         jr final_menu_input
-
-      not_to_mute:
-      xor a
-      ld (mute), a
-
+      ret
 
    final_input:
    ex af, af'
@@ -790,7 +804,7 @@ menuInputManager:
       ex af, af'
       ld a, #1
       ex af, af'
-      jr check_menu_mute
+      jr final_menu_input
 
 
    check_2:
@@ -800,33 +814,15 @@ menuInputManager:
       ex af, af'
       ld a, #2
       ex af, af'
-      jr check_menu_mute
+      jr final_menu_input
 
    check_3:
    ld hl, #Key_3
    call cpct_isKeyPressed_asm    ;;Destruye: A, BC, D, HL
-   jr z, check_menu_mute
+   jr z, final_menu_input
       ex af, af'
       ld a, #3
       ex af, af'
-
-   check_menu_mute:
-   ;; Check mute
-   ld hl, #Key_M
-   call cpct_isKeyPressed_asm
-   jr z, final_menu_input
-      ld a, (mute)
-      cp #0
-      jr nz, not_muted
-
-         ld a, #1
-         ld (mute), a
-         call cpct_akp_stop_asm
-         jr final_menu_input
-
-      not_muted:
-      xor a
-      ld (mute), a
 
    final_menu_input:
    ex af, af'
