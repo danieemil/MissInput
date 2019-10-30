@@ -98,6 +98,18 @@ $(eval $(call PACKZX7B,map_18,src/bins/))
 $(eval $(call ADD2PACK,map_19,src/maps/map19.bin))
 $(eval $(call PACKZX7B,map_19,src/bins/))
 
+$(eval $(call ADD2PACK,map_20,src/maps/map20.bin))
+$(eval $(call PACKZX7B,map_20,src/bins/))
+
+$(eval $(call ADD2PACK,map_21,src/maps/map21.bin))
+$(eval $(call PACKZX7B,map_21,src/bins/))
+
+$(eval $(call ADD2PACK,map_23,src/maps/map23.bin))
+$(eval $(call PACKZX7B,map_23,src/bins/))
+
+$(eval $(call ADD2PACK,map_24,src/maps/map24.bin))
+$(eval $(call PACKZX7B,map_24,src/bins/))
+
 $(eval $(call ADD2PACK,title_screen_c,src/bins/title_screen.bin))
 $(eval $(call PACKZX7B,title_screen_c,src/bins/))
 

@@ -22,6 +22,8 @@
 ;; PUNERO A LOS NIVELES
 levels:
 
+   
+
    .dw #lvl_01    ;;Introduccion Movimiento
    .dw #lvl_02    ;;Introduccion Movimientos avanzados
    .dw #lvl_03    ;;Walljump test
@@ -34,13 +36,17 @@ levels:
    .dw #lvl_14    ;;P-Djump 2.0
    .dw #lvl_09    ;;Introduccion P-Gravity
    .dw #lvl_10
+   .dw #lvl_24
    .dw #lvl_11
    .dw #lvl_19
    .dw #lvl_12
+   .dw #lvl_20
    .dw #lvl_18
    .dw #lvl_16    ;;
+   .dw #lvl_21
    .dw #lvl_15    ;;GusanoPinchudo
    .dw #lvl_17
+   .dw #lvl_23    ;;THE END
 
    .dw #0x0000
 
@@ -1067,5 +1073,307 @@ lvl_01:
    .dw _enemy02_spr_4                                             ;; Render
    .db #18*tw+1, #19*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
    .db #-1, #0, #5*tw-1, #5*tw-1, #18*tw, #15*th, #02, #00        ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+
+   .db #0x80
+
+
+
+
+
+
+;;===============================
+;;
+;;       LEVEL 20
+;;
+;;===============================
+   lvl_20:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x54, #0x4C, #0x4B
+
+   ;;POSICION FINAL DEL MAPA COMPRIMIDO
+   .dw #_map_20_end                       
+
+   ;;POSICIÓN INICIAL DEL JUGADOR
+   .db #2*tw, #16*th
+
+   ;; ENTIDADES DE COLISION
+   .db #1*tw, #0*th, #18*tw, #2*th, #0x00
+   .db #0*tw, #5*th, #3*tw, #1*th, #0x00
+   .db #0*tw, #10*th, #1*tw, #9*th, #0x00
+   .db #1*tw, #19*th, #2*tw, #1*th, #0x00
+   .db #6*tw, #18*th, #3*tw, #1*th, #0x00
+   .db #17*tw, #18*th, #2*tw, #1*th, #0x00
+   .db #11*tw, #5*th, #2*tw, #1*th, #0x00
+   .db #16*tw, #5*th, #3*tw, #1*th, #0x00
+   .db #19*tw, #6*th, #1*tw, #12*th, #0x00
+   .db #0x80
+
+   ;; ENTIDADES ESPECIALES
+   .db #1*tw, #21*th, #18*tw, #2*th, #e_pinchos
+   .db #5*tw, #2*th, #4*tw, #1*th, #e_pinchos
+   .db #1*tw, #2*th, #3*tw, #1*th, #e_pinchos
+   .db #10*tw, #2*th, #9*tw, #1*th, #e_pinchos
+
+   .db #17*tw, #12*th, #2*tw, #6*th, #e_gup
+
+   .db #0*tw, #6*th, #1*tw-2, #4*th, #e_salida
+   .db #0x80
+
+   ;; POWER UPS
+
+   .db #12*tw+2, #15*th, #power_width, #power_height, #p_djump
+   .dw _powerUps_spr_14
+   .db #3*tw+1, #14*th, #0, #0, #0, #0
+
+   .db #6*tw+2, #8*th, #power_width, #power_height, #p_djump
+   .dw _powerUps_spr_14
+   .db #3*tw+1, #14*th, #0, #0, #0, #0
+
+
+   
+   .db #0x80
+   
+   ;; ENEMIGOS 
+   .db #4*tw, #2*th-4, #enemy_width, #enemy_height, e_line     ;; Entity
+   .dw _enemy02_spr_4                                             ;; Render
+   .db #4*tw, #2*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   .db #00, #04, #9*tw-2, #9*tw-2, #4*tw, #2*th-4, #01, #00    ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+   
+   .db #9*tw, #2*th-4, #enemy_width, #enemy_height, e_line     ;; Entity
+   .dw _enemy02_spr_4                                             ;; Render
+   .db #9*tw, #2*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   .db #00, #04, #9*tw-2, #9*tw-2, #9*tw, #2*th-4, #00, #00    ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+   
+   ;.db #14*tw, #2*th-4, #enemy_width, #enemy_height, e_line     ;; Entity
+   ;.dw _enemy02_spr_4                                             ;; Render
+   ;.db #14*tw, #2*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   ;.db #00, #04, #9*tw-2, #9*tw-2, #14*tw, #2*th-4, #01, #00    ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+   
+
+   .db #0x80
+
+
+
+
+
+
+
+
+
+
+;;===============================
+;;
+;;       LEVEL 21
+;;
+;;===============================
+   lvl_21:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x54, #0x4C, #0x4B
+
+   ;;POSICION FINAL DEL MAPA COMPRIMIDO
+   .dw #_map_21_end                       
+
+   ;;POSICIÓN INICIAL DEL JUGADOR
+   .db #12*tw, #19*th
+
+   ;; ENTIDADES DE COLISION
+   .db #1*tw, #0*th, #7*tw, #2*th, #0x00
+   .db #17*tw, #1*th, #3*tw, #3*th, #0x00
+   .db #19*tw, #5*th, #1*tw, #14*th, #0x00
+   .db #0*tw, #2*th, #1*tw, #13*th, #0x00
+   .db #3*tw, #11*th, #9*tw, #1*th, #0x00
+   .db #12*tw, #11*th, #2*tw, #4*th, #0x00
+   .db #14*tw, #14*th, #2*tw, #1*th, #0x00
+   .db #1*tw, #21*th, #4*tw, #2*th, #0x00
+   .db #8*tw, #21*th, #11*tw, #2*th, #0x00
+   .db #0x80
+
+   ;; ENTIDADES ESPECIALES
+   .db #8*tw, #0*th, #9*tw, #2*th, #e_pinchos
+   .db #3*tw, #12*th, #6*tw, #1*th, #e_pinchos
+   .db #0*tw, #15*th, #1*tw, #6*th, #e_pinchos
+   .db #14*tw, #20*th, #5*tw, #1*th, #e_pinchos
+
+   .db #9*tw, #12*th, #2*tw, #9*th, #e_gup
+   .db #9*tw, #2*th, #2*tw, #9*th, #e_gdown
+
+   .db #5*tw, #22*th, #3*tw, #1*th, #e_salida
+   .db #0x80
+
+   ;; POWER UPS
+
+   ;.db #14*tw, #7*th, #power_width, #power_height, #p_djump
+   ;.dw _powerUps_spr_14
+   ;.db #3*tw+1, #14*th, #0, #0, #0, #0
+
+
+
+   
+   .db #0x80
+   
+   ;; ENEMIGOS 
+   .db #14*tw-1, #11*th, #enemy_width, #enemy_height, e_line     ;; Entity
+   .dw _enemy02_spr_4                                             ;; Render
+   .db #14*tw, #11*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   .db #01, #00, #4*tw, #4*tw, #14*tw-1, #11*th, #01, #00    ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+   
+   .db #3*tw+1, #9*th, #enemy_width, #enemy_height, e_bounce     ;; Entity
+   .dw _enemy02_spr_4                                             ;; Render
+   .db #3*tw, #9*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   .db #01, #00, #5*tw-2, #5*tw-2, #3*tw, #9*th, #02, #00    ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+     
+   .db #1*tw+1, #19*th, #enemy_width, #enemy_height, e_bounce     ;; Entity
+   .dw _enemy02_spr_4                                             ;; Render
+   .db #3*tw, #9*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   .db #01, #00, #3*tw-1, #3*tw-1, #1*tw, #19*th, #02, #00    ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+     
+   
+   .db #0x80
+
+
+
+
+
+
+
+   ;;===============================
+;;
+;;       LEVEL 23
+;;
+;;===============================
+   lvl_23:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x54, #0x4C, #0x4B
+
+   ;;POSICION FINAL DEL MAPA COMPRIMIDO
+   .dw #_map_23_end                       
+
+   ;;POSICIÓN INICIAL DEL JUGADOR
+   .db #2*tw, #4*th
+
+   ;; ENTIDADES DE COLISION
+   .db #0*tw, #3*th, #1*tw, #3*th, #0x00
+   .db #1*tw, #2*th, #5*tw, #1*th, #0x00
+   .db #6*tw, #0*th, #2*tw, #12*th, #0x00
+   .db #12*tw, #0*th, #2*tw, #12*th, #0x00
+   .db #1*tw, #6*th, #3*tw, #1*th, #0x00
+   .db #0*tw, #7*th, #1*tw, #13*th, #0x00
+   .db #1*tw, #20*th, #11*tw, #2*th, #0x00
+   .db #3*tw, #11*th, #3*tw, #1*th, #0x00
+   .db #19*tw, #5*th, #1*tw, #14*th, #0x00
+   .db #14*tw, #3*th, #2*tw, #4*th, #0x00
+   .db #0x80
+
+   ;; ENTIDADES ESPECIALES
+   .db #7*tw, #19*th, #1*tw, #1*th, #e_pinchos
+   .db #12*tw, #20*th, #7*tw, #2*th, #e_pinchos
+   .db #16*tw, #3*th, #3*tw, #1*th, #e_pinchos
+
+   .db #18*tw, #13*th, #1*tw, #3*th, #e_gup
+   .db #8*tw, #5*th, #4*tw, #3*th, #e_gdown
+
+   .db #8*tw, #0*th, #4*tw, #1*th, #e_salida
+   .db #0x80
+
+   ;; POWER UPS
+
+   .db #15*tw+2, #16*th, #power_width, #power_height, #p_djump
+   .dw _powerUps_spr_14
+   .db #3*tw+1, #14*th, #0, #0, #0, #0
+   .db #0x80
+   
+   ;; ENEMIGOS 
+   ;.db #14*tw, #11*th, #enemy_width, #enemy_height, e_line     ;; Entity
+   ;.dw _enemy02_spr_4                                             ;; Render
+   ;.db #14*tw, #11*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   ;.db #01, #00, #4*tw, #4*tw, #14*tw, #11*th, #01, #00    ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+   ;
+   ;.db #3*tw+1, #9*th, #enemy_width, #enemy_height, e_bounce     ;; Entity
+   ;.dw _enemy02_spr_4                                             ;; Render
+   ;.db #3*tw, #9*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   ;.db #01, #00, #5*tw-1, #5*tw-1, #3*tw, #9*th, #02, #00    ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+     
+   .db #1*tw+1, #18*th, #enemy_width, #enemy_height, e_bounce     ;; Entity
+   .dw _enemy02_spr_4                                             ;; Render
+   .db #1*tw, #18*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   .db #01, #00, #5*tw-1, #5*tw-1, #1*tw, #18*th, #02, #00    ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+     
+   ;.db #14*tw-1, #11*th, #enemy_width, #enemy_height, e_line     ;; Entity
+   ;.dw _enemy02_spr_4                                             ;; Render
+   ;.db #14*tw, #11*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   ;.db #01, #00, #4*tw, #4*tw, #14*tw-1, #11*th, #01, #00    ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+   
+   .db #9*tw+2, #10*th, #enemy_width, #enemy_height, #e_chase    ;;Entity
+   .dw _enemy01_spr_4                                             ;;Render
+   .db #9*tw, #10*th, #0, #0, #0, #0
+   .db #00, #00, #20, #20, #8*tw, #90*th, #01, #00             ;;Enemy
+   
+
+   .db #0x80
+
+
+
+
+
+
+;;===============================
+;;
+;;       LEVEL 24
+;;
+;;===============================
+   lvl_24:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x54, #0x4C, #0x4B
+
+   ;;POSICION FINAL DEL MAPA COMPRIMIDO
+   .dw #_map_24_end                       
+
+   ;;POSICIÓN INICIAL DEL JUGADOR
+   .db #15*tw, #11*th
+
+   ;; ENTIDADES DE COLISION
+   .db #0*tw, #1*th, #2*tw, #2*th, #0x00
+   .db #5*tw, #3*th, #3*tw, #1*th, #0x00
+   .db #0*tw, #4*th, #1*tw, #14*th, #0x00
+   .db #5*tw, #8*th, #9*tw, #7*th, #0x00
+   .db #14*tw, #7*th, #5*tw, #1*th, #0x00
+   .db #14*tw, #13*th, #3*tw, #2*th, #0x00
+   .db #19*tw, #8*th, #1*tw, #13*th, #0x00
+   .db #4*tw, #21*th, #15*tw, #1*th, #0x00
+   .db #10*tw, #19*th, #1*tw, #2*th, #0x00
+   .db #0x80
+
+   ;; ENTIDADES ESPECIALES
+   .db #2*tw, #3*th, #3*tw, #1*th, #e_pinchos
+   .db #0*tw, #18*th, #1*tw, #3*th, #e_pinchos
+   .db #1*tw, #21*th, #3*tw, #1*th, #e_pinchos
+
+   .db #7*tw+2, #4*th, #1*tw-2, #4*th, #e_salida
+   .db #0x80
+
+   ;; POWER UPS
+   .db #0x80
+   
+
+   ;; ENEMIGOS 
+   .db #11*tw-1, #19*th, #enemy_width, #enemy_height, e_line      ;; Entity
+   .dw _enemy02_spr_4                                             ;; Render
+   .db #11*tw-1, #19*th, #0, #0, #0, #0                             ;; PreX, PreY, Animation data (no cambiar de #0)
+   .db #01, #00, #7*tw, #7*tw, #11*tw-1, #19*th, #01, #00         ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+   
+   .db #1*tw, #3*th-2, #enemy_width, #enemy_height, e_line      ;; Entity
+   .dw _enemy02_spr_4                                             ;; Render
+   .db #11*tw-1, #19*th, #0, #0, #0, #0                             ;; PreX, PreY, Animation data (no cambiar de #0)
+   .db #00, #04, #7*tw+3, #7*tw+3, #1*tw, #3*th-2, #01, #00         ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+   
+   ;.db #4*tw, #19*th+2, #enemy_width, #enemy_height, e_line      ;; Entity
+   ;.dw _enemy02_spr_4                                             ;; Render
+   ;.db #11*tw-1, #19*th, #0, #0, #0, #0                             ;; PreX, PreY, Animation data (no cambiar de #0)
+   ;.db #00, #-4, #7*tw+1, #7*tw+1, #4*tw, #19*th+2, #01, #00         ;; DirX, DirY, Rango, RangoInicial, OrigX, OrigY, Iteraciones/update, ResCounter 
+   
 
    .db #0x80
