@@ -61,7 +61,7 @@ ReserveVector Ventities, de_size, 20
 ReserveVector Ventities2, de_size, 20
 
 ;;Power-ups
-ReserveVector Vpowers, dde_size, 4
+ReserveVector Vpowers, dde_size, 8
 
 ;;Enemigos
 ReserveVector Venemies, dE_size, 4

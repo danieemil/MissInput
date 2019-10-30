@@ -7,3 +7,7 @@
 Licensed content used:
 
     - CPCtelera:
+    CPCtelera low-level library, examples and scripts are distributed under GNU Lesser General Public License v3
+
+        Autores de CPCtelera: 
+        http://lronaldo.github.io/cpctelera/files/authors-txt.html

@@ -41,15 +41,17 @@ enemy_updateAll:
     ex af, af'
 
     ;; Contador que limita el número de veces que un enemigo se ejecuta
+
+    ld a, de_x(iy)
+    ld dde_preX(iy), a
+    ld a, de_y(iy)
+    ld dde_preY(iy), a
+
     xor a
     cp dE_resCount(iy)
     jr z, do_update
 
         dec dE_resCount(iy)
-        ld a, de_x(iy)
-        ld dde_preX(iy), a
-        ld a, de_y(iy)
-        ld dde_preY(iy), a
         jr next_enemy
 
     do_update:

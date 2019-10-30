@@ -22,7 +22,6 @@
 ;; PUNERO A LOS NIVELES
 levels:
 
-   .dw #lvl_11
    .dw #lvl_01
    .dw #lvl_02
    .dw #lvl_03
@@ -33,6 +32,8 @@ levels:
    .dw #lvl_08
    .dw #lvl_09
    .dw #lvl_10
+   .dw #lvl_11
+   .dw #lvl_12
 
    .dw #0x0000
 
@@ -576,4 +577,74 @@ lvl_01:
    
    .db #0x80
 
+
+
+
+;;===============================
+;;
+;;       LEVEL 12
+;;
+;;===============================
+   lvl_12:
+
+   ;;PALETA DEL NIVEL
+   .db #0x57, #0x54, #0x4C, #0x4B
+
+   ;;POSICION FINAL DEL MAPA COMPRIMIDO
+   .dw #_map_17_end
+
+   ;;POSICIÓN INICIAL DEL JUGADOR
+   .db #1*tw+2, #14*th
+
+   ;; ENTIDADES DE COLISION
+   .db #0*tw, #5*th, #1*tw, #11*th, #0x00
+   .db #1*tw, #16*th, #15*tw, #5*th, #0x00
+   .db #16*tw, #21*th, #4*tw, #1*th, #0x00
+   .db #19*tw, #5*th, #1*tw, #12*th, #0x00
+   .db #0x80
+
+   ;; ENTIDADES ESPECIALES
+   .db #1*tw, #5*th, #18*tw, #1*th, #e_pinchos
+   .db #19*tw+2, #17*th, #1*tw-2, #4*th, #e_salida
+   .db #0x80
+
+   ;; POWER UPS
+   .db #3*tw+1, #14*th, #power_width, #power_height, #p_gup
+   .dw _powerUps_spr_14
+   .db #3*tw+1, #14*th, #0, #0, #0, #0
+
+   .db #7*tw+1, #14*th, #power_width, #power_height, #p_gup
+   .dw _powerUps_spr_14
+   .db #7*tw+1, #14*th, #0, #0, #0, #0
+
+   .db #11*tw+1, #14*th, #power_width, #power_height, #p_gup
+   .dw _powerUps_spr_14
+   .db #11*tw+1, #14*th, #0, #0, #0, #0
+
+   .db #15*tw+1, #14*th, #power_width, #power_height, #p_gup
+   .dw _powerUps_spr_14
+   .db #15*tw+1, #14*th, #0, #0, #0, #0
+
+   ;.db #5*tw, #11*th, #power_width, #power_height, #p_gup
+   ;.dw _powerUps_spr_14
+   ;.db #5*tw, #11*th, #0, #0, #0, #0
+
+   ;.db #9*tw+1, #11*th, #power_width, #power_height, #p_gup
+   ;.dw _powerUps_spr_14
+   ;.db #9*tw+1, #11*th, #0, #0, #0, #0
+
+   ;.db #13*tw, #11*th, #power_width, #power_height, #p_gup
+   ;.dw _powerUps_spr_14
+   ;.db #13*tw, #11*th, #0, #0, #0, #0
+
+   .db #0x80
+   
+   ;; ENEMIGOS
+
+   .db #18*tw, #13*th, #enemy_width, #enemy_height, e_line     ;; Entity
+   .dw _enemy02_spr_4                                             ;; Render
+   .db #6*tw, #9*th, #0, #0, #0, #0                            ;; PreX, PreY, Animation data (no cambiar de #0)
+   .db #-1, #00, #17*tw, #17*tw, #18*tw+1, #13*th, #00, #00
+
+   .db #0x80
 

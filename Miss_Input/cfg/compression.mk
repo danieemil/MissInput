@@ -74,6 +74,9 @@ $(eval $(call PACKZX7B,map_10,src/bins/))
 $(eval $(call ADD2PACK,map_15,src/maps/map15.bin))
 $(eval $(call PACKZX7B,map_15,src/bins/))
 
+$(eval $(call ADD2PACK,map_17,src/maps/map17.bin))
+$(eval $(call PACKZX7B,map_17,src/bins/))
+
 $(eval $(call ADD2PACK,title_screen_c,src/bins/title_screen.bin))
 $(eval $(call PACKZX7B,title_screen_c,src/bins/))
 
