@@ -22,7 +22,6 @@
 ;; PUNERO A LOS NIVELES
 levels:
 
-   .dw #lvl_11
    .dw #lvl_01
    .dw #lvl_02
    .dw #lvl_03
@@ -33,6 +32,7 @@ levels:
    .dw #lvl_08
    .dw #lvl_09
    .dw #lvl_10
+   .dw #lvl_11
 
    .dw #0x0000
 
