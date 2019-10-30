@@ -29,6 +29,13 @@
 .include "bins/map_10.h.s"
 .include "bins/map_15.h.s"
 .include "bins/map_17.h.s"
+.include "bins/map_11.h.s"
+.include "bins/map_12.h.s"
+.include "bins/map_13.h.s"
+.include "bins/map_14.h.s"
+.include "bins/map_16.h.s"
+.include "bins/map_18.h.s"
+.include "bins/map_19.h.s"
 
 
 

@@ -77,6 +77,27 @@ $(eval $(call PACKZX7B,map_15,src/bins/))
 $(eval $(call ADD2PACK,map_17,src/maps/map17.bin))
 $(eval $(call PACKZX7B,map_17,src/bins/))
 
+$(eval $(call ADD2PACK,map_11,src/maps/map11.bin))
+$(eval $(call PACKZX7B,map_11,src/bins/))
+
+$(eval $(call ADD2PACK,map_12,src/maps/map12.bin))
+$(eval $(call PACKZX7B,map_12,src/bins/))
+
+$(eval $(call ADD2PACK,map_13,src/maps/map13.bin))
+$(eval $(call PACKZX7B,map_13,src/bins/))
+
+$(eval $(call ADD2PACK,map_14,src/maps/map14.bin))
+$(eval $(call PACKZX7B,map_14,src/bins/))
+
+$(eval $(call ADD2PACK,map_16,src/maps/map16.bin))
+$(eval $(call PACKZX7B,map_16,src/bins/))
+
+$(eval $(call ADD2PACK,map_18,src/maps/map18.bin))
+$(eval $(call PACKZX7B,map_18,src/bins/))
+
+$(eval $(call ADD2PACK,map_19,src/maps/map19.bin))
+$(eval $(call PACKZX7B,map_19,src/bins/))
+
 $(eval $(call ADD2PACK,title_screen_c,src/bins/title_screen.bin))
 $(eval $(call PACKZX7B,title_screen_c,src/bins/))
 
