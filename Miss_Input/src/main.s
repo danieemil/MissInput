@@ -938,7 +938,7 @@ collisionEnt_loop:
    not_cel_empty:
    ;; Si está inhabilitado pasamos a la siguiente entidad
    bit 5, de_type(iy)
-   jr nz, next_Ent
+   jp nz, next_Ent
 
    exx
    ex af, af'
@@ -968,12 +968,34 @@ collisionEnt_loop:
 
          set 5, de_type(iy)
          
-         ex af, af'
+         push af
 
          ld a, #1
          ld (power_up_sound), a
+
+         ld d, dde_preX(iy)
+         ld a, de_w(iy)
+         add d
+         ld e, a
+         ld b, dde_preY(iy)
+         ld a, de_h(iy)
+         add b
+         call redrawTiles
+
+         call switchBuffers
+
+         ld d, dde_preX(iy)
+         ld a, de_w(iy)
+         add d
+         ld e, a
+         ld b, dde_preY(iy)
+         ld a, de_h(iy)
+         add b
+         call redrawTiles
+
+         call switchBuffers
       
-         ex af, af'
+         pop af
 
       ;; T _ T 
       check_type:
@@ -1024,7 +1046,7 @@ collisionEnt_loop:
 
    dec a
 
-   jr nz, not_cel_empty
+   jp nz, not_cel_empty
 ret
 
 end_level:
