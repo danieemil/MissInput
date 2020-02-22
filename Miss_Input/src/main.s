@@ -949,7 +949,7 @@ collisionEnt_loop:
 
    ld a, c
    cp #1
-   jr nz, noCollisionEnt
+   jp nz, noCollisionEnt
 
       ld a, de_type(iy)
       
@@ -970,31 +970,57 @@ collisionEnt_loop:
          
          push af
 
+
+         push hl
+         push de
+         push bc
+
+         exx
+
+         push hl
+         push de
+         push bc
+         
+
          ld a, #1
          ld (power_up_sound), a
 
-         ld d, dde_preX(iy)
+
+
+         ;; Clear power-up
+         ld d, de_x(iy)
          ld a, de_w(iy)
          add d
          ld e, a
-         ld b, dde_preY(iy)
+         ld b, de_y(iy)
          ld a, de_h(iy)
          add b
          call redrawTiles
 
          call switchBuffers
 
-         ld d, dde_preX(iy)
+         ;; Clear power-up
+         ld d, de_x(iy)
          ld a, de_w(iy)
          add d
          ld e, a
-         ld b, dde_preY(iy)
+         ld b, de_y(iy)
          ld a, de_h(iy)
          add b
          call redrawTiles
 
          call switchBuffers
-      
+
+         pop bc
+         pop de
+         pop hl
+
+         exx
+
+         pop bc
+         pop de
+         pop hl
+
          pop af
 
       ;; T _ T 
